@@ -30,7 +30,7 @@ const Clientes = () => {
   }, []);
 
   const searchClient = (dni) => {
-    const client = clientes.find((c) => (c.dni = dni));
+    const client = clientes.find((c) => c.dni === dni);
     return client;
   };
 
@@ -40,20 +40,14 @@ const Clientes = () => {
     const name = nombreRef.current?.value;
     const address = direccionRef.current?.value;
     const phone = Number(telefonoRef.current?.value);
-    console.log(clientes);
-
     const dni = Number(dniRef.current?.value);
-
-    console.log(clientes);
-
     if (editingClient) {
       // Actualizar cliente existente
-      const datos = {
-        name: name,
-        address: address,
-        phone: phone,
-        dni: dni,
-      };
+      let datos = {};
+      if (name) datos.name = name;
+      if (address) datos.address = address;
+      if (phone) datos.phone = phone;
+      if (dni) datos.dni = dni;
       try {
         const res = await fetch(
           `http://localhost:8080/allClients/${editingClient.id}`,

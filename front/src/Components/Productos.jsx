@@ -1,22 +1,49 @@
-import React, { useState } from 'react';
-import 'bootstrap/dist/css/bootstrap.min.css';
-
-
-// Clase Producto adaptada a JS
-class Producto {
-  constructor(id, nombre, precio) {
-    this.id = id;
-    this.nombre = nombre;
-    this.precio = precio;
-  }
-}
+import React, { useState, useEffect, useRef } from "react";
+import "bootstrap/dist/css/bootstrap.min.css";
 
 const Productos = ({ role }) => {
   const [formVisible, setFormVisible] = useState(false);
+  const [required, setIsRequired] = useState(true);
+  const [localRole, setLocalRole] = useState(role);
   const [productos, setProductos] = useState([]);
-  const [nombre, setNombre] = useState('');
-  const [precio, setPrecio] = useState('');
-  const [productoEditando, setProductoEditando] = useState(null);
+  const [proveedores, setProveedores] = useState([]);
+  const [editingProduct, setEditingProduct] = useState(null);
+  const descripcionRef = useRef(null);
+  const idProvRef = useRef(null);
+  const stockRef = useRef(null);
+  const precioRef = useRef(null);
+
+  useEffect(() => {
+    const fetchProd = async () => {
+      try {
+        await fetch("http://localhost:8080/allProducts")
+          .then((res) => res.json())
+          .then((data) => {
+            setProductos(data);
+          });
+      } catch (error) {
+        console.log(error);
+      }
+    };
+
+    fetchProd();
+  }, []);
+
+  useEffect(() => {
+    const fetchSupp = async () => {
+      try {
+        await fetch("http://localhost:8080/allSuppliers")
+          .then((res) => res.json())
+          .then((data) => {
+            setProveedores(data);
+          });
+      } catch (error) {
+        console.log(error);
+      }
+    };
+
+    fetchSupp();
+  }, []);
 
   const toggleFormVisibility = () => {
     setFormVisible(!formVisible);
@@ -24,53 +51,105 @@ const Productos = ({ role }) => {
   };
 
   const resetForm = () => {
-    setNombre('');
-    setPrecio('');
-    setProductoEditando(null);
+    if (descripcionRef.current) descripcionRef.current.value = "";
+    if (stockRef.current) stockRef.current.value = "";
+    if (precioRef.current) precioRef.current.value = "";
+    if (idProvRef.current) idProvRef.current.value = "";
   };
 
-  const createOrUpdateProducto = (event) => {
+  const createOrUpdateProducto = async (event) => {
     event.preventDefault();
+    const description = descripcionRef.current?.value;
+    const price = Number(precioRef.current?.value);
+    const stock = Number(stockRef.current?.value);
+    const idProv = Number(idProvRef.current?.value);
 
-    if (nombre && precio !== '') {
-      if (productoEditando) {
-        // Actualizar producto
-        const productosActualizados = productos.map((prod) =>
-          prod.id === productoEditando.id ? { ...prod, nombre, precio: Number(precio) } : prod
+    if (editingProduct) {
+      // Actualizar cliente existente
+      let datos = {};
+      if (description) datos.description = description;
+      if (price) datos.price = price;
+      if (stock) datos.stock = stock;
+      if (idProv) datos.idProv = idProv;
+      try {
+        const res = await fetch(
+          `http://localhost:8080/allProducts/${editingProduct.id}`,
+          {
+            method: "PATCH",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(datos),
+          }
         );
-        setProductos(productosActualizados);
-      } else {
-        // Crear nuevo producto
-        const newProducto = new Producto(productos.length + 1, nombre, Number(precio));
-        setProductos([...productos, newProducto]);
+        if (res.ok) {
+          if (datos.description) editingProduct.description = datos.description;
+          if (datos.price) editingProduct.price = datos.price;
+          if (datos.stock) editingProduct.stock = datos.stock;
+          if (datos.idProv) editingProduct.idProv = datos.idProv;
+          const updatedProd = productos.map((prod) =>
+            prod.id === editingProduct.id ? { ...productos, updatedProd } : prod
+          );
+          setProductos(updatedProd); //actualiza la lista con los datos actualizados
+          setIsRequired(true);
+          setEditingProduct(null);
+          resetForm();
+        }
+      } catch (error) {
+        console.log(error);
       }
+    } else if (description && price && idProv) {
+      // Crear nuevo cliente
+      const newProd = {
+        description: description,
+        price: price,
+        stock: stock,
+        idProv: idProv,
+      };
+      try {
+        const res = await fetch("http://localhost:8080/allProducts", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(newProd),
+        });
+        if (res.ok) {
+          const completeProd = await res.json();
+          setProductos([...productos, completeProd]);
+          resetForm();
+          setEditingProduct(null);
+        }
+      } catch (error) {
+        console.log(error);
+      }
+    } else console.log("error al crear o actualizar producto");
 
-      resetForm();
-      setFormVisible(false);
-    }
+    setFormVisible(false);
   };
 
-  const handleEdit = (id) => {
-    const producto = productos.find((prod) => prod.id === id);
-    if (producto) {
-      setProductoEditando(producto);
-      setFormVisible(true); // Mostrar el formulario para editar
-      setNombre(producto.nombre);
-      setPrecio(producto.precio);
-    }
-  };
-
-  const handleDelete = (id) => {
-    const confirmDelete = window.confirm("¿Estás seguro de eliminar este producto?");
+  const handleDelete = async (id) => {
+    const confirmDelete = window.confirm(
+      "¿Estás seguro de eliminar este producto?"
+    );
     if (confirmDelete) {
-      const productosActualizados = productos.filter((producto) => producto.id !== id);
-      setProductos(productosActualizados);
+      await fetch(`http://localhost:8080/allProducts/${id}`, {
+        method: "DELETE",
+      });
+      const updatedProd = productos.filter((p) => p.id !== id);
+      setProductos(updatedProd);
     }
+  };
+
+  const descripcionProv = (id) => {
+    const prov = proveedores.find((p) => p.id == id);
+    console.log(prov);
+    // return prov.name;
   };
 
   return (
-    <div >
-      {(role === 'Administrador' || role === 'Vendedor') && (
+    <div style={{ marginTop: "8%" }}>
+      {(localRole === "Administrador" || localRole === "Vendedor") && (
         <div className="btn-group">
           <button
             id="b_create"
@@ -78,53 +157,82 @@ const Productos = ({ role }) => {
             type="button"
             className="btn btn-primary"
           >
-            {formVisible ? 'Cancelar' : 'Crear Producto'}
+            {formVisible ? "Cancelar" : "Crear Producto"}
           </button>
         </div>
       )}
 
       {/* Formulario solo visible si formVisible es true */}
       {formVisible && (
-        <form onSubmit={createOrUpdateProducto} id="productoData" style={{ marginTop: '20px' }}>
+        <form
+          onSubmit={createOrUpdateProducto}
+          id="productoData"
+          style={{ marginTop: "20px" }}
+        >
           <div className="mb-3">
-            <label htmlFor="nombre">Nombre: </label>
+            <label htmlFor="nombre">Descripcion: </label>
             <input
               type="text"
-              value={nombre}
-              onChange={(e) => setNombre(e.target.value)}
-              name="nombre"
+              name="descripcion"
               className="form-control"
-              required
+              required={required}
+              ref={descripcionRef}
             />
           </div>
           <div className="mb-3">
             <label htmlFor="precio">Precio: </label>
             <input
               type="number"
-              value={precio === '' ? '' : precio} // Asegura que el campo pueda estar vacío
-              onChange={(e) => setPrecio(e.target.value === '' ? '' : Number(e.target.value))}
               name="precio"
               className="form-control"
-              required
+              required={required}
+              ref={precioRef}
             />
+          </div>
+          <div className="mb-3">
+            <label htmlFor="nombre">stock: </label>
+            <input
+              type="number"
+              ref={stockRef}
+              name="stock"
+              className="form-control"
+            />
+          </div>
+          <div className="mb-3">
+            <label htmlFor="nombre">Proveedor: </label>
+            <select
+              name="idProv"
+              id="idProv"
+              style={{ marginLeft: "10px" }}
+              className="form-control"
+              required={required}
+              ref={idProvRef}
+            >
+              <option value="">Elegi un proveedor</option>
+              {proveedores.map((prov) => (
+                <option value={prov.id}>{prov.name}</option>
+              ))}
+            </select>
           </div>
 
           {/* Botón de enviar (Crear/Actualizar Producto) */}
           <button type="submit" className="btn btn-primary">
-            {productoEditando ? 'Actualizar' : 'Crear'}
+            {editingProduct ? "Actualizar" : "Crear"}
           </button>
         </form>
       )}
 
       {/* Tabla de productos */}
-      <div className="table-responsive" style={{ marginTop: '10%' }}>
+      <div className="table-responsive" style={{ marginTop: "10%" }}>
         <h2>Listado de Productos</h2>
         <table className="table table-bordered" id="productoTable">
           <thead className="table-dark">
             <tr>
               <th>ID</th>
-              <th>Nombre</th>
+              <th>Descipcion</th>
               <th>Precio</th>
+              <th>Stock</th>
+              <th>Proveedor</th>
               <th>Acciones</th>
             </tr>
           </thead>
@@ -133,21 +241,28 @@ const Productos = ({ role }) => {
               productos.map((producto) => (
                 <tr key={producto.id}>
                   <td>{producto.id}</td>
-                  <td>{producto.nombre}</td>
-                  <td>{producto.precio}</td>
+                  <td>{producto.description}</td>
+                  <td>${producto.price}</td>
+                  <td>{producto.stock}</td>
+                  <td>{producto.idProv}</td>
                   <td>
-                    {(role === 'Administrador' || role === 'Vendedor') && (
+                    {(localRole === "Administrador" ||
+                      localRole === "Vendedor") && (
                       <>
                         <button
                           className="btn btn-warning btn-sm"
-                          onClick={() => handleEdit(producto.id)}
+                          onClick={() => {
+                            toggleFormVisibility();
+                            setEditingProduct(producto);
+                            setIsRequired(false);
+                          }}
                         >
                           Editar
                         </button>
                         <button
                           className="btn btn-danger btn-sm"
                           onClick={() => handleDelete(producto.id)}
-                          style={{ marginLeft: '10px' }}
+                          style={{ marginLeft: "10px" }}
                         >
                           Eliminar
                         </button>
@@ -158,7 +273,9 @@ const Productos = ({ role }) => {
               ))
             ) : (
               <tr>
-                <td colSpan={4} className="text-center">No hay productos registrados</td>
+                <td colSpan={6} className="text-center">
+                  No hay productos registrados
+                </td>
               </tr>
             )}
           </tbody>
@@ -169,10 +286,3 @@ const Productos = ({ role }) => {
 };
 
 export default Productos;
-
-
-
-
-
-
-

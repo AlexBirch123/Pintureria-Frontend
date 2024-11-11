@@ -1,47 +1,113 @@
-import React, { useState, useRef } from 'react';
-import 'bootstrap/dist/css/bootstrap.min.css';
+import React, { useState, useRef, useEffect } from "react";
+import "bootstrap/dist/css/bootstrap.min.css";
 
 const Proveedores = () => {
   const [proveedores, setProveedores] = useState([]);
   const [formVisible, setFormVisible] = useState(false);
+  const [required, setIsRequired] = useState(true);
   const [editingProveedor, setEditingProveedor] = useState(null);
   const nombreRef = useRef(null);
   const direccionRef = useRef(null);
   const telefonoRef = useRef(null);
-  const dniRef = useRef(null);
+  const cuitRef = useRef(null);
+
+  useEffect(() => {
+    const fetchSupp = async () => {
+      try {
+        await fetch("http://localhost:8080/allSuppliers")
+          .then((res) => res.json())
+          .then((data) => {
+            setProveedores(data);
+          });
+      } catch (error) {
+        console.log(error);
+      }
+    };
+
+    fetchSupp();
+  }, []);
+
+  const searchSupp = (cuit) => {
+    const client = proveedores.find((p) => p.cuit === cuit);
+    return client;
+  };
 
   // Crear proveedor
-  const createProveedor = (event) => {
+  const createUpdateSupp = async (event) => {
     event.preventDefault();
-    const nombre = nombreRef.current?.value;
-    const direccion = direccionRef.current?.value;
-    const telefono = telefonoRef.current?.value;
-    const dni = dniRef.current?.value;
+    const name = nombreRef.current?.value;
+    const address = direccionRef.current?.value;
+    const phone = Number(telefonoRef.current?.value);
+    const cuit = Number(cuitRef.current?.value);
 
-    if (nombre && direccion && telefono && dni) {
-      if (editingProveedor) {
-        // Actualizar proveedor existente
-        const updatedProveedores = proveedores.map((proveedor) =>
-          proveedor.id === editingProveedor.id
-            ? { ...proveedor, nombre, direccion, telefono, dni }
-            : proveedor
+    if (editingProveedor) {
+      // Actualizar cliente existente
+      let datos = {};
+      if (name) datos.name = name;
+      if (address) datos.address = address;
+      if (phone) datos.phone = phone;
+      if (cuit) datos.cuit = cuit;
+      try {
+        const res = await fetch(
+          `http://localhost:8080/allSuppliers/${editingProveedor.id}`,
+          {
+            method: "PATCH",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(datos),
+          }
         );
-        setProveedores(updatedProveedores);
-        setEditingProveedor(null);
-      } else {
-        // Crear nuevo proveedor
-        const newProveedor = {
-          id: Date.now(), // Generación de ID única
-          nombre,
-          direccion,
-          telefono,
-          dni,
-        };
-        setProveedores([...proveedores, newProveedor]);
+        if (res.ok) {
+          if (datos.name) editingProveedor.name = datos.name;
+          if (datos.address) editingProveedor.address = datos.address;
+          if (datos.phone) editingProveedor.phone = datos.phone;
+          if (datos.cuit) editingProveedor.cuit = datos.cuit;
+          const updatedSupp = proveedores.map((supp) =>
+            supp.id === editingProveedor.id
+              ? { ...proveedores, updatedSupp }
+              : supp
+          );
+          setProveedores(updatedSupp); //actualiza la lista con los datos actualizados
+          setIsRequired(true);
+          setEditingProveedor(null);
+          // sethidden(!dniHidden);
+          resetForm();
+        }
+      } catch (error) {
+        console.log(error);
       }
-      resetForm();
-      setFormVisible(false); // Ocultar formulario después de crear o actualizar proveedor
-    }
+    } else if (name && cuit) {
+      const existingSupp = searchSupp(cuit); //verifica que el DNI no exista
+      if (!existingSupp) {
+        // Crear nuevo cliente
+        const newSupp = {
+          name: name,
+          address: address,
+          phone: phone,
+          cuit: cuit,
+        };
+        try {
+          const res = await fetch("http://localhost:8080/allSuppliers", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(newSupp),
+          });
+          if (res.ok) {
+            const completeSupp = await res.json();
+            setProveedores([...proveedores, completeSupp]);
+            resetForm();
+            setEditingProveedor(null);
+          }
+        } catch (error) {
+          console.log(error);
+        }
+      } else console.log("CUIT/CUIL ya registrado");
+    } else console.log("error al crear o actualizar proveedores");
+
+    setFormVisible(false);
   };
 
   // Mostrar/ocultar formulario
@@ -52,68 +118,94 @@ const Proveedores = () => {
 
   // Limpiar formulario
   const resetForm = () => {
-    if (nombreRef.current) nombreRef.current.value = '';
-    if (direccionRef.current) direccionRef.current.value = '';
-    if (telefonoRef.current) telefonoRef.current.value = '';
-    if (dniRef.current) dniRef.current.value = '';
-  };
-
-  // Función para actualizar proveedor
-  const editProveedor = (id) => {
-    const proveedor = proveedores.find((p) => p.id === id);
-    if (proveedor) {
-      setFormVisible(true);
-      setEditingProveedor(proveedor);
-      if (nombreRef.current) nombreRef.current.value = proveedor.nombre;
-      if (direccionRef.current) direccionRef.current.value = proveedor.direccion;
-      if (telefonoRef.current) telefonoRef.current.value = proveedor.telefono;
-      if (dniRef.current) dniRef.current.value = proveedor.dni;
-    }
+    if (nombreRef.current) nombreRef.current.value = "";
+    if (direccionRef.current) direccionRef.current.value = "";
+    if (telefonoRef.current) telefonoRef.current.value = "";
+    if (cuitRef.current) cuitRef.current.value = "";
   };
 
   // Función para eliminar proveedor
-  const deleteProveedor = (id) => {
-    const confirmDelete = window.confirm("¿Estás seguro de eliminar este proveedor?");
+  const deleteProveedor = async (id) => {
+    const confirmDelete = window.confirm(
+      "¿Estás seguro de eliminar este cliente?"
+    );
     if (confirmDelete) {
-      const updatedProveedores = proveedores.filter((proveedor) => proveedor.id !== id);
-      setProveedores(updatedProveedores);
+      await fetch(`http://localhost:8080/allSuppliers/${id}`, {
+        method: "DELETE",
+      });
+      const updatedSupp = proveedores.filter((p) => p.id !== id);
+      setProveedores(updatedSupp);
     }
   };
 
   return (
-    <div style={{ marginTop: '5%' }}>
-      <div className="btn-group" style={{ marginBottom: '3%' }}>
+    <div style={{ marginTop: "8%" }}>
+      <div className="btn-group" style={{ marginBottom: "3%" }}>
         <button
           id="b_create"
           onClick={toggleFormVisibility}
           type="button"
           className="btn btn-primary"
         >
-          {formVisible ? 'Cancelar' : 'Crear Proveedor'}
+          {formVisible ? "Cancelar" : "Crear Proveedor"}
         </button>
       </div>
 
       {/* Formulario visible para crear o editar proveedor */}
       {formVisible && (
-        <form id="proveedorForm" onSubmit={createProveedor} style={{ marginTop: '5%' }}>
+        <form
+          id="proveedorForm"
+          onSubmit={createUpdateSupp}
+          style={{ marginTop: "5%" }}
+        >
           <div className="mb-3">
-            <label htmlFor="Nombre" className="form-label">Nombre:</label>
-            <input type="text" ref={nombreRef} name="Nombre" className="form-control" required />
+            <label htmlFor="Nombre" className="form-label">
+              Nombre:
+            </label>
+            <input
+              type="text"
+              ref={nombreRef}
+              name="Nombre"
+              className="form-control"
+              required={required}
+            />
           </div>
           <div className="mb-3">
-            <label htmlFor="Direccion" className="form-label">Dirección:</label>
-            <input type="text" ref={direccionRef} name="Direccion" className="form-control" required />
+            <label htmlFor="Direccion" className="form-label">
+              Dirección:
+            </label>
+            <input
+              type="text"
+              ref={direccionRef}
+              name="Direccion"
+              className="form-control"
+            />
           </div>
           <div className="mb-3">
-            <label htmlFor="Telefono" className="form-label">Teléfono:</label>
-            <input type="text" ref={telefonoRef} name="Telefono" className="form-control" required />
+            <label htmlFor="Telefono" className="form-label">
+              Teléfono:
+            </label>
+            <input
+              type="text"
+              ref={telefonoRef}
+              name="Telefono"
+              className="form-control"
+            />
           </div>
           <div className="mb-3">
-            <label htmlFor="DNI" className="form-label">DNI:</label>
-            <input type="text" ref={dniRef} name="DNI" className="form-control" required />
+            <label htmlFor="DNI" className="form-label">
+              CUIT/CUIL:
+            </label>
+            <input
+              type="text"
+              ref={cuitRef}
+              name="cuit"
+              className="form-control"
+              required={required}
+            />
           </div>
           <button type="submit" className="btn btn-primary">
-            {editingProveedor ? 'Actualizar Proveedor' : 'Guardar Proveedor'}
+            {editingProveedor ? "Actualizar Proveedor" : "Guardar Proveedor"}
           </button>
         </form>
       )}
@@ -128,7 +220,7 @@ const Proveedores = () => {
               <th>Nombre</th>
               <th>Dirección</th>
               <th>Teléfono</th>
-              <th>DNI</th>
+              <th>CUIT/CUIL</th>
               <th>Acciones</th>
             </tr>
           </thead>
@@ -137,13 +229,17 @@ const Proveedores = () => {
               proveedores.map((proveedor) => (
                 <tr key={proveedor.id}>
                   <td>{proveedor.id}</td>
-                  <td>{proveedor.nombre}</td>
-                  <td>{proveedor.direccion}</td>
-                  <td>{proveedor.telefono}</td>
-                  <td>{proveedor.dni}</td>
+                  <td>{proveedor.name}</td>
+                  <td>{proveedor.address}</td>
+                  <td>{proveedor.phone}</td>
+                  <td>{proveedor.cuit}</td>
                   <td>
                     <button
-                      onClick={() => editProveedor(proveedor.id)}
+                      onClick={() => {
+                        toggleFormVisibility();
+                        setEditingProveedor(proveedor);
+                        setIsRequired(false);
+                      }}
                       className="btn btn-warning btn-sm me-2"
                     >
                       Actualizar
