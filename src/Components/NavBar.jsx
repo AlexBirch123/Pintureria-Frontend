@@ -4,7 +4,11 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import rioColor from "../rio_color.png";
 
 const NavBar = ({ isAuthenticated, role, setIsAuthenticated }) => {
-  const handleLogout = () => {
+  const handleLogout = async() => {
+    await fetch("http://localhost:8080/Users/logout", {
+      method: "POST",
+      credentials: "include"
+    })
     setIsAuthenticated(false); // Actualiza el estado de autenticación
     window.location.href = "/login"; // Redirige al usuario al login
   };

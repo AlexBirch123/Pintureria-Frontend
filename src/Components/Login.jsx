@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "bootstrap/dist/css/bootstrap.min.css";
 
@@ -9,6 +9,24 @@ const Login = ({ setIsAuthenticated, setRole }) => {
   // const [role, setLocalRole] = useState("");
   const [message, setMessage] = useState("");
   const navigate = useNavigate();
+
+
+  useEffect(() => {
+      const fetchSession = async () => {
+        try {
+           const res = await fetch("http://localhost:8080/authorized",{
+            method: "GET",
+            credentials:"include"})
+            if(res.ok){
+              setIsAuthenticated(true)
+            }
+        } catch (error) {
+          console.log(error);
+        }
+      };
+  
+      fetchSession();
+    }, []);
 
   
   const validacion = async () => {
@@ -26,27 +44,13 @@ const Login = ({ setIsAuthenticated, setRole }) => {
           },
           body: JSON.stringify(data),
         });
-        const usuario = await res.json();
-        console.log(usuario);
-        if (usuario) {
+        if (res.ok) {
           
-          setMessage("Datos correctos.");
-
-          try {  //prueba de persistencia de cookie
-            await fetch("http://localhost:8080/protected",{
-             method: "GET",
-             credentials:"include"})
-              .then((res) => res.json())
-              .then((data) => {
-                console.log(data);
-              });
-          } catch (error) {
-            console.log(error);
-          }
-          // setIsAuthenticated(true);
+          setMessage("Datos correctos");
+          setIsAuthenticated(true);
           // switch (usuario.level) {
           //   case 1:
-          // setRole("Administrador");
+          setRole("Administrador");
           //     break;
           //   case 2:
           //     setRole("Vendedor");
@@ -55,7 +59,7 @@ const Login = ({ setIsAuthenticated, setRole }) => {
           //     setRole("Cliente");
           //     break;
           // }
-          // navigate("/dashboard");
+           navigate("/dashboard");
         } else {
           setMessage("Nombre de usuario o contraseña incorrectos.");
         }
@@ -125,44 +129,3 @@ const Login = ({ setIsAuthenticated, setRole }) => {
 };
 
 export default Login;
-//   return (
-//     <div className="container" style={{ maxWidth: "400px", marginTop: "50px" }}>
-//       <h2 className="text-center">Login</h2>
-//       <form onSubmit={handleLogin}>
-//         <div className="mb-3">
-//           <label htmlFor="username" className="form-label">
-//             Nombre de Usuario:
-//           </label>
-//           <input
-//             type="text"
-//             id="username"
-//             className="form-control"
-//             value={username}
-//             onChange={(e) => setUsername(e.target.value)}
-//             required
-//           />
-//         </div>
-//         <div className="mb-3">
-//           <label htmlFor="password" className="form-label">
-//             Contraseña:
-//           </label>
-//           <input
-//             type="password"
-//             id="password"
-//             className="form-control"
-//             value={password}
-//             onChange={(e) => setPassword(e.target.value)}
-//             required
-//           />
-//         </div>
-//         <div className="mb-3"></div>
-//         <button type="submit" className="btn btn-primary w-100">
-//           Iniciar Sesión
-//         </button>
-//       </form>
-//       {message && <p className="text-danger text-center">{message}</p>}
-//     </div>
-//   );
-// };
-
-// export default Login;
