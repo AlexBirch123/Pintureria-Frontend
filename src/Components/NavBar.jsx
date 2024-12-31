@@ -5,12 +5,19 @@ import rioColor from "../rio_color.png";
 
 const NavBar = ({ isAuthenticated, role, setIsAuthenticated }) => {
   const handleLogout = async() => {
-    await fetch("http://localhost:8080/Users/logout", {
-      method: "POST",
-      credentials: "include"
-    })
-    setIsAuthenticated(false); // Actualiza el estado de autenticación
-    window.location.href = "/login"; // Redirige al usuario al login
+    try {
+      await fetch("http://localhost:8080/Users/logout", {
+        method: "POST",
+        credentials: "include",
+      }).then(res =>{
+          if(res.ok){
+            setIsAuthenticated(false); // Actualiza el estado de autenticación
+            window.location.href = "/login"; // Redirige al usuario al login
+          }
+      })  
+    } catch (error) {
+      console.log(error)
+    }
   };
 
   return (
