@@ -8,6 +8,7 @@ import Empleados from './Components/Empleados';
 import Proveedores from './Components/Proveedores';
 import Ventas from './Components/Ventas';
 import Productos from './Components/Productos';
+import Home from './home.js';
 
 import './App.css';
 import RegistroCliente from './Components/RegistroCliente';
@@ -25,20 +26,20 @@ function App() {
 
       <Routes>
         {/* Rutas protegidas, solo accesibles si el usuario está autenticado */}
-        <Route path="/login" element={<Login setIsAuthenticated={setIsAuthenticated} setRole={setRole} />} />
         <Route path="/sucursales" element={isAuthenticated && role === 'Administrador' ? <Sucursales /> : <Navigate to="/login" />} />
         <Route path="/clientes" element={isAuthenticated ? <Clientes /> : <Navigate to="/login" />} />
         <Route path="/empleados" element={isAuthenticated && role === 'Administrador' ? <Empleados /> : <Navigate to="/login" />} />
         <Route path="/proveedores" element={isAuthenticated ? <Proveedores /> : <Navigate to="/login" />} />
         <Route path="/ventas" element={isAuthenticated ? <Ventas /> : <Navigate to="/login" />} />
         <Route path="/productos" element={isAuthenticated ? <Productos role={role} /> : <Navigate to="/login" />} />
+        <Route path="/home" element={<Home role={role} setIsAuthenticated={setIsAuthenticated}/>} />
 
         {/* Ruta para el Login */}
         <Route path="/login" element={<Login setIsAuthenticated={setIsAuthenticated} setRole={setRole} />} />
         <Route path="/register" element={<RegistroCliente />} />
 
         {/* Redirigir al login por defecto */}
-        <Route path="/" element={<Navigate to="/login" />} />
+        <Route path="/" element={<Navigate to="/home" />} />
       </Routes>
     </Router>
   );
