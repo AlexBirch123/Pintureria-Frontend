@@ -1,5 +1,4 @@
 import { createContext, useContext, useState, useEffect } from 'react';
-// import { useNavigate } from 'react-router';
 import { URL } from '../config.js';
 
 // Crear el AuthContext
@@ -11,8 +10,7 @@ export const useAuth = () => useContext(AuthContext);
 // Proveedor del contexto que maneja la autenticación
 export const AuthProvider = ({ children }) => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [role, setRole] = useState('Cliente'); 
-  //const navigate = useNavigate()
+  const [role, setRole] = useState(3); 
 
   useEffect(() => {
     const checkAuth = async () => {
@@ -27,25 +25,18 @@ export const AuthProvider = ({ children }) => {
           setRole(data.level); 
         } else {
           setIsAuthenticated(false);
-          setRole(null);
-          // navigate("/login"); 
         }
       } catch (error) {
         setIsAuthenticated(false);
         setRole(null);
-        //navigate("/login");
       }
     };
 
     checkAuth();
-  }, [
-    //navigate
-
-  ]);
+  }, []);
 
   return (
     <AuthContext.Provider value={{ isAuthenticated, setIsAuthenticated, role, setRole }}>
-      {console.log(role)}
       {children}
     </AuthContext.Provider>
   );

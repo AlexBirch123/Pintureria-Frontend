@@ -4,13 +4,19 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import rioColor from "../rio_color.png";
 import { URL } from "../config";
 import { useAuth } from "./AuthContext";
+import "../App.css";
+
 
 const NavBar = () => {
 
-  const { isAuthenticated, role , setIsAuthenticated } = useAuth();
+  const {  role , setIsAuthenticated, isAuthenticated} = useAuth();
   const navigate = useNavigate()
 
-  const handleLogout = async() => {
+  const handleSession = async() => {
+    if (!isAuthenticated) {
+      navigate("/login");
+      return;
+    }
     try {
       await fetch( URL +"/Users/logout", {
         method: "POST",
@@ -111,9 +117,11 @@ const NavBar = () => {
                 </Link>
               </li>
             )}
+          </ul>
+          <ul className="navbar-nav ms-auto">
             <li className="nav-item">
-              <button className="nav-link btn" onClick={handleLogout}>
-                Cerrar Sesión
+              <button className="nav-link btn" onClick={handleSession}>
+                {isAuthenticated ? "Cerrar Sesión" : "Iniciar Sesión"}
               </button>
             </li>
           </ul>

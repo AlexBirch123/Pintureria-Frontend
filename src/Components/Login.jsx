@@ -61,7 +61,7 @@ const Login = () => {
 
   return (
     <div className="container" style={{ maxWidth: "400px", marginTop: "50px" }}>
-      <h2 className="text-center">Login</h2>
+      <h2 className="text-center">Inicio de sesión</h2>
       <form onSubmit={handleLogin}>
         <div className="mb-3">
           <label htmlFor="username" className="form-label">

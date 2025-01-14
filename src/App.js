@@ -24,11 +24,11 @@ function App() {
 
        <Routes>
          {/* Rutas protegidas, solo accesibles si el usuario está autenticado */}
-         <Route path="/sucursales" element={isAuthenticated && role === 'Administrador' ? <Sucursales /> : <Navigate to="/notAuth" />} />
-         <Route path="/clientes" element={isAuthenticated ? <Clientes /> : <Navigate to="/notAuth" />} />
-         <Route path="/empleados" element={isAuthenticated && role === 'Administrador' ? <Empleados /> : <Navigate to="/notAuth" />} />
-         <Route path="/proveedores" element={isAuthenticated ? <Proveedores /> : <Navigate to="/notAuth" />} />
-         <Route path="/ventas" element={isAuthenticated ? <Ventas /> : <Navigate to="/notAuth" />} />
+         <Route path="/sucursales" element={isAuthenticated && role === 1 ? <Sucursales /> : <Navigate to="/notAuth" />} />
+         <Route path="/clientes" element={isAuthenticated && (role === 1 || role === 2)? <Clientes /> : <Navigate to="/notAuth" />} />
+         <Route path="/empleados" element={isAuthenticated && role === 1 ? <Empleados /> : <Navigate to="/notAuth" />} />
+         <Route path="/proveedores" element={isAuthenticated && (role === 1 || role === 2)? <Proveedores /> : <Navigate to="/notAuth" />} />
+         <Route path="/ventas" element={isAuthenticated && (role === 1 || role === 2) ? <Ventas /> : <Navigate to="/notAuth" />} />
          <Route path="/productos" element={isAuthenticated ? <Productos role={role} /> : <Navigate to="/notAuth" />} />
          <Route path="/home" element={<Home role={role}/>} />
 
@@ -37,8 +37,8 @@ function App() {
          <Route path="/register" element={<RegistroCliente />} />
 
          {/* Redirigir al login por defecto */}
-         {/* <Route path="/" element={<Navigate to="/home" />} /> */}
-         <Route path="/" element={isAuthenticated ? <Navigate to="/dashboard" />: <Navigate to="/login" />} />
+         <Route path="/" element={<Navigate to="/home" />} />
+         
        </Routes>
     </Router>
 
