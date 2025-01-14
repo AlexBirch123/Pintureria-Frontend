@@ -11,9 +11,9 @@ const root = ReactDOM.createRoot(document.getElementById('root'));
 // Renderizar la aplicación
 root.render(
   <React.StrictMode>
-    <AuthProvider>
-      <App />
-    </AuthProvider>
+      <AuthProvider>
+        <App />
+      </AuthProvider>
   </React.StrictMode>
 );
 

@@ -1,4 +1,3 @@
-import React, { useState } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import Login from './Components/Login';
 import NavBar from './Components/NavBar';
@@ -12,36 +11,37 @@ import Home from './home.js';
 
 import './App.css';
 import RegistroCliente from './Components/RegistroCliente';
+import { useAuth } from './Components/AuthContext.jsx';
 
 function App() {
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [role, setRole] = useState(''); // Guarda el rol del usuario autenticado
+
+  const { isAuthenticated, role } = useAuth(); // Obtén las variables globales
 
   return (
-    <Router>
-      {/* Mostrar NavBar solo si el usuario está autenticado */}
-      {isAuthenticated && (
-        <NavBar setIsAuthenticated={setIsAuthenticated} role={role} />
-      )}
+     <Router>
+       {/* Mostrar NavBar solo si el usuario está autenticado */}
+       {isAuthenticated && ( <NavBar/>)}
 
-      <Routes>
-        {/* Rutas protegidas, solo accesibles si el usuario está autenticado */}
-        <Route path="/sucursales" element={isAuthenticated && role === 'Administrador' ? <Sucursales /> : <Navigate to="/login" />} />
-        <Route path="/clientes" element={isAuthenticated ? <Clientes /> : <Navigate to="/login" />} />
-        <Route path="/empleados" element={isAuthenticated && role === 'Administrador' ? <Empleados /> : <Navigate to="/login" />} />
-        <Route path="/proveedores" element={isAuthenticated ? <Proveedores /> : <Navigate to="/login" />} />
-        <Route path="/ventas" element={isAuthenticated ? <Ventas /> : <Navigate to="/login" />} />
-        <Route path="/productos" element={isAuthenticated ? <Productos role={role} /> : <Navigate to="/login" />} />
-        <Route path="/home" element={<Home role={role} setIsAuthenticated={setIsAuthenticated}/>} />
+       <Routes>
+         {/* Rutas protegidas, solo accesibles si el usuario está autenticado */}
+         <Route path="/sucursales" element={isAuthenticated && role === 'Administrador' ? <Sucursales /> : <Navigate to="/login" />} />
+         <Route path="/clientes" element={isAuthenticated ? <Clientes /> : <Navigate to="/login" />} />
+         <Route path="/empleados" element={isAuthenticated && role === 'Administrador' ? <Empleados /> : <Navigate to="/login" />} />
+         <Route path="/proveedores" element={isAuthenticated ? <Proveedores /> : <Navigate to="/login" />} />
+         <Route path="/ventas" element={isAuthenticated ? <Ventas /> : <Navigate to="/login" />} />
+         <Route path="/productos" element={isAuthenticated ? <Productos role={role} /> : <Navigate to="/login" />} />
+         <Route path="/home" element={<Home role={role}/>} />
 
-        {/* Ruta para el Login */}
-        <Route path="/login" element={<Login setIsAuthenticated={setIsAuthenticated} setRole={setRole} />} />
-        <Route path="/register" element={<RegistroCliente />} />
+         {/* Ruta para el Login */}
+         <Route path="/login" element={<Login/>} />
+         <Route path="/register" element={<RegistroCliente />} />
 
-        {/* Redirigir al login por defecto */}
-        <Route path="/" element={<Navigate to="/home" />} />
-      </Routes>
+         {/* Redirigir al login por defecto */}
+         {/* <Route path="/" element={<Navigate to="/home" />} /> */}
+         <Route path="/" element={isAuthenticated ? <Navigate to="/dashboard" />: <Navigate to="/login" />} />
+       </Routes>
     </Router>
+
   );
 }
 

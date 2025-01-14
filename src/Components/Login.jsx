@@ -1,32 +1,16 @@
-import React, { useEffect, useState } from "react";
+import React, {useState } from "react";
 import { useNavigate } from "react-router-dom";
-import "bootstrap/dist/css/bootstrap.min.css";
+import { URL } from "../config.js";
+import { useAuth } from "./AuthContext";
 
-const Login = ({ setIsAuthenticated, setRole }) => {
+const Login = () => {
   // const [user, setUser] = useState(null);
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   // const [role, setLocalRole] = useState("");
   const [message, setMessage] = useState("");
+  const { isAuthenticated, role,setIsAuthenticated,setRole } = useAuth()
   const navigate = useNavigate();
-
-
-  useEffect(() => {
-      const fetchSession = async () => {
-        try {
-           const res = await fetch("http://localhost:8080/authorized",{
-            method: "GET",
-            credentials:"include"})
-            if(res.ok){
-              setIsAuthenticated(true)
-            }
-        } catch (error) {
-          console.log(error);
-        }
-      };
-  
-      fetchSession();
-    }, []);
 
   
   const validacion = async () => {
@@ -36,7 +20,7 @@ const Login = ({ setIsAuthenticated, setRole }) => {
         pswHash: password,
       };
       try {
-        const res = await fetch("http://localhost:8080/Users/login", {
+        const res = await fetch( URL +"/Users/login", {
           method: "POST",
           credentials: "include",
           headers: {
@@ -44,28 +28,31 @@ const Login = ({ setIsAuthenticated, setRole }) => {
           },
           body: JSON.stringify(data),
         });
-        if (res.ok) {
-          
-          setMessage("Datos correctos");
-          setIsAuthenticated(true);
-          // switch (usuario.level) {
-          //   case 1:
+        if (!res.ok) {
+          return setMessage("Credenciales incorrectas");
+           
+        } 
+        const user = await res.json()
+
+
+        setMessage("Datos correctos");
+        setIsAuthenticated(true);
+        switch (user.level) {
+          case 1:
           setRole("Administrador");
-          //     break;
-          //   case 2:
-          //     setRole("Vendedor");
-          //     break;
-          //   case 3:
-          //     setRole("Cliente");
-          //     break;
-          // }
-           navigate("/dashboard");
-        } else {
-          setMessage("Nombre de usuario o contraseña incorrectos.");
+            break;
+          case 2:
+            setRole("Vendedor");
+            break;
+          case 3:
+            setRole("Cliente");
+            break;
+          default: setRole("Cliente");
         }
+         navigate("/dashboard");
+        
       } catch (error) {
-        console.log(error);
-        setMessage("Nombre de usuario o contraseña incorrectos.");
+        setMessage("Nombre de usuario o contraseña incorrectos");
       }
     }
   };
