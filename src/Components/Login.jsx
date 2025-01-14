@@ -32,24 +32,13 @@ const Login = () => {
           return setMessage("Credenciales incorrectas");
            
         } 
-        const user = await res.json()
+        const level = await res.json()
 
 
         setMessage("Datos correctos");
         setIsAuthenticated(true);
-        switch (user.level) {
-          case 1:
-          setRole("Administrador");
-            break;
-          case 2:
-            setRole("Vendedor");
-            break;
-          case 3:
-            setRole("Cliente");
-            break;
-          default: setRole("Cliente");
-        }
-         navigate("/dashboard");
+        setRole(level)
+        navigate("/dashboard");
         
       } catch (error) {
         setMessage("Nombre de usuario o contraseña incorrectos");

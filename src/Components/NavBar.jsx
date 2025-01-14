@@ -1,18 +1,24 @@
 import React from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import "bootstrap/dist/css/bootstrap.min.css";
 import rioColor from "../rio_color.png";
+import { URL } from "../config";
+import { useAuth } from "./AuthContext";
 
-const NavBar = ({ isAuthenticated, role, setIsAuthenticated }) => {
+const NavBar = () => {
+
+  const { isAuthenticated, role , setIsAuthenticated } = useAuth();
+  const navigate = useNavigate()
+
   const handleLogout = async() => {
     try {
-      await fetch("http://localhost:8080/Users/logout", {
+      await fetch( URL +"/Users/logout", {
         method: "POST",
         credentials: "include",
       }).then(res =>{
           if(res.ok){
             setIsAuthenticated(false); // Actualiza el estado de autenticación
-            window.location.href = "/login"; // Redirige al usuario al login
+            navigate ("/login"); // Redirige al usuario al login
           }
       })  
     } catch (error) {
@@ -40,7 +46,7 @@ const NavBar = ({ isAuthenticated, role, setIsAuthenticated }) => {
         </button>
         <div className="collapse navbar-collapse" id="collapsibleNavbar">
           <ul className="navbar-nav">
-            {role === "Administrador" && (
+            {role === 1 && (
               <>
                 <li className="nav-item">
                   <Link className="nav-link" to="/Sucursales">
@@ -74,7 +80,7 @@ const NavBar = ({ isAuthenticated, role, setIsAuthenticated }) => {
                 </li>
               </>
             )}
-            {role === "Vendedor" && (
+            {role === 2 && (
               <>
                 <li className="nav-item">
                   <Link className="nav-link" to="/Clientes">
@@ -98,7 +104,7 @@ const NavBar = ({ isAuthenticated, role, setIsAuthenticated }) => {
                 </li>
               </>
             )}
-            {role === "Cliente" && (
+            {role === 3 && (
               <li className="nav-item">
                 <Link className="nav-link" to="/Productos">
                   Productos

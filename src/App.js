@@ -15,7 +15,7 @@ import { useAuth } from './Components/AuthContext.jsx';
 
 function App() {
 
-  const { isAuthenticated, role } = useAuth(); // Obtén las variables globales
+  const { isAuthenticated, role } = useAuth();
 
   return (
      <Router>
@@ -24,16 +24,16 @@ function App() {
 
        <Routes>
          {/* Rutas protegidas, solo accesibles si el usuario está autenticado */}
-         <Route path="/sucursales" element={isAuthenticated && role === 'Administrador' ? <Sucursales /> : <Navigate to="/login" />} />
-         <Route path="/clientes" element={isAuthenticated ? <Clientes /> : <Navigate to="/login" />} />
-         <Route path="/empleados" element={isAuthenticated && role === 'Administrador' ? <Empleados /> : <Navigate to="/login" />} />
-         <Route path="/proveedores" element={isAuthenticated ? <Proveedores /> : <Navigate to="/login" />} />
-         <Route path="/ventas" element={isAuthenticated ? <Ventas /> : <Navigate to="/login" />} />
-         <Route path="/productos" element={isAuthenticated ? <Productos role={role} /> : <Navigate to="/login" />} />
+         <Route path="/sucursales" element={isAuthenticated && role === 'Administrador' ? <Sucursales /> : <Navigate to="/notAuth" />} />
+         <Route path="/clientes" element={isAuthenticated ? <Clientes /> : <Navigate to="/notAuth" />} />
+         <Route path="/empleados" element={isAuthenticated && role === 'Administrador' ? <Empleados /> : <Navigate to="/notAuth" />} />
+         <Route path="/proveedores" element={isAuthenticated ? <Proveedores /> : <Navigate to="/notAuth" />} />
+         <Route path="/ventas" element={isAuthenticated ? <Ventas /> : <Navigate to="/notAuth" />} />
+         <Route path="/productos" element={isAuthenticated ? <Productos role={role} /> : <Navigate to="/notAuth" />} />
          <Route path="/home" element={<Home role={role}/>} />
 
          {/* Ruta para el Login */}
-         <Route path="/login" element={<Login/>} />
+         <Route path="/login" element={ <Login/> } />
          <Route path="/register" element={<RegistroCliente />} />
 
          {/* Redirigir al login por defecto */}

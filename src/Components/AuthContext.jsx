@@ -45,6 +45,7 @@ export const AuthProvider = ({ children }) => {
 
   return (
     <AuthContext.Provider value={{ isAuthenticated, setIsAuthenticated, role, setRole }}>
+      {console.log(role)}
       {children}
     </AuthContext.Provider>
   );
