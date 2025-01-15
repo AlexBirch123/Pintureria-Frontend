@@ -12,6 +12,7 @@ import Home from './home.js';
 import './App.css';
 import RegistroCliente from './Components/RegistroCliente';
 import { useAuth } from './Components/AuthContext.jsx';
+import Recover from './Components/Recover.jsx';
 
 function App() {
 
@@ -29,12 +30,13 @@ function App() {
          <Route path="/empleados" element={isAuthenticated && role === 1 ? <Empleados /> : <Navigate to="/notAuth" />} />
          <Route path="/proveedores" element={isAuthenticated && (role === 1 || role === 2)? <Proveedores /> : <Navigate to="/notAuth" />} />
          <Route path="/ventas" element={isAuthenticated && (role === 1 || role === 2) ? <Ventas /> : <Navigate to="/notAuth" />} />
-         <Route path="/productos" element={isAuthenticated ? <Productos role={role} /> : <Navigate to="/notAuth" />} />
+         <Route path="/productos" element={ <Productos role={role} />} />
          <Route path="/home" element={<Home role={role}/>} />
 
          {/* Ruta para el Login */}
-         <Route path="/login" element={ <Login/> } />
+         <Route path="/login" element={ isAuthenticated ? <Navigate to= "/dashboard"/> :<Login/> } />
          <Route path="/register" element={<RegistroCliente />} />
+         <Route path="/recoverPassword" element={ isAuthenticated ? <Navigate to= "/dashboard"/> :<Recover />} />
 
          {/* Redirigir al login por defecto */}
          <Route path="/" element={<Navigate to="/home" />} />

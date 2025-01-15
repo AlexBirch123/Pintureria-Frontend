@@ -23,8 +23,8 @@ const NavBar = () => {
         credentials: "include",
       }).then(res =>{
           if(res.ok){
-            setIsAuthenticated(false); // Actualiza el estado de autenticación
-            navigate ("/login"); // Redirige al usuario al login
+            setIsAuthenticated(false);  
+            navigate ("/dashboard"); 
           }
       })  
     } catch (error) {
@@ -119,6 +119,12 @@ const NavBar = () => {
             )}
           </ul>
           <ul className="navbar-nav ms-auto">
+          {isAuthenticated === false && 
+            (<li className="nav-item">
+              <Link className="nav-link" to="/register">
+                  Registrate
+              </Link>
+            </li>)}
             <li className="nav-item">
               <button className="nav-link btn" onClick={handleSession}>
                 {isAuthenticated ? "Cerrar Sesión" : "Iniciar Sesión"}

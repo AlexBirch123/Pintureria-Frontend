@@ -1,5 +1,5 @@
 import React, {useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { URL } from "../config.js";
 import { useAuth } from "./AuthContext";
 
@@ -9,7 +9,7 @@ const Login = () => {
   const [password, setPassword] = useState("");
   // const [role, setLocalRole] = useState("");
   const [message, setMessage] = useState("");
-  const { isAuthenticated, role,setIsAuthenticated,setRole } = useAuth()
+  const {setIsAuthenticated,setRole } = useAuth()
   const navigate = useNavigate();
 
   
@@ -95,6 +95,9 @@ const Login = () => {
 
       {/* Botón de Registro */}
       <div className="text-center mt-3">
+        <Link className="link" to="/recoverPassword">
+          ¿Olvidó su contraseña?
+        </Link>
         <p>¿No tienes una cuenta?</p>
         <button onClick={handleRegisterClick} className="btn btn-secondary">
           Registrarse
