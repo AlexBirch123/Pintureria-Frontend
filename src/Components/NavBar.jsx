@@ -6,51 +6,56 @@ import { URL } from "../config";
 import { useAuth } from "./AuthContext";
 import "../App.css";
 
-
 const NavBar = () => {
+  const { role, setIsAuthenticated, isAuthenticated } = useAuth();
+  const navigate = useNavigate();
 
-  const {  role , setIsAuthenticated, isAuthenticated} = useAuth();
-  const navigate = useNavigate()
-
-  const handleSession = async() => {
+  const handleSession = async () => {
     if (!isAuthenticated) {
       navigate("/login");
       return;
     }
     try {
-      await fetch( URL +"/Users/logout", {
+      await fetch(URL + "/Users/logout", {
         method: "POST",
         credentials: "include",
-      }).then(res =>{
-          if(res.ok){
-            setIsAuthenticated(false);  
-            navigate ("/dashboard"); 
-          }
-      })  
+      }).then((res) => {
+        if (res.ok) {
+          setIsAuthenticated(false);
+          navigate("/dashboard");
+        }
+      });
     } catch (error) {
-      console.log(error)
+      console.log(error);
     }
   };
 
   return (
     <nav className="navbar navbar-expand-sm bg-dark navbar-dark fixed-top">
-      <div className="container-fluid">
-        <img
-          src={rioColor}
-          alt="Logo"
-          style={{ width: "10%", height: "auto" }}
-          className="rounded-pill"
-        />
+      <div className="container-fluid d-flex justify-content-center">
+        <li className="nav-item">
+          <a href="/">
+            <img
+              src={rioColor}
+              alt="Logo"
+              style={{ width: "30%", height: "auto" }}
+              className="rounded-pill"
+            />
+          </a>
+        </li>
 
-        <button
+        {/* <button
           className="navbar-toggler"
           type="button"
           data-bs-toggle="collapse"
           data-bs-target="#collapsibleNavbar"
         >
           <span className="navbar-toggler-icon"></span>
-        </button>
-        <div className="collapse navbar-collapse" id="collapsibleNavbar">
+        </button> */}
+        <div
+          className="collapse navbar-collapse justify-content-center"
+          id="collapsibleNavbar"
+        >
           <ul className="navbar-nav">
             {role === 1 && (
               <>
@@ -119,12 +124,13 @@ const NavBar = () => {
             )}
           </ul>
           <ul className="navbar-nav ms-auto">
-          {isAuthenticated === false && 
-            (<li className="nav-item">
-              <Link className="nav-link" to="/register">
+            {isAuthenticated === false && (
+              <li className="nav-item">
+                <Link className="nav-link" to="/register">
                   Registrate
-              </Link>
-            </li>)}
+                </Link>
+              </li>
+            )}
             <li className="nav-item">
               <button className="nav-link btn" onClick={handleSession}>
                 {isAuthenticated ? "Cerrar Sesión" : "Iniciar Sesión"}

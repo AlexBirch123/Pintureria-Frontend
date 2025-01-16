@@ -6,6 +6,7 @@ const Sucursales = () => {
   const [sucursales, setSucursales] = useState([]);
   const [formVisible, setFormVisible] = useState(false);
   const [editingSucursal, setEditingSucursal] = useState(null);
+  const [editingField, setEditingField] = useState({ id: null, field: null });
   const direccionRef = useRef(null);
   const telefonoRef = useRef(null);
 
@@ -14,6 +15,14 @@ const Sucursales = () => {
     if (!item) return null;
     const { datos, timestamp } = JSON.parse(item);
     return { datos, timestamp };
+  };
+
+  const setLocalStorage = (data) => {
+    const now = Date.now();
+    localStorage.setItem(
+      "branches",
+      JSON.stringify({ datos: data, timestamp: now })
+    );
   };
 
   const fetchBranches = async (local, now) => {
@@ -37,34 +46,35 @@ const Sucursales = () => {
     const getBranches = async () => {
       const local = getLocalStorage("branches");
       const now = Date.now();
-      if (!local) return fetchBranches(local, now);
-      if (now - local.timestamp > 180000) return fetchBranches(local, now);
+      if (!local) return await fetchBranches(local, now);
+      if (now - local.timestamp > 180000)
+        return await fetchBranches(local, now);
       setSucursales(local.datos);
     };
 
     getBranches();
   }, []);
 
-  const searchBranch = (addres) => {
-    const branch = sucursales.find((s) => (s.addres = addres));
+  const searchBranch = (address) => {
+    const branch = sucursales.find((s) => (s.address = address));
     return branch;
   };
 
   // Crear o actualizar sucursal
   const createUpdateSucursal = async (event) => {
     event.preventDefault();
-    const addres = direccionRef.current?.value;
+    const address = direccionRef.current?.value;
     const phone = Number(telefonoRef.current?.value);
     console.log(editingSucursal);
-    if (phone && addres) {
+    if (phone && address) {
       //Actualizar
       if (editingSucursal) {
-        editingSucursal.addres = addres;
+        editingSucursal.address = address;
         editingSucursal.phone = phone;
         console.log(editingSucursal);
         try {
           const res = await fetch(URL + `/Branches/${editingSucursal.id}`, {
-            method: "PUT",
+            method: "PATCH",
             headers: {
               "Content-Type": "application/json",
             },
@@ -75,6 +85,7 @@ const Sucursales = () => {
               sucursal.id === editingSucursal.id ? editingSucursal : sucursal
             );
             setSucursales(updatedBranches);
+            setLocalStorage(sucursales);
             resetForm();
             setEditingSucursal(null);
           }
@@ -84,10 +95,10 @@ const Sucursales = () => {
         setEditingSucursal(null);
       } else {
         // Crear nueva sucursal
-        const existingBranch = searchBranch(addres);
+        const existingBranch = searchBranch(address);
         if (!existingBranch) {
           const newBranch = {
-            addres: addres,
+            address: address,
             phone: phone,
           };
           try {
@@ -101,6 +112,7 @@ const Sucursales = () => {
             if (res.ok) {
               const completeBranch = await res.json();
               setSucursales([...sucursales, completeBranch]); // Actualiza la lista de productos con el nuevo
+              setLocalStorage(sucursales);
               resetForm();
             }
           } catch (error) {
@@ -137,6 +149,35 @@ const Sucursales = () => {
         (sucursal) => sucursal.id !== id
       );
       setSucursales(updatedSucursales);
+      setLocalStorage(sucursales);
+    }
+  };
+
+  const handleDoubleClick = (id, field) => {
+    setEditingField({ id, field });
+  };
+
+  const handleFieldChange = (id, field, value) => {
+    setSucursales((prevSucursales) =>
+      prevSucursales.map((sucursal) =>
+        sucursal.id === id ? { ...sucursal, [field]: value } : sucursal
+      )
+    );
+  };
+
+  const handleBlur = async (id, field, value) => {
+    const data = { [field]: value };
+    try {
+      await fetch(URL + `/Branches/${id}`, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(data),
+      });
+      setEditingField({ id: null, field: null });
+    } catch (error) {
+      console.log(error);
     }
   };
 
@@ -207,8 +248,64 @@ const Sucursales = () => {
               sucursales.map((sucursal) => (
                 <tr key={sucursal.id}>
                   <td>{sucursal.id}</td>
-                  <td>{sucursal.addres}</td>
-                  <td>{sucursal.phone}</td>
+                  <td
+                    onDoubleClick={() =>
+                      handleDoubleClick(sucursal.id, "address")
+                    }
+                  >
+                    {editingField.id === sucursal.id &&
+                    editingField.field === "address" ? (
+                      <input
+                        type="text"
+                        value={sucursal.address}
+                        onChange={(e) =>
+                          handleFieldChange(
+                            sucursal.id,
+                            "address",
+                            e.target.value
+                          )
+                        }
+                        onBlur={async () =>
+                          await handleBlur(
+                            sucursal.id,
+                            "address",
+                            sucursal.address
+                          )
+                        }
+                        autoFocus
+                      />
+                    ) : (
+                      sucursal.address
+                    )}
+                  </td>
+                  <td
+                    onDoubleClick={() =>
+                      handleDoubleClick(sucursal.id, "phone")
+                    }
+                  >
+                    {editingField.id === sucursal.id &&
+                    editingField.field === "phone" ? (
+                      <input
+                        type="text"
+                        value={sucursal.phone}
+                        onChange={(e) =>
+                          handleFieldChange(
+                            sucursal.id,
+                            "phone",
+                            e.target.value
+                          )
+                        }
+                        onBlur={async () =>
+                          await handleBlur(sucursal.id, "phone", sucursal.phone)
+                        }
+                        autoFocus
+                      />
+                    ) : (
+                      sucursal.phone
+                    )}
+                  </td>
+                  {/* <td>{sucursal.address}</td>
+                  <td>{sucursal.phone}</td> */}
                   <td>
                     <button
                       onClick={() => {
