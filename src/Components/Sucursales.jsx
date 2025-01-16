@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
+import { URL } from "../config";
 
 const Sucursales = () => {
   const [sucursales, setSucursales] = useState([]);
@@ -8,20 +9,40 @@ const Sucursales = () => {
   const direccionRef = useRef(null);
   const telefonoRef = useRef(null);
 
+  const getLocalStorage = (clave) => {
+    const item = localStorage.getItem(clave);
+    if (!item) return null;
+    const { datos, timestamp } = JSON.parse(item);
+    return { datos, timestamp };
+  };
+
+  const fetchBranches = async (local, now) => {
+    try {
+      await fetch(URL + "/Branches")
+        .then((res) => res.json())
+        .then((data) => {
+          setSucursales(data);
+          localStorage.setItem(
+            "branches",
+            JSON.stringify({ datos: data, timestamp: now })
+          );
+        });
+    } catch (error) {
+      console.log(error);
+      setSucursales(local.datos);
+    }
+  };
+
   useEffect(() => {
-    const fetchBranches = async () => {
-      try {
-        await fetch("http://localhost:8080/allBranches")
-          .then((res) => res.json())
-          .then((data) => {
-            setSucursales(data);
-          });
-      } catch (error) {
-        console.log(error);
-      }
+    const getBranches = async () => {
+      const local = getLocalStorage("branches");
+      const now = Date.now();
+      if (!local) return fetchBranches(local, now);
+      if (now - local.timestamp > 180000) return fetchBranches(local, now);
+      setSucursales(local.datos);
     };
 
-    fetchBranches();
+    getBranches();
   }, []);
 
   const searchBranch = (addres) => {
@@ -42,16 +63,13 @@ const Sucursales = () => {
         editingSucursal.phone = phone;
         console.log(editingSucursal);
         try {
-          const res = await fetch(
-            `http://localhost:8080/allBranches/${editingSucursal.id}`,
-            {
-              method: "PUT",
-              headers: {
-                "Content-Type": "application/json",
-              },
-              body: JSON.stringify(editingSucursal),
-            }
-          );
+          const res = await fetch(URL + `/Branches/${editingSucursal.id}`, {
+            method: "PUT",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(editingSucursal),
+          });
           if (res.ok) {
             const updatedBranches = sucursales.map((sucursal) =>
               sucursal.id === editingSucursal.id ? editingSucursal : sucursal
@@ -73,7 +91,7 @@ const Sucursales = () => {
             phone: phone,
           };
           try {
-            const res = await fetch("http://localhost:8080/allBranches", {
+            const res = await fetch(URL + "/Branches", {
               method: "POST",
               headers: {
                 "Content-Type": "application/json",
@@ -112,7 +130,7 @@ const Sucursales = () => {
       "¿Estás seguro de eliminar esta sucursal?"
     );
     if (confirmDelete) {
-      await fetch(`http://localhost:8080/allBranches/${id}`, {
+      await fetch(URL + `/Branches/${id}`, {
         method: "DELETE",
       });
       const updatedSucursales = sucursales.filter(
