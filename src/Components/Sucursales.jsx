@@ -5,8 +5,8 @@ import { URL } from "../config";
 const Sucursales = () => {
   const [sucursales, setSucursales] = useState([]);
   const [formVisible, setFormVisible] = useState(false);
-  const [editingSucursal, setEditingSucursal] = useState(null);
   const [editingField, setEditingField] = useState({ id: null, field: null });
+  const [message, setMessage] = useState(null);
   const direccionRef = useRef(null);
   const telefonoRef = useRef(null);
 
@@ -56,78 +56,56 @@ const Sucursales = () => {
   }, []);
 
   const searchBranch = (address) => {
-    const branch = sucursales.find((s) => (s.address = address));
+    const branch = sucursales.find((s) => s.address === address);
     return branch;
   };
 
-  // Crear o actualizar sucursal
-  const createUpdateSucursal = async (event) => {
+  // Crear sucursal
+  const createSucursal = async (event) => {
     event.preventDefault();
     const address = direccionRef.current?.value;
     const phone = Number(telefonoRef.current?.value);
-    console.log(editingSucursal);
     if (phone && address) {
-      //Actualizar
-      if (editingSucursal) {
-        editingSucursal.address = address;
-        editingSucursal.phone = phone;
-        console.log(editingSucursal);
+      // Crear nueva sucursal
+      console.log(address, phone);
+      const existingBranch = searchBranch(address);
+      console.log(existingBranch);
+      if (!existingBranch) {
+        const newBranch = {
+          address: address,
+          phone: phone,
+        };
+        console.log(newBranch);
         try {
-          const res = await fetch(URL + `/Branches/${editingSucursal.id}`, {
-            method: "PATCH",
+          const res = await fetch(URL + "/Branches", {
+            method: "POST",
             headers: {
               "Content-Type": "application/json",
             },
-            body: JSON.stringify(editingSucursal),
+            body: JSON.stringify(newBranch),
           });
           if (res.ok) {
-            const updatedBranches = sucursales.map((sucursal) =>
-              sucursal.id === editingSucursal.id ? editingSucursal : sucursal
-            );
-            setSucursales(updatedBranches);
+            const completeBranch = await res.json();
+            setSucursales([...sucursales, completeBranch]); // Actualiza la lista de productos con el nuevo
             setLocalStorage(sucursales);
             resetForm();
-            setEditingSucursal(null);
+            setMessage("Sucursal creada correctamente");
+            setTimeout(() => setMessage(null), 3000);
           }
         } catch (error) {
-          console.log(error);
+          console.error("Error en la solicitud:", error);
         }
-        setEditingSucursal(null);
-      } else {
-        // Crear nueva sucursal
-        const existingBranch = searchBranch(address);
-        if (!existingBranch) {
-          const newBranch = {
-            address: address,
-            phone: phone,
-          };
-          try {
-            const res = await fetch(URL + "/Branches", {
-              method: "POST",
-              headers: {
-                "Content-Type": "application/json",
-              },
-              body: JSON.stringify(newBranch),
-            });
-            if (res.ok) {
-              const completeBranch = await res.json();
-              setSucursales([...sucursales, completeBranch]); // Actualiza la lista de productos con el nuevo
-              setLocalStorage(sucursales);
-              resetForm();
-            }
-          } catch (error) {
-            console.error("Error en la solicitud:", error);
-          }
-        } else console.log("Direccion ya existente");
-      }
-    } else console.log("Todos los campos deben estar completos");
+      } else console.log("Direccion ya existente");
+    } else {
+      setMessage("Todos los campos deben estar completos");
+      setTimeout(() => setMessage(null), 3000);
+    }
     setFormVisible(false);
   };
 
   // Mostrar/ocultar formulario
   const toggleFormVisibility = () => {
     setFormVisible(!formVisible);
-    setEditingSucursal(null); // Resetear sucursal en edición
   };
 
   // Limpiar formulario
@@ -142,14 +120,18 @@ const Sucursales = () => {
       "¿Estás seguro de eliminar esta sucursal?"
     );
     if (confirmDelete) {
-      await fetch(URL + `/Branches/${id}`, {
-        method: "DELETE",
-      });
-      const updatedSucursales = sucursales.filter(
-        (sucursal) => sucursal.id !== id
-      );
-      setSucursales(updatedSucursales);
-      setLocalStorage(sucursales);
+      try {
+        await fetch(URL + `/Branches/${id}`, {
+          method: "DELETE",
+        });
+        const updatedSucursales = sucursales.filter(
+          (sucursal) => sucursal.id !== id
+        );
+        setSucursales(updatedSucursales);
+        setLocalStorage(updatedSucursales);
+      } catch (error) {
+        setMessage("Error al eliminar la sucursal");
+      }
     }
   };
 
@@ -175,6 +157,7 @@ const Sucursales = () => {
         },
         body: JSON.stringify(data),
       });
+      setLocalStorage(sucursales);
       setEditingField({ id: null, field: null });
     } catch (error) {
       console.log(error);
@@ -198,7 +181,7 @@ const Sucursales = () => {
       {formVisible && (
         <form
           id="sucursalForm"
-          onSubmit={createUpdateSucursal}
+          onSubmit={createSucursal}
           style={{ marginBottom: "3%" }}
         >
           <div className="mb-3">
@@ -226,10 +209,11 @@ const Sucursales = () => {
             />
           </div>
           <button type="submit" className="btn btn-primary">
-            {editingSucursal ? "Actualizar Sucursal" : "Guardar Sucursal"}
+            Guardar Sucursal
           </button>
         </form>
       )}
+      {message && <div className="alert alert-info">{message}</div>}
 
       {/* Tabla de Sucursales */}
       <div className="table-responsive" style={{ marginTop: "3%" }}>
@@ -252,6 +236,7 @@ const Sucursales = () => {
                     onDoubleClick={() =>
                       handleDoubleClick(sucursal.id, "address")
                     }
+                    title="Doble click para editar"
                   >
                     {editingField.id === sucursal.id &&
                     editingField.field === "address" ? (
@@ -282,6 +267,7 @@ const Sucursales = () => {
                     onDoubleClick={() =>
                       handleDoubleClick(sucursal.id, "phone")
                     }
+                    title="Doble click para editar"
                   >
                     {editingField.id === sucursal.id &&
                     editingField.field === "phone" ? (
@@ -304,18 +290,7 @@ const Sucursales = () => {
                       sucursal.phone
                     )}
                   </td>
-                  {/* <td>{sucursal.address}</td>
-                  <td>{sucursal.phone}</td> */}
                   <td>
-                    <button
-                      onClick={() => {
-                        setFormVisible(true);
-                        setEditingSucursal(sucursal);
-                      }}
-                      className="btn btn-warning btn-sm me-2"
-                    >
-                      Actualizar
-                    </button>
                     <button
                       onClick={() => deleteSucursal(sucursal.id)}
                       className="btn btn-danger btn-sm"
