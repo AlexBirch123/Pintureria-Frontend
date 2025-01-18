@@ -1,4 +1,4 @@
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import Login from './Components/Login';
 import NavBar from './Components/NavBar';
 import Sucursales from './Components/Sucursales';
@@ -21,7 +21,7 @@ function App() {
   return (
      <Router>
        {/* Mostrar NavBar solo si el usuario está autenticado */}
-       {isAuthenticated && ( <NavBar/>)}
+       <NavBar/>
 
        <Routes>
          {/* Rutas protegidas, solo accesibles si el usuario está autenticado */}

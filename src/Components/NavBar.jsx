@@ -1,5 +1,5 @@
 import React from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import "bootstrap/dist/css/bootstrap.min.css";
 import rioColor from "../rio_color.png";
 import { URL } from "../config";
@@ -9,6 +9,8 @@ import "../App.css";
 const NavBar = () => {
   const { role, setIsAuthenticated, isAuthenticated } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
+  const showNavBar = location.pathname !== '/login' && location.pathname !== '/register' && location.pathname !== '/recoverPassword';
 
   const handleSession = async () => {
     if (!isAuthenticated) {
@@ -52,7 +54,7 @@ const NavBar = () => {
         >
           <span className="navbar-toggler-icon"></span>
         </button> */}
-        <div
+        {showNavBar &&(<div
           className="collapse navbar-collapse justify-content-center"
           id="collapsibleNavbar"
         >
@@ -137,7 +139,7 @@ const NavBar = () => {
               </button>
             </li>
           </ul>
-        </div>
+        </div>)}
       </div>
     </nav>
   );
