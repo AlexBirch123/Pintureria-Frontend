@@ -2,7 +2,7 @@ import React from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import "bootstrap/dist/css/bootstrap.min.css";
 import rioColor from "../rio_color.png";
-import { URL } from "../config";
+import { URL } from "../utils/config";
 import { useAuth } from "./AuthContext";
 import "../App.css";
 

@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
-import { URL } from "../config";
+import { URL } from "../utils/config";
+import { getLocalStorage, setLocalStorage } from "../utils/localStorage";
 
 const Sucursales = () => {
   const [sucursales, setSucursales] = useState([]);
@@ -10,31 +11,14 @@ const Sucursales = () => {
   const direccionRef = useRef(null);
   const telefonoRef = useRef(null);
 
-  const getLocalStorage = (clave) => {
-    const item = localStorage.getItem(clave);
-    if (!item) return null;
-    const { datos, timestamp } = JSON.parse(item);
-    return { datos, timestamp };
-  };
-
-  const setLocalStorage = (data) => {
-    const now = Date.now();
-    localStorage.setItem(
-      "branches",
-      JSON.stringify({ datos: data, timestamp: now })
-    );
-  };
-
-  const fetchBranches = async (local, now) => {
+  // Obtener sucursales
+  const fetchBranches = async (local) => {
     try {
       await fetch(URL + "/Branches")
         .then((res) => res.json())
         .then((data) => {
           setSucursales(data);
-          localStorage.setItem(
-            "branches",
-            JSON.stringify({ datos: data, timestamp: now })
-          );
+          setLocalStorage(data, "branches");
         });
     } catch (error) {
       console.log(error);
@@ -42,13 +26,13 @@ const Sucursales = () => {
     }
   };
 
+  // Obtener sucursales al cargar el componente
   useEffect(() => {
     const getBranches = async () => {
       const local = getLocalStorage("branches");
       const now = Date.now();
-      if (!local) return await fetchBranches(local, now);
-      if (now - local.timestamp > 180000)
-        return await fetchBranches(local, now);
+      if (!local) return await fetchBranches(local);
+      if (now - local.timestamp > 180000) return await fetchBranches(local);
       setSucursales(local.datos);
     };
 
@@ -66,16 +50,13 @@ const Sucursales = () => {
     const address = direccionRef.current?.value;
     const phone = Number(telefonoRef.current?.value);
     if (phone && address) {
-      // Crear nueva sucursal
-      console.log(address, phone);
       const existingBranch = searchBranch(address);
-      console.log(existingBranch);
       if (!existingBranch) {
         const newBranch = {
           address: address,
           phone: phone,
         };
-        console.log(newBranch);
+
         try {
           const res = await fetch(URL + "/Branches", {
             method: "POST",
@@ -87,7 +68,7 @@ const Sucursales = () => {
           if (res.ok) {
             const completeBranch = await res.json();
             setSucursales([...sucursales, completeBranch]); // Actualiza la lista de productos con el nuevo
-            setLocalStorage(sucursales);
+            setLocalStorage(sucursales, "branches");
             resetForm();
             setMessage("Sucursal creada correctamente");
             setTimeout(() => setMessage(null), 3000);
@@ -95,7 +76,7 @@ const Sucursales = () => {
         } catch (error) {
           console.error("Error en la solicitud:", error);
         }
-      } else console.log("Direccion ya existente");
+      } else setMessage("La sucursal ya existe");
     } else {
       setMessage("Todos los campos deben estar completos");
       setTimeout(() => setMessage(null), 3000);
@@ -140,6 +121,13 @@ const Sucursales = () => {
   };
 
   const handleFieldChange = (id, field, value) => {
+    if (field === "address") {
+      const addressExists = searchBranch(value);
+      if (addressExists) {
+        alert("La direccion ya existe.");
+        return;
+      }
+    }
     setSucursales((prevSucursales) =>
       prevSucursales.map((sucursal) =>
         sucursal.id === id ? { ...sucursal, [field]: value } : sucursal
@@ -157,7 +145,7 @@ const Sucursales = () => {
         },
         body: JSON.stringify(data),
       });
-      setLocalStorage(sucursales);
+      setLocalStorage(sucursales, "branches");
       setEditingField({ id: null, field: null });
     } catch (error) {
       console.log(error);

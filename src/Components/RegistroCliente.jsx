@@ -2,7 +2,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "bootstrap/dist/css/bootstrap.min.css";
-import { URL } from "../config";
+import { URL } from "../utils/config";
 
 const RegistroCliente = () => {
   const [formData, setFormData] = useState({
@@ -24,7 +24,7 @@ const RegistroCliente = () => {
 
   const postUser = async () => {
     try {
-      const res = await fetch( URL + `/Users`, {
+      const res = await fetch(URL + `/Users`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -41,14 +41,10 @@ const RegistroCliente = () => {
 
   const validateData = async () => {
     try {
-      const res = await fetch(
-        URL + `/Users/email/${formData.email}`
-      );
+      const res = await fetch(URL + `/Users/email/${formData.email}`);
       const email = await res.json();
       if (!email) {
-        const response = await fetch(
-          URL + `/Users/name/${formData.userName}`
-        );
+        const response = await fetch(URL + `/Users/name/${formData.userName}`);
         const name = await response.json();
         if (!name) {
           return name;

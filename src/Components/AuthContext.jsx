@@ -1,5 +1,5 @@
-import { createContext, useContext, useState, useEffect } from 'react';
-import { URL } from '../config.js';
+import { createContext, useContext, useState, useEffect } from "react";
+import { URL } from "../utils/config";
 
 // Crear el AuthContext
 const AuthContext = createContext();
@@ -10,19 +10,19 @@ export const useAuth = () => useContext(AuthContext);
 // Proveedor del contexto que maneja la autenticación
 export const AuthProvider = ({ children }) => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [role, setRole] = useState(3); 
+  const [role, setRole] = useState(3);
 
   useEffect(() => {
     const checkAuth = async () => {
       try {
-        const res = await fetch( URL + "/authorized", {
+        const res = await fetch(URL + "/authorized", {
           credentials: "include",
         });
 
         if (res.ok) {
           const data = await res.json();
           setIsAuthenticated(true);
-          setRole(data.level); 
+          setRole(data.level);
         } else {
           setIsAuthenticated(false);
         }
@@ -36,7 +36,9 @@ export const AuthProvider = ({ children }) => {
   }, []);
 
   return (
-    <AuthContext.Provider value={{ isAuthenticated, setIsAuthenticated, role, setRole }}>
+    <AuthContext.Provider
+      value={{ isAuthenticated, setIsAuthenticated, role, setRole }}
+    >
       {children}
     </AuthContext.Provider>
   );
