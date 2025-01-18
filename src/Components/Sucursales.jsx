@@ -17,11 +17,11 @@ const Sucursales = () => {
       await fetch(URL + "/Branches")
         .then((res) => res.json())
         .then((data) => {
+          if (!data) return;
           setSucursales(data);
           setLocalStorage(data, "branches");
         });
     } catch (error) {
-      console.log(error);
       setSucursales(local.datos);
     }
   };
