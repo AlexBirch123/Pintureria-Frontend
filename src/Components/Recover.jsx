@@ -1,6 +1,6 @@
-import React, {useState } from "react";
+import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { URL } from "../config.js";
+import { URL } from "../utils/config.js";
 import { useAuth } from "./AuthContext.jsx";
 
 const Recover = () => {
@@ -12,7 +12,6 @@ const Recover = () => {
   // const {setIsAuthenticated,setRole } = useAuth()
   // const navigate = useNavigate();
 
-  
   // const validacion = async () => {
   //   if (username && password) {
   //     const data = {
@@ -30,16 +29,15 @@ const Recover = () => {
   //       });
   //       if (!res.ok) {
   //         return setMessage("Credenciales incorrectas");
-           
-  //       } 
-  //       const level = await res.json()
 
+  //       }
+  //       const level = await res.json()
 
   //       setMessage("Datos correctos");
   //       setIsAuthenticated(true);
   //       setRole(level)
   //       navigate("/dashboard");
-        
+
   //     } catch (error) {
   //       setMessage("Nombre de usuario o contraseña incorrectos");
   //     }
@@ -50,14 +48,14 @@ const Recover = () => {
     e.preventDefault();
 
     setMessage("Correo enviado con éxito");
-  //   if (username === "" || password === "") {
-  //     setMessage("Por favor, ingrese todos los campos.");
-  //     return;
-  //   }
-  //   validacion();
-  // };
-  // const handleRegisterClick = () => {
-  //   navigate("/register"); // Redirigir a la página de registro de clientes
+    //   if (username === "" || password === "") {
+    //     setMessage("Por favor, ingrese todos los campos.");
+    //     return;
+    //   }
+    //   validacion();
+    // };
+    // const handleRegisterClick = () => {
+    //   navigate("/register"); // Redirigir a la página de registro de clientes
   };
 
   return (

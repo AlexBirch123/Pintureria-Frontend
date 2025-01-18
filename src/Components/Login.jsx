@@ -1,6 +1,6 @@
-import React, {useState } from "react";
+import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { URL } from "../config.js";
+import { URL } from "../utils/config.js";
 import { useAuth } from "./AuthContext";
 
 const Login = () => {
@@ -9,10 +9,9 @@ const Login = () => {
   const [password, setPassword] = useState("");
   // const [role, setLocalRole] = useState("");
   const [message, setMessage] = useState("");
-  const {setIsAuthenticated,setRole } = useAuth()
+  const { setIsAuthenticated, setRole } = useAuth();
   const navigate = useNavigate();
 
-  
   const validacion = async () => {
     if (username && password) {
       const data = {
@@ -20,7 +19,7 @@ const Login = () => {
         pswHash: password,
       };
       try {
-        const res = await fetch( URL +"/Users/login", {
+        const res = await fetch(URL + "/Users/login", {
           method: "POST",
           credentials: "include",
           headers: {
@@ -30,16 +29,13 @@ const Login = () => {
         });
         if (!res.ok) {
           return setMessage("Credenciales incorrectas");
-           
-        } 
-        const level = await res.json()
-
+        }
+        const level = await res.json();
 
         setMessage("Datos correctos");
         setIsAuthenticated(true);
-        setRole(level)
+        setRole(level);
         navigate("/dashboard");
-        
       } catch (error) {
         setMessage("Nombre de usuario o contraseña incorrectos");
       }
