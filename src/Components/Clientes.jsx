@@ -8,17 +8,21 @@ const Clientes = () => {
   const [formVisible, setFormVisible] = useState(false);
   const [message, setMessage] = useState(null);
   const [editingField, setEditingField] = useState({ id: null, field: null });
+  const [prevValue, setPrevValue] = useState(null);
   const nombreRef = useRef(null);
   const direccionRef = useRef(null);
   const telefonoRef = useRef(null);
   const dniRef = useRef(null);
 
+  useEffect(() => {
   // Obtener sucursales
-  const fetchClients = async (local) => {
+  const fetchClients = async () => {
+    const local = getLocalStorage("clients");
     try {
       await fetch(URL + "/Clients")
         .then((res) => res.json())
         .then((data) => {
+          if (!data) return setClientes(local.datos);;
           setClientes(data);
           setLocalStorage(data, "clients");
         });
@@ -28,16 +32,7 @@ const Clientes = () => {
     }
   };
 
-  useEffect(() => {
-    const getBranches = async () => {
-      const local = getLocalStorage("clients");
-      const now = Date.now();
-      if (!local) return await fetchClients(local);
-      if (now - local.timestamp > 180000) return await fetchClients(local);
-      setClientes(local.datos);
-    };
-
-    getBranches();
+    fetchClients();
   }, []);
 
   const searchClient = (dni) => {
@@ -72,8 +67,9 @@ const Clientes = () => {
           });
           if (res.ok) {
             const completeClient = await res.json();
-            setClientes([...clientes, completeClient]);
-            setLocalStorage(clientes, "clients");
+            const newClients = [...clientes, completeClient];
+            setClientes(newClients);
+            setLocalStorage(newClients, "clients");
             resetForm();
             setMessage("Cliente creado exitosamente");
             setTimeout(() => setMessage(null), 3000);
@@ -119,27 +115,33 @@ const Clientes = () => {
     }
   };
 
-  const handleDoubleClick = (id, field) => {
+  const handleDoubleClick = (id, field,value) => {
     setEditingField({ id, field });
+    setPrevValue(value)
   };
 
   const handleFieldChange = (id, field, value) => {
-    if (field === "dni") {
-      const dniExists = searchClient(value);
-      if (dniExists) {
-        alert("El DNI ya existe.");
-        return;
-      }
-    }
-    setClientes((prevSucursales) =>
-      prevSucursales.map((sucursal) =>
-        sucursal.id === id ? { ...sucursal, [field]: value } : sucursal
+    setClientes((cli) =>
+      cli.map((c) =>
+        c.id === id ? { ...c, [field]: value } : c
       )
     );
   };
 
   const handleBlur = async (id, field, value) => {
     const data = { [field]: value };
+    if (field === "dni") {
+      const dniExists = searchClient(value);
+      if (dniExists) {
+        alert("El DNI ya existe.");
+        setClientes((cli) =>
+          cli.map((c) =>
+            c.id === id ? { ...c, [field]: prevValue } : c
+          )
+        );
+        return setPrevValue(null);
+      }
+    }
     try {
       await fetch(URL + `/Clients/${id}`, {
         method: "PATCH",
@@ -168,7 +170,7 @@ const Clientes = () => {
           {formVisible ? "Cancelar" : "Crear Cliente"}
         </button>
       </div>
-
+      {message && <div className="alert alert-success">{message}</div>}
       {/* Formulario visible para crear o editar cliente */}
       {formVisible && (
         <form
@@ -248,7 +250,7 @@ const Clientes = () => {
                 <tr key={cliente.id}>
                   <td>{cliente.id}</td>
                   <td
-                    onDoubleClick={() => handleDoubleClick(cliente.id, "dni")}
+                    onDoubleClick={() => handleDoubleClick(cliente.id, "dni",cliente.dni)}
                     title="Doble click para editar"
                   >
                     {editingField.id === cliente.id &&
@@ -269,7 +271,7 @@ const Clientes = () => {
                     )}
                   </td>
                   <td
-                    onDoubleClick={() => handleDoubleClick(cliente.id, "name")}
+                    onDoubleClick={() => handleDoubleClick(cliente.id, "name",cliente.name)}
                     title="Doble click para editar"
                   >
                     {editingField.id === cliente.id &&
@@ -291,7 +293,7 @@ const Clientes = () => {
                   </td>
                   <td
                     onDoubleClick={() =>
-                      handleDoubleClick(cliente.id, "address")
+                      handleDoubleClick(cliente.id, "address",cliente.address)
                     }
                     title="Doble click para editar"
                   >
@@ -321,7 +323,7 @@ const Clientes = () => {
                     )}
                   </td>
                   <td
-                    onDoubleClick={() => handleDoubleClick(cliente.id, "phone")}
+                    onDoubleClick={() => handleDoubleClick(cliente.id, "phone",cliente.phone)}
                     title="Doble click para editar"
                   >
                     {editingField.id === cliente.id &&
@@ -341,23 +343,7 @@ const Clientes = () => {
                       cliente.phone
                     )}
                   </td>
-
-                  {/* <td>{cliente.name}</td>
-                  <td>{cliente.address}</td>
-                  <td>{cliente.phone}</td>
-                  <td>{cliente.dni}</td> */}
                   <td>
-                    {/* <button
-                      onClick={() => {
-                        toggleFormVisibility();
-                        setEditingClient(cliente);
-                        setIsRequired(false);
-                        sethidden(true);
-                      }}
-                      className="btn btn-warning btn-sm me-2"
-                    >
-                      Actualizar
-                    </button> */}
                     <button
                       onClick={() => deleteCliente(cliente.id)}
                       className="btn btn-danger btn-sm"

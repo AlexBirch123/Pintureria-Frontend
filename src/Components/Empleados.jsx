@@ -1,11 +1,14 @@
 import React, { useState, useRef, useEffect } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
+import { URL } from "../utils/config";
+import { getLocalStorage, setLocalStorage } from "../utils/localStorage";
 
 const Empleados = () => {
   const [empleados, setEmpleados] = useState([]);
   const [formVisible, setFormVisible] = useState(false);
-  const [editingEmployee, setEditingEmployee] = useState(null);
-  const [isRequired, setIsRequired] = useState(true);
+  const [message, setMessage] = useState(null);
+  const [prevValue, setPrevValue] = useState(null);
+  const [editingField, setEditingField] = useState({ id: null, field: "" });
   const nombreRef = useRef(null);
   const sueldoRef = useRef(null);
   const telefonoRef = useRef(null);
@@ -13,14 +16,17 @@ const Empleados = () => {
 
   useEffect(() => {
     const fetchEmp = async () => {
+      const local = getLocalStorage("employees");
       try {
-        await fetch("http://localhost:8080/allEmployees")
+        await fetch(URL + "/Employees")
           .then((res) => res.json())
           .then((data) => {
+            if (!data) return setEmpleados(local.datos);
+            setLocalStorage(data, "employees");
             setEmpleados(data);
           });
       } catch (error) {
-        console.log(error);
+        setEmpleados(local.datos);
       }
     };
 
@@ -32,53 +38,16 @@ const Empleados = () => {
     return emp;
   };
 
-  // Crear o actualizar cliente
-  const createUpdateEmp = async (event) => {
+  // Crear empleado
+  const createEmp = async (event) => {
     event.preventDefault();
     const name = nombreRef.current?.value;
     const salary = Number(sueldoRef.current?.value);
     const phone = Number(telefonoRef.current?.value);
     const dni = Number(dniRef.current?.value);
-    if (editingEmployee) {
-      // Actualizar cliente existente
-      let datos = {};
-      if (name) datos.name = name;
-      if (salary) datos.salary = salary;
-      if (phone) datos.phone = phone;
-      if (dni) datos.dni = dni;
-      try {
-        const res = await fetch(
-          `http://localhost:8080/allEmployees/${editingEmployee.id}`,
-          {
-            method: "PATCH",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify(datos),
-          }
-        );
-        if (res.ok) {
-          if (datos.name) editingEmployee.name = datos.name;
-          if (datos.salary) editingEmployee.salary = datos.salary;
-          if (datos.phone) editingEmployee.phone = datos.phone;
-          if (datos.dni) editingEmployee.dni = datos.dni;
-          const updatedEmp = empleados.map((emp) =>
-            emp.id === editingEmployee.id
-              ? { ...empleados, editingEmployee }
-              : emp
-          );
-          setEmpleados(updatedEmp); //actualiza la lista con los datos actualizados
-          setIsRequired(true);
-          setEditingEmployee(null);
-          resetForm();
-        }
-      } catch (error) {
-        console.log(error);
-      }
-    } else if (name && dni && salary) {
+    if (name && dni && salary) {
       const existingEmp = searchEmp(dni); //verifica que el DNI no exista
       if (!existingEmp) {
-        // Crear nuevo cliente
         const newEmp = {
           name: name,
           salary: salary,
@@ -86,7 +55,7 @@ const Empleados = () => {
           dni: dni,
         };
         try {
-          const res = await fetch("http://localhost:8080/allEmployees", {
+          const res = await fetch(URL + "/Employees", {
             method: "POST",
             headers: {
               "Content-Type": "application/json",
@@ -96,21 +65,28 @@ const Empleados = () => {
           if (res.ok) {
             const completeEmp = await res.json();
             setEmpleados([...empleados, completeEmp]);
+            setLocalStorage(empleados, "employees");
             resetForm();
-            setEditingEmployee(null);
+            setMessage("Empleado creado con éxito");
+            setTimeout(() => {
+              setMessage(null);
+            }, 3000);
           }
         } catch (error) {
           console.log(error);
         }
-      } else console.log("DNI ya registrado");
-    } else console.log("error al crear o actualizar Empleado");
+      } else setMessage("DNI ya registrado");
+    } else {
+      setMessage("Todos los campos deben estar completos");
+      setTimeout(() => setMessage(null), 3000);
+    }
 
     setFormVisible(false);
   };
+
   // Mostrar/ocultar formulario
   const toggleFormVisibility = () => {
     setFormVisible(!formVisible);
-    setEditingEmployee(null); // Resetear empleado en edición
   };
 
   // Limpiar formulario
@@ -127,11 +103,50 @@ const Empleados = () => {
       "¿Estás seguro de eliminar este empleado?"
     );
     if (confirmDelete) {
-      await fetch(`http://localhost:8080/allEmployees/${id}`, {
+      await fetch(URL + `/Employees/${id}`, {
         method: "DELETE",
       });
       const updatedEmp = empleados.filter((e) => e.id !== id);
       setEmpleados(updatedEmp);
+      setLocalStorage(updatedEmp, "employees");
+    }
+  };
+
+  const handleDoubleClick = (id, field, value) => {
+    setEditingField({ id, field });
+    setPrevValue(value);
+  };
+
+  const handleFieldChange = (id, field, value) => {
+    setEmpleados((empleados) =>
+      empleados.map((emp) => (emp.id === id ? { ...emp, [field]: value } : emp))
+    );
+  };
+
+  const handleBlur = async (id, field, value) => {
+    const data = { [field]: value };
+    if (field === "address") {
+      const addressExists = searchEmp(value);
+      if (addressExists && addressExists.id !== id) {
+        alert("La direccion ya existe.");
+        setEmpleados((empleados) =>
+          empleados.map((e) => (e.id === id ? { ...e, [field]: prevValue } : e))
+        );
+        return setPrevValue(null);
+      }
+    }
+    try {
+      await fetch(URL + `/Employees/${id}`, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(data),
+      });
+      setLocalStorage(empleados, "employees");
+      setEditingField({ id: null, field: null });
+    } catch (error) {
+      console.log(error);
     }
   };
 
@@ -152,7 +167,7 @@ const Empleados = () => {
       {formVisible && (
         <form
           id="empleadoForm"
-          onSubmit={createUpdateEmp}
+          onSubmit={createEmp}
           style={{ marginTop: "5%" }}
         >
           <div className="mb-3">
@@ -164,19 +179,31 @@ const Empleados = () => {
               ref={nombreRef}
               name="Nombre"
               className="form-control"
-              required={isRequired}
+              required={true}
             />
           </div>
           <div className="mb-3">
-            <label htmlFor="Cargo" className="form-label">
+            <label htmlFor="DNI" className="form-label">
+              DNI:
+            </label>
+            <input
+              type="text"
+              ref={dniRef}
+              name="DNI"
+              className="form-control"
+              required={true}
+            />
+          </div>
+          <div className="mb-3">
+            <label htmlFor="sueldo" className="form-label">
               sueldo:
             </label>
             <input
               type="number"
               ref={sueldoRef}
-              name="Cargo"
+              name="sueldo"
               className="form-control"
-              required={isRequired}
+              required={true}
             />
           </div>
           <div className="mb-3">
@@ -190,23 +217,13 @@ const Empleados = () => {
               className="form-control"
             />
           </div>
-          <div className="mb-3">
-            <label htmlFor="DNI" className="form-label">
-              DNI:
-            </label>
-            <input
-              type="text"
-              ref={dniRef}
-              name="DNI"
-              className="form-control"
-              required={isRequired}
-            />
-          </div>
+
           <button type="submit" className="btn btn-primary">
-            {editingEmployee ? "Actualizar Empleado" : "Guardar Empleado"}
+            Guardar Empleado
           </button>
         </form>
       )}
+      {message && <div className="alert alert-info">{message}</div>}
 
       {/* Tabla de Empleados */}
       <div className="table-responsive">
@@ -216,34 +233,120 @@ const Empleados = () => {
             <tr>
               <th>ID</th>
               <th>Nombre</th>
+              <th>DNI</th>
               <th>Sueldo</th>
               <th>Teléfono</th>
-              <th>DNI</th>
               <th>Acciones</th>
             </tr>
           </thead>
           <tbody>
             {empleados.length > 0 ? (
-              empleados.map((empleado) => (
-                <tr key={empleado.id}>
-                  <td>{empleado.id}</td>
-                  <td>{empleado.name}</td>
-                  <td>{empleado.salary}</td>
-                  <td>{empleado.phone}</td>
-                  <td>{empleado.dni}</td>
+              empleados.map((emp) => (
+                <tr key={emp.id}>
+                  <td>{emp.id}</td>
+                  <td
+                    onDoubleClick={() =>
+                      handleDoubleClick(emp.id, "name", emp.name)
+                    }
+                    title="Doble click para editar"
+                  >
+                    {editingField.id === emp.id &&
+                    editingField.field === "name" ? (
+                      <input
+                        type="text"
+                        value={emp.name}
+                        onChange={(e) =>
+                          handleFieldChange(emp.id, "name", e.target.value)
+                        }
+                        onKeyDown={async (e) => {
+                          if (e.key === "Enter") {
+                            await handleBlur(emp.id, "name", emp.name);
+                          }
+                        }}
+                        autoFocus
+                      />
+                    ) : (
+                      emp.name
+                    )}
+                  </td>
+                  <td
+                    onDoubleClick={() =>
+                      handleDoubleClick(emp.id, "dni", emp.dni)
+                    }
+                    title="Doble click para editar"
+                  >
+                    {editingField.id === emp.id &&
+                    editingField.field === "dni" ? (
+                      <input
+                        type="text"
+                        value={emp.dni}
+                        onChange={(e) =>
+                          handleFieldChange(emp.id, "dni", e.target.value)
+                        }
+                        onKeyDown={async (e) => {
+                          if (e.key === "Enter") {
+                            await handleBlur(emp.id, "dni", emp.dni);
+                          }
+                        }}
+                        autoFocus
+                      />
+                    ) : (
+                      emp.dni
+                    )}
+                  </td>
+                  <td
+                    onDoubleClick={() =>
+                      handleDoubleClick(emp.id, "salary", emp.salary)
+                    }
+                    title="Doble click para editar"
+                  >
+                    {editingField.id === emp.id &&
+                    editingField.field === "salary" ? (
+                      <input
+                        type="text"
+                        value={emp.salary}
+                        onChange={(e) =>
+                          handleFieldChange(emp.id, "salary", e.target.value)
+                        }
+                        onKeyDown={async (e) => {
+                          if (e.key === "Enter") {
+                            await handleBlur(emp.id, "salary", emp.salary);
+                          }
+                        }}
+                        autoFocus
+                      />
+                    ) : (
+                      emp.salary
+                    )}
+                  </td>
+                  <td
+                    onDoubleClick={() =>
+                      handleDoubleClick(emp.id, "phone", emp.phone)
+                    }
+                    title="Doble click para editar"
+                  >
+                    {editingField.id === emp.id &&
+                    editingField.field === "phone" ? (
+                      <input
+                        type="text"
+                        value={emp.phone}
+                        onChange={(e) =>
+                          handleFieldChange(emp.id, "phone", e.target.value)
+                        }
+                        onKeyDown={async (e) => {
+                          if (e.key === "Enter") {
+                            await handleBlur(emp.id, "phone", emp.phone);
+                          }
+                        }}
+                        autoFocus
+                      />
+                    ) : (
+                      emp.phone
+                    )}
+                  </td>
                   <td>
                     <button
-                      onClick={() => {
-                        toggleFormVisibility();
-                        setEditingEmployee(empleado);
-                        setIsRequired(false);
-                      }}
-                      className="btn btn-warning btn-sm me-2"
-                    >
-                      Actualizar
-                    </button>
-                    <button
-                      onClick={() => deleteEmpleado(empleado.id)}
+                      onClick={() => deleteEmpleado(emp.id)}
                       className="btn btn-danger btn-sm"
                     >
                       Eliminar

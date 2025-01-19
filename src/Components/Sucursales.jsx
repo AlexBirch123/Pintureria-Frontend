@@ -8,35 +8,28 @@ const Sucursales = () => {
   const [formVisible, setFormVisible] = useState(false);
   const [editingField, setEditingField] = useState({ id: null, field: null });
   const [message, setMessage] = useState(null);
+  const [prevValue, setPrevValue] = useState(null);
   const direccionRef = useRef(null);
   const telefonoRef = useRef(null);
 
-  // Obtener sucursales
-  const fetchBranches = async (local) => {
-    try {
-      await fetch(URL + "/Branches")
-        .then((res) => res.json())
-        .then((data) => {
-          if (!data) return;
-          setSucursales(data);
-          setLocalStorage(data, "branches");
-        });
-    } catch (error) {
-      setSucursales(local.datos);
-    }
-  };
-
   // Obtener sucursales al cargar el componente
   useEffect(() => {
-    const getBranches = async () => {
+    const fetchBranches = async () => {
       const local = getLocalStorage("branches");
-      const now = Date.now();
-      if (!local) return await fetchBranches(local);
-      if (now - local.timestamp > 180000) return await fetchBranches(local);
-      setSucursales(local.datos);
-    };
 
-    getBranches();
+      try {
+        await fetch(URL + "/Branches")
+          .then((res) => res.json())
+          .then((data) => {
+            if (!data) return setSucursales(local.datos);
+            setSucursales(data);
+            setLocalStorage(data, "branches");
+          });
+      } catch (error) {
+        setSucursales(local.datos);
+      }
+    };
+    fetchBranches();
   }, []);
 
   const searchBranch = (address) => {
@@ -68,7 +61,7 @@ const Sucursales = () => {
           if (res.ok) {
             const completeBranch = await res.json();
             setSucursales([...sucursales, completeBranch]); // Actualiza la lista de productos con el nuevo
-            setLocalStorage(sucursales, "branches");
+            setLocalStorage([...sucursales, completeBranch], "branches");
             resetForm();
             setMessage("Sucursal creada correctamente");
             setTimeout(() => setMessage(null), 3000);
@@ -116,18 +109,12 @@ const Sucursales = () => {
     }
   };
 
-  const handleDoubleClick = (id, field) => {
+  const handleDoubleClick = (id, field, value) => {
     setEditingField({ id, field });
+    setPrevValue(value);
   };
 
   const handleFieldChange = (id, field, value) => {
-    if (field === "address") {
-      const addressExists = searchBranch(value);
-      if (addressExists) {
-        alert("La direccion ya existe.");
-        return;
-      }
-    }
     setSucursales((prevSucursales) =>
       prevSucursales.map((sucursal) =>
         sucursal.id === id ? { ...sucursal, [field]: value } : sucursal
@@ -137,6 +124,18 @@ const Sucursales = () => {
 
   const handleBlur = async (id, field, value) => {
     const data = { [field]: value };
+    if (field === "address") {
+      const addressExists = searchBranch(value);
+      if (addressExists && addressExists.id !== id) {
+        alert("La direccion ya existe.");
+        setSucursales((prevSucursales) =>
+          prevSucursales.map((sucursal) =>
+            sucursal.id === id ? { ...sucursal, [field]: prevValue } : sucursal
+          )
+        );
+        return setPrevValue(null);
+      }
+    }
     try {
       await fetch(URL + `/Branches/${id}`, {
         method: "PATCH",
@@ -222,7 +221,11 @@ const Sucursales = () => {
                   <td>{sucursal.id}</td>
                   <td
                     onDoubleClick={() =>
-                      handleDoubleClick(sucursal.id, "address")
+                      handleDoubleClick(
+                        sucursal.id,
+                        "address",
+                        sucursal.address
+                      )
                     }
                     title="Doble click para editar"
                   >
@@ -238,13 +241,15 @@ const Sucursales = () => {
                             e.target.value
                           )
                         }
-                        onBlur={async () =>
-                          await handleBlur(
-                            sucursal.id,
-                            "address",
-                            sucursal.address
-                          )
-                        }
+                        onKeyDown={async (e) => {
+                          if (e.key === "Enter") {
+                            await handleBlur(
+                              sucursal.id,
+                              "address",
+                              sucursal.address
+                            );
+                          }
+                        }}
                         autoFocus
                       />
                     ) : (
@@ -253,7 +258,7 @@ const Sucursales = () => {
                   </td>
                   <td
                     onDoubleClick={() =>
-                      handleDoubleClick(sucursal.id, "phone")
+                      handleDoubleClick(sucursal.id, "phone", sucursal.phone)
                     }
                     title="Doble click para editar"
                   >
