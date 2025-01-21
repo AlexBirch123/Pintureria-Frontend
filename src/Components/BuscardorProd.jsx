@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { getLocalStorage, setLocalStorage } from "../utils/localStorage";
 import { Modal } from "bootstrap";
 
-const CrearVentas = () => {
+const BuscadorProd = () => {
   //   const [formVisible, setFormVisible] = useState(false);
   //   const [tableVisible, setTableVisible] = useState(true);
   //   const [rowsSale, setRowsSale] = useState([]);
@@ -60,7 +60,7 @@ const CrearVentas = () => {
 
   return (
     <div>
-      <button onClick={setlIsOpen(true)}>Agregar Producto</button>
+      <button onClick={setlIsOpen(true)} className="btn btn-primary">Agregar Producto</button>
       <Modal isOpen={isOpen} onRequestClose={setlIsOpen(false)}>
         <h2>Seleccionar Productos</h2>
         <input
@@ -95,4 +95,4 @@ const CrearVentas = () => {
   );
 };
 
-export default CrearVentas;
+export default BuscadorProd;

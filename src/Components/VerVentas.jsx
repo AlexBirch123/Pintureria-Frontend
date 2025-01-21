@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
-import { URL } from "../../../back/config";
+import { URL } from "../utils/config";
 
 const VerVentas = () => {
   const [ventas, setVentas] = useState([]);
