@@ -19,7 +19,7 @@ const Login = () => {
         pswHash: password,
       };
       try {
-        const res = await fetch(URL + "/Users/login", {
+        const res = await fetch(URL + "/login", {
           method: "POST",
           credentials: "include",
           headers: {

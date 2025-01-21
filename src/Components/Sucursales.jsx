@@ -18,7 +18,7 @@ const Sucursales = () => {
       const local = getLocalStorage("branches");
 
       try {
-        await fetch(URL + "/Branches")
+        await fetch(URL + "/Branches",{credentials: "include"})
           .then((res) => res.json())
           .then((data) => {
             if (!data) return setSucursales(local.datos);
@@ -67,7 +67,7 @@ const Sucursales = () => {
             setTimeout(() => setMessage(null), 3000);
           }
         } catch (error) {
-          console.error("Error en la solicitud:", error);
+          setMessage("Error en la solicitud");
         }
       } else setMessage("La sucursal ya existe");
     } else {
@@ -139,6 +139,7 @@ const Sucursales = () => {
     try {
       await fetch(URL + `/Branches/${id}`, {
         method: "PATCH",
+        credentials: "include",
         headers: {
           "Content-Type": "application/json",
         },
@@ -147,8 +148,33 @@ const Sucursales = () => {
       setLocalStorage(sucursales, "branches");
       setEditingField({ id: null, field: null });
     } catch (error) {
-      console.log(error);
+      setMessage("Error en la solicitud");
     }
+  };
+
+  const input = (suc, field, value) => {
+    return (
+      <td
+        onDoubleClick={() => handleDoubleClick(suc.id, field, value)}
+        title="Doble click para editar"
+      >
+        {editingField.id === suc.id && editingField.field === field ? (
+          <input
+            type="text"
+            value={value}
+            onChange={(e) => handleFieldChange(suc.id, field, e.target.value)}
+            onKeyDown={async (e) => {
+              if (e.key === "Enter") {
+                await handleBlur(suc.id, field, value);
+              }
+            }}
+            autoFocus
+          />
+        ) : (
+          value
+        )}
+      </td>
+    );
   };
 
   return (
@@ -219,70 +245,8 @@ const Sucursales = () => {
               sucursales.map((sucursal) => (
                 <tr key={sucursal.id}>
                   <td>{sucursal.id}</td>
-                  <td
-                    onDoubleClick={() =>
-                      handleDoubleClick(
-                        sucursal.id,
-                        "address",
-                        sucursal.address
-                      )
-                    }
-                    title="Doble click para editar"
-                  >
-                    {editingField.id === sucursal.id &&
-                    editingField.field === "address" ? (
-                      <input
-                        type="text"
-                        value={sucursal.address}
-                        onChange={(e) =>
-                          handleFieldChange(
-                            sucursal.id,
-                            "address",
-                            e.target.value
-                          )
-                        }
-                        onKeyDown={async (e) => {
-                          if (e.key === "Enter") {
-                            await handleBlur(
-                              sucursal.id,
-                              "address",
-                              sucursal.address
-                            );
-                          }
-                        }}
-                        autoFocus
-                      />
-                    ) : (
-                      sucursal.address
-                    )}
-                  </td>
-                  <td
-                    onDoubleClick={() =>
-                      handleDoubleClick(sucursal.id, "phone", sucursal.phone)
-                    }
-                    title="Doble click para editar"
-                  >
-                    {editingField.id === sucursal.id &&
-                    editingField.field === "phone" ? (
-                      <input
-                        type="text"
-                        value={sucursal.phone}
-                        onChange={(e) =>
-                          handleFieldChange(
-                            sucursal.id,
-                            "phone",
-                            e.target.value
-                          )
-                        }
-                        onBlur={async () =>
-                          await handleBlur(sucursal.id, "phone", sucursal.phone)
-                        }
-                        autoFocus
-                      />
-                    ) : (
-                      sucursal.phone
-                    )}
-                  </td>
+                  {input(sucursal,"address", sucursal.address)}
+                  {input(sucursal,"phone", sucursal.phone)}
                   <td>
                     <button
                       onClick={() => deleteSucursal(sucursal.id)}

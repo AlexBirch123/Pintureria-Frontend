@@ -19,7 +19,7 @@ const Clientes = () => {
   const fetchClients = async () => {
     const local = getLocalStorage("clients");
     try {
-      await fetch(URL + "/Clients")
+      await fetch(URL + "/Clients",{credentials: "include"})
         .then((res) => res.json())
         .then((data) => {
           if (!data) return setClientes(local.datos);;
@@ -158,6 +158,31 @@ const Clientes = () => {
     searchClient(value);
   };
 
+  const input = (arr, field, value) => {
+    return (
+      <td
+        onDoubleClick={() => handleDoubleClick(arr.id, field, value)}
+        title="Doble click para editar"
+      >
+        {editingField.id === arr.id && editingField.field === field ? (
+          <input
+            type="text"
+            value={value}
+            onChange={(e) => handleFieldChange(arr.id, field, e.target.value)}
+            onKeyDown={async (e) => {
+              if (e.key === "Enter") {
+                await handleBlur(arr.id, field, value);
+              }
+            }}
+            autoFocus
+          />
+        ) : (
+          value
+        )}
+      </td>
+    );
+  };
+
   return (
     <div style={{ marginTop: "5%" }}>
       <div className="btn-group" style={{ marginBottom: "3%" }}>
@@ -249,100 +274,10 @@ const Clientes = () => {
               clientes.map((cliente) => (
                 <tr key={cliente.id}>
                   <td>{cliente.id}</td>
-                  <td
-                    onDoubleClick={() => handleDoubleClick(cliente.id, "dni",cliente.dni)}
-                    title="Doble click para editar"
-                  >
-                    {editingField.id === cliente.id &&
-                    editingField.field === "dni" ? (
-                      <input
-                        type="text"
-                        value={cliente.dni}
-                        onChange={(e) =>
-                          handleFieldChange(cliente.id, "dni", e.target.value)
-                        }
-                        onBlur={async () =>
-                          await handleBlur(cliente.id, "dni", cliente.dni)
-                        }
-                        autoFocus
-                      />
-                    ) : (
-                      cliente.dni
-                    )}
-                  </td>
-                  <td
-                    onDoubleClick={() => handleDoubleClick(cliente.id, "name",cliente.name)}
-                    title="Doble click para editar"
-                  >
-                    {editingField.id === cliente.id &&
-                    editingField.field === "name" ? (
-                      <input
-                        type="text"
-                        value={cliente.name}
-                        onChange={(e) =>
-                          handleFieldChange(cliente.id, "name", e.target.value)
-                        }
-                        onBlur={async () =>
-                          await handleBlur(cliente.id, "name", cliente.address)
-                        }
-                        autoFocus
-                      />
-                    ) : (
-                      cliente.name
-                    )}
-                  </td>
-                  <td
-                    onDoubleClick={() =>
-                      handleDoubleClick(cliente.id, "address",cliente.address)
-                    }
-                    title="Doble click para editar"
-                  >
-                    {editingField.id === cliente.id &&
-                    editingField.field === "address" ? (
-                      <input
-                        type="text"
-                        value={cliente.address}
-                        onChange={(e) =>
-                          handleFieldChange(
-                            cliente.id,
-                            "address",
-                            e.target.value
-                          )
-                        }
-                        onBlur={async () =>
-                          await handleBlur(
-                            cliente.id,
-                            "address",
-                            cliente.address
-                          )
-                        }
-                        autoFocus
-                      />
-                    ) : (
-                      cliente.address
-                    )}
-                  </td>
-                  <td
-                    onDoubleClick={() => handleDoubleClick(cliente.id, "phone",cliente.phone)}
-                    title="Doble click para editar"
-                  >
-                    {editingField.id === cliente.id &&
-                    editingField.field === "phone" ? (
-                      <input
-                        type="text"
-                        value={cliente.phone}
-                        onChange={(e) =>
-                          handleFieldChange(cliente.id, "phone", e.target.value)
-                        }
-                        onBlur={async () =>
-                          await handleBlur(cliente.id, "phone", cliente.phone)
-                        }
-                        autoFocus
-                      />
-                    ) : (
-                      cliente.phone
-                    )}
-                  </td>
+                  {input(cliente, "name",cliente.name)}
+                  {input(cliente, "dni",cliente.dni)}
+                  {input(cliente, "address",cliente.address)}
+                  {input(cliente, "phone",cliente.phone)}
                   <td>
                     <button
                       onClick={() => deleteCliente(cliente.id)}

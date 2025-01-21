@@ -18,7 +18,7 @@ const NavBar = () => {
       return;
     }
     try {
-      await fetch(URL + "/Users/logout", {
+      await fetch(URL + "/logout", {
         method: "POST",
         credentials: "include",
       }).then((res) => {
@@ -59,7 +59,12 @@ const NavBar = () => {
           id="collapsibleNavbar"
         >
           <ul className="navbar-nav">
-            {role === 1 && (
+          <li className="nav-item">
+                  <Link className="nav-link" to="/Productos">
+                    Productos
+                  </Link>
+                </li>
+            {(role === 1 && isAuthenticated)&& (
               <>
                 <li className="nav-item">
                   <Link className="nav-link" to="/Sucursales">
@@ -86,14 +91,9 @@ const NavBar = () => {
                     Ventas
                   </Link>
                 </li>
-                <li className="nav-item">
-                  <Link className="nav-link" to="/Productos">
-                    Productos
-                  </Link>
-                </li>
               </>
             )}
-            {role === 2 && (
+            {(role === 2 && isAuthenticated)&& (
               <>
                 <li className="nav-item">
                   <Link className="nav-link" to="/Clientes">
@@ -106,23 +106,11 @@ const NavBar = () => {
                   </Link>
                 </li>
                 <li className="nav-item">
-                  <Link className="nav-link" to="/Productos">
-                    Productos
-                  </Link>
-                </li>
-                <li className="nav-item">
                   <Link className="nav-link" to="/Proveedores">
                     Proveedores
                   </Link>
                 </li>
               </>
-            )}
-            {role === 3 && (
-              <li className="nav-item">
-                <Link className="nav-link" to="/Productos">
-                  Productos
-                </Link>
-              </li>
             )}
           </ul>
           <ul className="navbar-nav ms-auto">

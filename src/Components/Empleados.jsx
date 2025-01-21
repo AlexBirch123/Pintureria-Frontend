@@ -18,7 +18,7 @@ const Empleados = () => {
     const fetchEmp = async () => {
       const local = getLocalStorage("employees");
       try {
-        await fetch(URL + "/Employees")
+        await fetch(URL + "/Employees", {credentials: "include"})
           .then((res) => res.json())
           .then((data) => {
             if (!data) return setEmpleados(local.datos);
@@ -57,6 +57,7 @@ const Empleados = () => {
         try {
           const res = await fetch(URL + "/Employees", {
             method: "POST",
+            credentials: "include",
             headers: {
               "Content-Type": "application/json",
             },
@@ -148,6 +149,31 @@ const Empleados = () => {
     } catch (error) {
       console.log(error);
     }
+  };
+
+  const input = (arr, field, value) => {
+    return (
+      <td
+        onDoubleClick={() => handleDoubleClick(arr.id, field, value)}
+        title="Doble click para editar"
+      >
+        {editingField.id === arr.id && editingField.field === field ? (
+          <input
+            type="text"
+            value={value}
+            onChange={(e) => handleFieldChange(arr.id, field, e.target.value)}
+            onKeyDown={async (e) => {
+              if (e.key === "Enter") {
+                await handleBlur(arr.id, field, value);
+              }
+            }}
+            autoFocus
+          />
+        ) : (
+          value
+        )}
+      </td>
+    );
   };
 
   return (
@@ -244,106 +270,10 @@ const Empleados = () => {
               empleados.map((emp) => (
                 <tr key={emp.id}>
                   <td>{emp.id}</td>
-                  <td
-                    onDoubleClick={() =>
-                      handleDoubleClick(emp.id, "name", emp.name)
-                    }
-                    title="Doble click para editar"
-                  >
-                    {editingField.id === emp.id &&
-                    editingField.field === "name" ? (
-                      <input
-                        type="text"
-                        value={emp.name}
-                        onChange={(e) =>
-                          handleFieldChange(emp.id, "name", e.target.value)
-                        }
-                        onKeyDown={async (e) => {
-                          if (e.key === "Enter") {
-                            await handleBlur(emp.id, "name", emp.name);
-                          }
-                        }}
-                        autoFocus
-                      />
-                    ) : (
-                      emp.name
-                    )}
-                  </td>
-                  <td
-                    onDoubleClick={() =>
-                      handleDoubleClick(emp.id, "dni", emp.dni)
-                    }
-                    title="Doble click para editar"
-                  >
-                    {editingField.id === emp.id &&
-                    editingField.field === "dni" ? (
-                      <input
-                        type="text"
-                        value={emp.dni}
-                        onChange={(e) =>
-                          handleFieldChange(emp.id, "dni", e.target.value)
-                        }
-                        onKeyDown={async (e) => {
-                          if (e.key === "Enter") {
-                            await handleBlur(emp.id, "dni", emp.dni);
-                          }
-                        }}
-                        autoFocus
-                      />
-                    ) : (
-                      emp.dni
-                    )}
-                  </td>
-                  <td
-                    onDoubleClick={() =>
-                      handleDoubleClick(emp.id, "salary", emp.salary)
-                    }
-                    title="Doble click para editar"
-                  >
-                    {editingField.id === emp.id &&
-                    editingField.field === "salary" ? (
-                      <input
-                        type="text"
-                        value={emp.salary}
-                        onChange={(e) =>
-                          handleFieldChange(emp.id, "salary", e.target.value)
-                        }
-                        onKeyDown={async (e) => {
-                          if (e.key === "Enter") {
-                            await handleBlur(emp.id, "salary", emp.salary);
-                          }
-                        }}
-                        autoFocus
-                      />
-                    ) : (
-                      emp.salary
-                    )}
-                  </td>
-                  <td
-                    onDoubleClick={() =>
-                      handleDoubleClick(emp.id, "phone", emp.phone)
-                    }
-                    title="Doble click para editar"
-                  >
-                    {editingField.id === emp.id &&
-                    editingField.field === "phone" ? (
-                      <input
-                        type="text"
-                        value={emp.phone}
-                        onChange={(e) =>
-                          handleFieldChange(emp.id, "phone", e.target.value)
-                        }
-                        onKeyDown={async (e) => {
-                          if (e.key === "Enter") {
-                            await handleBlur(emp.id, "phone", emp.phone);
-                          }
-                        }}
-                        autoFocus
-                      />
-                    ) : (
-                      emp.phone
-                    )}
-                  </td>
+                  {input(emp, "name", emp.name)}
+                  {input(emp, "dni", emp.dni)}
+                  {input(emp, "salary", emp.salary)}
+                  {input(emp, "phone", emp.phone)}
                   <td>
                     <button
                       onClick={() => deleteEmpleado(emp.id)}

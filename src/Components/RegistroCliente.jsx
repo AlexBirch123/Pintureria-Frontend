@@ -43,20 +43,14 @@ const RegistroCliente = () => {
     try {
       const res = await fetch(URL + `/Users/email/${formData.email}`);
       const email = await res.json();
-      if (!email) {
-        const response = await fetch(URL + `/Users/name/${formData.userName}`);
-        const name = await response.json();
-        if (!name) {
-          return name;
-        } else {
-          setMessage("Nombre de usuario existente");
+      if (email) return setMessage("Email existente");
+      
+      const response = await fetch(URL + `/Users/name/${formData.userName}`);
+      const name = await response.json();
+      if (name) return setMessage("Nombre de usuario existente");
 
-          return name;
-        }
-      } else {
-        setMessage("Email existente");
-        return email;
-      }
+      return true;
+
     } catch (error) {
       console.log(error);
     }
@@ -65,17 +59,12 @@ const RegistroCliente = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     const valido = await validateData();
-    console.log(valido);
-    console.log("1");
     if (!valido) {
       const data = postUser();
       if (data) {
-        console.log(true);
         // Mostrar mensaje de éxito y redirigir al login después de unos segundos
         setSubmitted(true);
-        setTimeout(() => {
-          navigate("/login"); // Redirigir al login
-        }, 2000); // Redirigir después de 2 segundos
+        setTimeout(() => {navigate("/login");}, 2000); 
       }
     }
   };

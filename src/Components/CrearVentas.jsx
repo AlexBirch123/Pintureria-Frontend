@@ -17,6 +17,20 @@ const Ventas = () => {
   const sucursalRef = useRef(null);
   const totalRef = useRef(null);
 
+  //PESTAÑA PARA CREAR UNA VENTA
+  //Obtener productos
+  //Obtener empleados
+  //Obtener clientes
+  //Obtener sucursales
+  //crear buscador de productos
+  //agregarlos en un tabla donde se pueda modificar los campos
+  //al guardar se debe crear la venta y los renglones
+  //al guardar se debe actualizar el stock de los productos
+  //al finalzar debe mostrar el total de la venta
+
+
+
+
   const fetchProd = async () => {
     try {
       await fetch("http://localhost:8080/allProducts")
