@@ -1,12 +1,12 @@
 import React, { useState, useRef, useEffect } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
+import { setLocalStorage, getLocalStorage } from "../utils/localStorage";
+import { URL } from "../utils/URL";
 
 const Ventas = () => {
-  const [ventas, setVentas] = useState([]);
   const [formVisible, setFormVisible] = useState(false);
   const [tableVisible, setTableVisible] = useState(true);
-  const [showRows, setShowRows] = useState(false);
-  const [editingVenta, setEditingVenta] = useState(null);
+  const [listProd, setListProd] = useState([]);
   const [rowsSale, setRowsSale] = useState([]);
   const [productos, setProductos] = useState([]);
   const [empleados, setEmpleados] = useState([]);
@@ -23,20 +23,20 @@ const Ventas = () => {
   //Obtener clientes
   //Obtener sucursales
   //crear buscador de productos
-  //agregarlos en un tabla donde se pueda modificar los campos
+  //agregarlos en un tabla donde se pueda modificar los campos sin guardar en la base de datos
   //al guardar se debe crear la venta y los renglones
   //al guardar se debe actualizar el stock de los productos
   //al finalzar debe mostrar el total de la venta
 
-
-
-
   const fetchProd = async () => {
+    const local = getLocalStorage("products");
     try {
-      await fetch("http://localhost:8080/allProducts")
+      await fetch(URL + "/Products", { credentials: "include" })
         .then((res) => res.json())
         .then((data) => {
+          if (!data) return setProductos(local.datos);
           setProductos(data);
+          setLocalStorage("products", data);
         });
     } catch (error) {
       console.log(error);
@@ -45,23 +45,29 @@ const Ventas = () => {
 
   useEffect(() => {
     const fetchEmp = async () => {
+      const local = getLocalStorage("employees");
       try {
-        await fetch("http://localhost:8080/allEmployees")
+        await fetch(URL + "/Employees", { credentials: "include" })
           .then((res) => res.json())
           .then((data) => {
+            if (!data) return setEmpleados(local.datos);
+            setLocalStorage(data, "employees");
             setEmpleados(data);
           });
       } catch (error) {
-        console.log(error);
+        setEmpleados(local.datos);
       }
     };
 
     const fetchClient = async () => {
+      const local = getLocalStorage("clients");
       try {
-        await fetch("http://localhost:8080/allClients")
+        await fetch(URL + "/Clients", { credentials: "include" })
           .then((res) => res.json())
           .then((data) => {
+            if (!data) return setEmpleados(local.datos);
             setClientes(data);
+            setLocalStorage(data, "clients");
           });
       } catch (error) {
         console.log(error);
@@ -69,22 +75,14 @@ const Ventas = () => {
     };
 
     const fetchSuc = async () => {
+      const local = getLocalStorage("branches");
       try {
-        await fetch("http://localhost:8080/allBranches")
+        await fetch(URL + "/Branches", { credentials: "include" })
           .then((res) => res.json())
           .then((data) => {
+            if (!data) return setSucursales(local.datos);
             setSucursales(data);
-          });
-      } catch (error) {
-        console.log(error);
-      }
-    };
-    const fetchSale = async () => {
-      try {
-        await fetch("http://localhost:8080/allSales")
-          .then((res) => res.json())
-          .then((data) => {
-            setVentas(data);
+            setLocalStorage(data, "branches");
           });
       } catch (error) {
         console.log(error);
@@ -92,7 +90,6 @@ const Ventas = () => {
     };
 
     fetchProd();
-    fetchSale();
     fetchSuc();
     fetchClient();
     fetchEmp();
