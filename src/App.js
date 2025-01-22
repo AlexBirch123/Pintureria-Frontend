@@ -23,7 +23,8 @@ function App() {
   return (
      <Router>
        {/* Mostrar NavBar solo si el usuario está autenticado */}
-       <NavBar/>
+       {/* <NavBar/> */}
+
 
        <Routes>
          {/* Rutas protegidas, solo accesibles si el usuario está autenticado */}
