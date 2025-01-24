@@ -1,10 +1,10 @@
 import React, { useState, useRef, useEffect } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { setLocalStorage, getLocalStorage } from "../utils/localStorage";
-import { URL } from "../utils/URL";
+import { URL } from "../utils/config";
 import BuscadorProd from "./BuscardorProd";
 
-const Ventas = () => {
+const CrearVentas = () => {
   const [formVisible, setFormVisible] = useState(false);
   const [tableVisible, setTableVisible] = useState(true);
   const [listProd, setListProd] = useState([]);
@@ -30,28 +30,28 @@ const Ventas = () => {
   //al guardar se debe actualizar el stock de los productos
   //al finalzar debe mostrar el total de la venta
 
-  const fetchProd = async () => {
-    const local = getLocalStorage("products");
-    try {
-      await fetch(URL + "/Products", { credentials: "include" })
-        .then((res) => res.json())
-        .then((data) => {
-          if (!data) return setProductos(local.datos);
-          setProductos(data);
-          setLocalStorage("products", data);
-        });
-    } catch (error) {
-      console.log(error);
-    }
-  };
-
   useEffect(() => {
+    const fetchProd = async () => {
+      const local = getLocalStorage("products");
+      try {
+        await fetch(URL + "/Products", { credentials: "include" })
+          .then((res) => res.json())
+          .then((data) => {
+            if (!data) return setProductos(local.datos);
+            setProductos(data);
+            setLocalStorage(data, "products");
+          });
+      } catch (error) {
+        console.log(error);
+      }
+    };
     const fetchEmp = async () => {
       const local = getLocalStorage("employees");
       try {
         await fetch(URL + "/Employees", { credentials: "include" })
           .then((res) => res.json())
           .then((data) => {
+            console.log(data);
             if (!data) return setEmpleados(local.datos);
             setLocalStorage(data, "employees");
             setEmpleados(data);
@@ -97,140 +97,138 @@ const Ventas = () => {
     fetchEmp();
   }, []);
 
-  const sumarStock = async (id, stock, cantidad) => {
-    try {
-      const datos = {
-        stock: stock + cantidad,
-      };
-      await fetch(`http://localhost:8080/allProducts/${id}`, {
-        method: "PATCH",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(datos),
-      });
-    } catch (error) {
-      
-      console.log("error al actualiza stock");
-    }
-  };
+  // const sumarStock = async (id, stock, cantidad) => {
+  //   try {
+  //     const datos = {
+  //       stock: stock + cantidad,
+  //     };
+  //     await fetch(`http://localhost:8080/allProducts/${id}`, {
+  //       method: "PATCH",
+  //       headers: {
+  //         "Content-Type": "application/json",
+  //       },
+  //       body: JSON.stringify(datos),
+  //     });
+  //   } catch (error) {
+  //     console.log("error al actualiza stock");
+  //   }
+  // };
 
+  // const creatRows = async (datos) => {
+  //   try {
+  //     const res = await fetch(`http://localhost:8080/allRows`, {
+  //       method: "POST",
+  //       headers: {
+  //         "Content-Type": "application/json",
+  //       },
+  //       body: JSON.stringify(datos),
+  //     });
+  //   } catch (error) {
+  //     console.log("error al crear las filas");
+  //     return;
+  //   }
+  // };
 
-  const creatRows = async (datos) => {
-    try {
-      const res = await fetch(`http://localhost:8080/allRows`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(datos),
-      });
-    } catch (error) {
-      console.log("error al crear las filas");
-      return;
-    }
-  };
+  // const cargaFilasVenta = async (id) => {
+  //   try {
+  //     const res = await fetch(`http://localhost:8080/allRows/${id}`);
+  //     const data = await res.json();
+  //     setRowsSale(data);
+  //     console.log(data);
+  //     console.log(rowsSale);
+  //   } catch (error) {
+  //     console.log("error al actualiza stock");
+  //   }
+  // };
 
-  const cargaFilasVenta = async (id) => {
-    try {
-      const res = await fetch(`http://localhost:8080/allRows/${id}`);
-      const data = await res.json();
-      setRowsSale(data);
-      console.log(data);
-      console.log(rowsSale);
-    } catch (error) {
-      console.log("error al actualiza stock");
-    }
-  };
-
-  const updateStock = async (id, stock, cantidad) => {
-    try {
-      const datos = {
-        stock: stock - cantidad,
-      };
-      await fetch(`http://localhost:8080/allProducts/${id}`, {
-        method: "PATCH",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(datos),
-      });
-    } catch (error) {
-      console.log("error al actualiza stock");
-    }
-  };
+  // const updateStock = async (id, stock, cantidad) => {
+  //   try {
+  //     const datos = {
+  //       stock: stock - cantidad,
+  //     };
+  //     await fetch(`http://localhost:8080/allProducts/${id}`, {
+  //       method: "PATCH",
+  //       headers: {
+  //         "Content-Type": "application/json",
+  //       },
+  //       body: JSON.stringify(datos),
+  //     });
+  //   } catch (error) {
+  //     console.log("error al actualiza stock");
+  //   }
+  // };
 
   let renglones = [];
   // Crear venta
-  const createVenta = async (event) => {
-    event.preventDefault();
-    console.log(renglones);
-    toggleFormVisibility();
-    const idClient = clienteRef.current.value;
-    const idEmp = empleadoRef.current.value;
-    const idBranch = sucursalRef.current.value;
+  // const createVenta = async (event) => {
+  //   event.preventDefault();
+  //   console.log(renglones);
+  //   toggleFormVisibility();
+  //   const idClient = clienteRef.current.value;
+  //   const idEmp = empleadoRef.current.value;
+  //   const idBranch = sucursalRef.current.value;
 
-    if (idClient && idEmp && idBranch) {
-      let prodFiltrados = [];
-      renglones.forEach((r) => {
-        productos.forEach((prod) => {
-          if (prod.id === r.id) {
-            prodFiltrados.push({ ...prod, cantidad: Number(r.cantidad) });
-          }
-        });
-      });
-      let total = 0;
-      prodFiltrados.map((pr) => (total += pr.price * pr.cantidad));
-      const newSale = {
-        idClient: idClient,
-        idBranch: idBranch,
-        idEmp: idEmp,
-        total: total,
-      };
-      try {
-        const res = await fetch(`http://localhost:8080/allSales`, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(newSale),
-        });
-        if (res.ok) {
-          const completeSale = await res.json();
-          try {
-            const rows = [];
-            prodFiltrados.forEach((p) => {
-              const newRow = {
-                idSale: completeSale.id,
-                idProduct: p.id,
-                description: p.description,
-                price: p.price,
-                amount: p.cantidad,
-                total: p.cantidad * p.price,
-              };
-              rows.push(newRow);
-            });
-            rows.forEach((row) =>
-              //carga los productos de la venta
-              creatRows(row)
-            );
+  //   if (idClient && idEmp && idBranch) {
+  //     let prodFiltrados = [];
+  //     renglones.forEach((r) => {
+  //       productos.forEach((prod) => {
+  //         if (prod.id === r.id) {
+  //           prodFiltrados.push({ ...prod, cantidad: Number(r.cantidad) });
+  //         }
+  //       });
+  //     });
+  //     let total = 0;
+  //     prodFiltrados.map((pr) => (total += pr.price * pr.cantidad));
+  //     const newSale = {
+  //       idClient: idClient,
+  //       idBranch: idBranch,
+  //       idEmp: idEmp,
+  //       total: total,
+  //     };
+  //     try {
+  //       const res = await fetch(`http://localhost:8080/allSales`, {
+  //         method: "POST",
+  //         headers: {
+  //           "Content-Type": "application/json",
+  //         },
+  //         body: JSON.stringify(newSale),
+  //       });
+  //       if (res.ok) {
+  //         const completeSale = await res.json();
+  //         try {
+  //           const rows = [];
+  //           prodFiltrados.forEach((p) => {
+  //             const newRow = {
+  //               idSale: completeSale.id,
+  //               idProduct: p.id,
+  //               description: p.description,
+  //               price: p.price,
+  //               amount: p.cantidad,
+  //               total: p.cantidad * p.price,
+  //             };
+  //             rows.push(newRow);
+  //           });
+  //           rows.forEach((row) =>
+  //             //carga los productos de la venta
+  //             creatRows(row)
+  //           );
 
-            prodFiltrados.forEach((p) =>
-              updateStock(p.id, p.stock, p.cantidad)
-            );
-          } catch (error) {
-            console.log(" erro al crear la venta", error);
-          }
-          setVentas([...ventas, completeSale]);
-          resetForm();
-          // setEditingClient(null);
-        }
-      } catch (error) {
-        console.log(" erro al crear la venta", error);
-      }
-    }
-    fetchProd();
-  };
+  //           prodFiltrados.forEach((p) =>
+  //             updateStock(p.id, p.stock, p.cantidad)
+  //           );
+  //         } catch (error) {
+  //           console.log(" erro al crear la venta", error);
+  //         }
+  //         setVentas([...ventas, completeSale]);
+  //         resetForm();
+  //         // setEditingClient(null);
+  //       }
+  //     } catch (error) {
+  //       console.log(" erro al crear la venta", error);
+  //     }
+  //   }
+  //   fetchProd();
+  // };
 
   // Mostrar/ocultar formulario
   const toggleFormVisibility = () => {
@@ -247,157 +245,151 @@ const Ventas = () => {
   };
 
   // Función para actualizar venta
-  const editVenta = (codigo) => {
-   
-  };
+  // const editVenta = (codigo) => {};
 
   // Función para eliminar venta
-  const handleDeleteRow = async (id) => {
-    const confirmDelete = window.confirm(
-      "¿Estás seguro de eliminar esta venta?"
-    );
-    if (confirmDelete) {
-      await fetch(`http://localhost:8080/allSales/${id}`, {
-        method: "DELETE",
-      });
-      await fetch(`http://localhost:8080/allRows/sale/${id}`, {
-        method: "DELETE",
-      });
-      const updatedVentas = ventas.filter((v) => v.id !== id);
-      cargaFilasVenta(id);
-      rowsSale.forEach((r) => sumarStock(r.idProduct, r.amount))
- 
-      setRowsSale(null);
-    }
-  };
+  // const handleDeleteRow = async (id) => {
+  //   const confirmDelete = window.confirm(
+  //     "¿Estás seguro de eliminar esta venta?"
+  //   );
+  //   if (confirmDelete) {
+  //     await fetch(`http://localhost:8080/allSales/${id}`, {
+  //       method: "DELETE",
+  //     });
+  //     await fetch(`http://localhost:8080/allRows/sale/${id}`, {
+  //       method: "DELETE",
+  //     });
+  //     const updatedVentas = ventas.filter((v) => v.id !== id);
+  //     cargaFilasVenta(id);
+  //     rowsSale.forEach((r) => sumarStock(r.idProduct, r.amount));
 
-  const CantidadChange = (idProducto, cantidad) => {
-    const estaSeleccionado = renglones.find((prod) => prod.id === idProducto);
-    if (estaSeleccionado) {
-      // Si ya está en el array, quítalo (desmarcar checkbox)
-      const index = renglones.findIndex((prod) => prod.id == idProducto);
-      renglones[index].cantidad = Number(cantidad);
-    }
-  };
+  //     setRowsSale(null);
+  //   }
+  // };
+
+  // const CantidadChange = (idProducto, cantidad) => {
+  //   const estaSeleccionado = renglones.find((prod) => prod.id === idProducto);
+  //   if (estaSeleccionado) {
+  //     // Si ya está en el array, quítalo (desmarcar checkbox)
+  //     const index = renglones.findIndex((prod) => prod.id == idProducto);
+  //     renglones[index].cantidad = Number(cantidad);
+  //   }
+  // };
 
   return (
     <div style={{ marginTop: "5%" }}>
-      <div className="btn-group" style={{ marginBottom: "3%" }}>
-        <button
-          id="b_create"
-          onClick={toggleFormVisibility}
-          type="button"
-          className="btn btn-primary"
-        >
-          {formVisible ? "Cancelar" : "Crear Venta"}
-        </button>
-      </div>
-
       {/* Formulario visible para crear o editar venta */}
-        <form id="ventaForm" onSubmit={createVenta} style={{ marginTop: "5%" }}>
-          <div className="mb-3">
-            <label htmlFor="Cliente" className="form-label">
-              Cliente:
-            </label>
-            <select
-              ref={clienteRef}
-              name="Cliente"
-              className="form-control"
-              required
-            >
-              <option value="">Seleccione un cliente</option>
-              {clientes.map((cliente) => (
-                <option key={cliente.id} value={cliente.id}>
-                  {cliente.id + " - " + cliente.name}
-                </option>
-              ))}
-            </select>
-          </div>
-          <div className="mb-3">
-            <label htmlFor="Empleado" className="form-label">
-              Empleado:
-            </label>
-            <select
-              ref={empleadoRef}
-              name="Empleado"
-              className="form-control"
-              required
-            >
-              <option value="">Seleccione un empleado</option>
-              {empleados.map((empleado) => (
-                <option key={empleado.id} value={empleado.id}>
-                  {empleado.id + " - " + empleado.name}
-                </option>
-              ))}
-            </select>
-          </div>
-          <div className="mb-3">
-            <label htmlFor="sucursal" className="form-label">
-              Sucursal:
-            </label>
-            <select
-              ref={sucursalRef}
-              name="sucursal"
-              className="form-control"
-              required
-            >
-              <option value="">Seleccione una Sucursal</option>
-              {sucursales.map((suc) => (
-                <option key={suc.id} value={suc.id}>
-                  {suc.id + " - " + suc.address}
-                </option>
-              ))}
-            </select>
-          </div>
-          <div className="mb-3">
-          <table className="table table-bordered" id="ventaTable">
-              <thead className="table-dark">
-                <tr>
-                  <th>ID</th>
-                  <th>Descripcion</th>
-                  <th>Cantidad</th>
-                  <th>Precio</th>
-                  <th>Stock</th>
-                </tr>
-              </thead>
-              <tbody>
-                {saleProds.map((producto) => (
-                  <tr key={producto.id}>
-                    <td style={{ width: "100px" }}>
-                      {/* <input
+      <form id="ventaForm" style={{ marginTop: "5%" }}>
+        <div className="mb-3">
+          <label htmlFor="Cliente" className="form-label">
+            Cliente:
+          </label>
+          <select
+            ref={clienteRef}
+            name="Cliente"
+            className="form-control"
+            required
+          >
+            <option value="">Seleccione un cliente</option>
+            {clientes.map((cliente) => (
+              <option key={cliente.id} value={cliente.id}>
+                {cliente.id + " - " + cliente.name}
+              </option>
+            ))}
+          </select>
+        </div>
+        <div className="mb-3">
+          <label htmlFor="Empleado" className="form-label">
+            Empleado:
+          </label>
+          <select
+            ref={empleadoRef}
+            name="Empleado"
+            className="form-control"
+            required
+          >
+            <option value="">Seleccione un empleado</option>
+            {empleados.map((empleado) => (
+              <option key={empleado.id} value={empleado.id}>
+                {empleado.id + " - " + empleado.name}
+              </option>
+            ))}
+          </select>
+        </div>
+        <div className="mb-3">
+          <label htmlFor="sucursal" className="form-label">
+            Sucursal:
+          </label>
+          <select
+            ref={sucursalRef}
+            name="sucursal"
+            className="form-control"
+            required
+          >
+            <option value="">Seleccione una Sucursal</option>
+            {sucursales.map((suc) => (
+              <option key={suc.id} value={suc.id}>
+                {suc.id + " - " + suc.address}
+              </option>
+            ))}
+          </select>
+        </div>
+        <div className="mb-3">
+          <BuscadorProd
+            saleProds={saleProds}
+            setSaleProds={setSaleProds}
+          ></BuscadorProd>
+          <table
+            className="table table-bordered"
+            id="ventaTable"
+            style={{ marginTop: "2%" }}
+          >
+            <thead className="table-dark">
+              <tr>
+                <th>ID</th>
+                <th>Descripcion</th>
+                <th>Cantidad</th>
+                <th>Precio</th>
+                <th>Stock</th>
+              </tr>
+            </thead>
+            <tbody>
+              {saleProds.map((producto) => (
+                <tr key={producto.id}>
+                  <td style={{ width: "100px" }}>
+                    {/* <input
                         type="checkbox"
                         className="btn-check"
                         id={`btncheck-${producto.id}`}
                         onChange={() => CheckboxChange(producto.id)}
                       /> */}
-                      <label
-                        className="btn btn-outline-primary"
-                        htmlFor={`btncheck-${producto.id}`}
-                      >
-                        Seleccionar
-                      </label>
-                    </td>
-                    <td style={{ width: "100px" }}>
-                      <input
-                        type="number"
-                        name="cantidad"
-                        className="form-control"
-                        onChange={(e) =>
-                          CantidadChange(producto.id, e.target.value)
-                        }
-                        min="1"
-                      />
-                    </td>
-                    <td>{producto.description}</td>
-                    <td>{producto.price}</td>
-                    <td>{producto.stock}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-              <BuscadorProd saleProds={saleProds} setSaleProds ={setSaleProds}></BuscadorProd>
-          </div>
-          {/* <div>
+                    <label
+                      className="btn btn-outline-primary"
+                      htmlFor={`btncheck-${producto.id}`}
+                    >
+                      Seleccionar
+                    </label>
+                  </td>
+                  <td style={{ width: "100px" }}>
+                    <input
+                      type="number"
+                      name="cantidad"
+                      className="form-control"
+                      // onChange={(e) =>
+                      //   CantidadChange(producto.id, e.target.value)
+                      // }
+                      min="1"
+                    />
+                  </td>
+                  <td>{producto.description}</td>
+                  <td>{producto.price}</td>
+                  <td>{producto.stock}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+        {/* <div>
             <label htmlFor="Productos" className="form-label">
               Productos Disponibles:
             </label>
@@ -447,11 +439,10 @@ const Ventas = () => {
               </tbody>
             </table>
           </div> */}
-          <button type="submit" className="btn btn-primary">
-            Guardar Venta
-          </button>
-        </form>
-      
+        <button type="submit" className="btn btn-primary">
+          Guardar Venta
+        </button>
+      </form>
 
       {/* {tableVisible && (
         <div className="table-responsive">
@@ -548,4 +539,4 @@ const Ventas = () => {
   );
 };
 
-export default Ventas;
+export default CrearVentas;

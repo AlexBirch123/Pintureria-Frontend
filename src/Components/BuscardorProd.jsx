@@ -3,7 +3,7 @@ import { getLocalStorage, setLocalStorage } from "../utils/localStorage";
 import Modal from "react-modal";
 import { URL } from "../utils/config";
 
-const BuscadorProd = ({saleProds, setSaleProds}) => {
+const BuscadorProd = ({ saleProds, setSaleProds }) => {
   const [productos, setProductos] = useState([]);
   const [filteredProductos, setFilteredProductos] = useState([]);
   const [isOpen, setIsOpen] = useState(false);
@@ -21,7 +21,7 @@ const BuscadorProd = ({saleProds, setSaleProds}) => {
         if (!data) return setProductos(local?.datos || []);
         setLocalStorage(data, "products");
         setProductos(data);
-        setFilteredProductos(data);
+        setFilteredProductos(productos);
       } catch (error) {
         console.log(error);
         setProductos(local?.datos || []);
@@ -33,9 +33,11 @@ const BuscadorProd = ({saleProds, setSaleProds}) => {
 
   const handleSearch = (e) => {
     setSearchTerm(e.target.value);
-    setFilteredProductos(productos.filter((product) =>
-      product.description.toLowerCase().includes(searchTerm.toLowerCase())
-    ))
+    setFilteredProductos(
+      productos.filter((product) =>
+        product.description.toLowerCase().includes(searchTerm.toLowerCase())
+      )
+    );
   };
 
   const handleProductSelect = (product) => {
@@ -48,16 +50,16 @@ const BuscadorProd = ({saleProds, setSaleProds}) => {
 
   const handleAddProduct = () => {
     selectedProducts.forEach((product) => {
-      saleProds.set((prev) => [
-        ...prev , product]);
+      saleProds.set((prev) => [...prev, product]);
     });
-   }
-
+  };
 
   return (
     <div>
       <button
-        onClick={() => {setIsOpen(true);}}
+        onClick={() => {
+          setIsOpen(true);
+        }}
         className="btn btn-primary"
       >
         Agregar Producto
@@ -87,7 +89,9 @@ const BuscadorProd = ({saleProds, setSaleProds}) => {
                   <input
                     type="checkbox"
                     checked={selectedProducts.includes(product)}
-                    onChange={() => {handleProductSelect(product)}}
+                    onChange={() => {
+                      handleProductSelect(product);
+                    }}
                   />
                 </td>
                 <td>{product.id}</td>
