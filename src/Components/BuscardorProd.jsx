@@ -3,7 +3,7 @@ import { getLocalStorage, setLocalStorage } from "../utils/localStorage";
 import Modal from "react-modal";
 import { URL } from "../utils/config";
 
-const BuscadorProd = () => {
+const BuscadorProd = ({saleProds, setSaleProds}) => {
   const [productos, setProductos] = useState([]);
   const [filteredProductos, setFilteredProductos] = useState([]);
   const [isOpen, setIsOpen] = useState(false);
@@ -41,12 +41,17 @@ const BuscadorProd = () => {
   const handleProductSelect = (product) => {
     if (selectedProducts.some((p) => p.id === product.id)) {
       setSelectedProducts(selectedProducts.filter((p) => p.id !== product.id));
-      console.log("1");
     } else {
       setSelectedProducts([...selectedProducts, product]);
-      console.log("2");
     }
   };
+
+  const handleAddProduct = () => {
+    selectedProducts.forEach((product) => {
+      saleProds.set((prev) => [
+        ...prev , product]);
+    });
+   }
 
 
   return (
@@ -81,12 +86,8 @@ const BuscadorProd = () => {
                 <td>
                   <input
                     type="checkbox"
-                    //checked={() => selectedProducts.includes(product)}
                     checked={selectedProducts.includes(product)}
                     onChange={() => {handleProductSelect(product)}}
-                    // onKeyDown={(e) => {
-                    //   if (e.key === "Enter") handleProductSelect(product);
-                    // }}
                   />
                 </td>
                 <td>{product.id}</td>
@@ -100,6 +101,7 @@ const BuscadorProd = () => {
         <button
           onClick={() => {
             setIsOpen(false);
+            handleAddProduct();
             setSelectedProducts([]);
             setSearchTerm("");
           }}
