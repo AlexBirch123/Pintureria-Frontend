@@ -13,8 +13,9 @@ import RegistroCliente from './Components/RegistroCliente';
 import { useAuth } from './Components/AuthContext.jsx';
 import Recover from './Components/Recover.jsx';
 import VerVentas from './Components/VerVentas.jsx';
-import CrearVentas from './Components/BuscardorProd.jsx';
+
 import BuscadorProd from './Components/BuscardorProd.jsx';
+import CrearVentas from './Components/CrearVentas.jsx';
 
 function App() {
 
@@ -33,7 +34,7 @@ function App() {
          <Route path="/empleados" element={isAuthenticated && role === 1 ? <Empleados /> : <Navigate to="/notAuth" />} />
          <Route path="/proveedores" element={isAuthenticated && (role === 1 || role === 2)? <Proveedores /> : <Navigate to="/notAuth" />} />
          <Route path="/ventas" element={isAuthenticated && (role === 1 || role === 2) ? <VerVentas/> : <Navigate to="/notAuth" />} />
-         <Route path="/crear_ventas" element={isAuthenticated && (role === 1 || role === 2) ? <CrearVentas/> : <Navigate to="/notAuth" />} />
+         <Route path="/crear_ventas" element={<CrearVentas/>} />
 
          <Route path="/buscador" element={<BuscadorProd/>} />
          

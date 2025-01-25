@@ -14,6 +14,7 @@ const CrearVentas = () => {
   const [empleados, setEmpleados] = useState([]);
   const [clientes, setClientes] = useState([]);
   const [sucursales, setSucursales] = useState([]);
+  const [editingField, setEditingField] = useState({ id: null, field: "" });
   const clienteRef = useRef(null);
   const empleadoRef = useRef(null);
   const sucursalRef = useRef(null);
@@ -51,7 +52,6 @@ const CrearVentas = () => {
         await fetch(URL + "/Employees", { credentials: "include" })
           .then((res) => res.json())
           .then((data) => {
-            console.log(data);
             if (!data) return setEmpleados(local.datos);
             setLocalStorage(data, "employees");
             setEmpleados(data);
@@ -244,9 +244,6 @@ const CrearVentas = () => {
     if (totalRef.current) totalRef.current.value = "";
   };
 
-  // Función para actualizar venta
-  // const editVenta = (codigo) => {};
-
   // Función para eliminar venta
   // const handleDeleteRow = async (id) => {
   //   const confirmDelete = window.confirm(
@@ -267,14 +264,15 @@ const CrearVentas = () => {
   //   }
   // };
 
-  // const CantidadChange = (idProducto, cantidad) => {
-  //   const estaSeleccionado = renglones.find((prod) => prod.id === idProducto);
-  //   if (estaSeleccionado) {
-  //     // Si ya está en el array, quítalo (desmarcar checkbox)
-  //     const index = renglones.findIndex((prod) => prod.id == idProducto);
-  //     renglones[index].cantidad = Number(cantidad);
-  //   }
-  // };
+
+
+    
+    const handleFieldChange = (id, field, value) => {
+      setSaleProds((saleProds) =>
+        saleProds.map((s) => (s.idProduct === id ? { ...s, [field]: value } : s))
+      );
+    };
+  
 
   return (
     <div style={{ marginTop: "5%" }}>
@@ -338,7 +336,10 @@ const CrearVentas = () => {
           <BuscadorProd
             saleProds={saleProds}
             setSaleProds={setSaleProds}
+            productos={productos}
+            setProductos={setProductos}
           ></BuscadorProd>
+
           <table
             className="table table-bordered"
             id="ventaTable"
@@ -348,193 +349,35 @@ const CrearVentas = () => {
               <tr>
                 <th>ID</th>
                 <th>Descripcion</th>
-                <th>Cantidad</th>
+                <th style={{ width: "10%" }}>Cantidad</th>
                 <th>Precio</th>
                 <th>Stock</th>
               </tr>
             </thead>
             <tbody>
-              {saleProds.map((producto) => (
-                <tr key={producto.id}>
-                  <td style={{ width: "100px" }}>
-                    {/* <input
-                        type="checkbox"
-                        className="btn-check"
-                        id={`btncheck-${producto.id}`}
-                        onChange={() => CheckboxChange(producto.id)}
-                      /> */}
-                    <label
-                      className="btn btn-outline-primary"
-                      htmlFor={`btncheck-${producto.id}`}
-                    >
-                      Seleccionar
-                    </label>
-                  </td>
-                  <td style={{ width: "100px" }}>
-                    <input
-                      type="number"
-                      name="cantidad"
-                      className="form-control"
-                      // onChange={(e) =>
-                      //   CantidadChange(producto.id, e.target.value)
-                      // }
-                      min="1"
+              {saleProds.map((prod) => (
+                <tr key={prod.idProduct}>
+                  <td>{prod.idProduct}</td>
+                  <td>{prod.description}</td>
+                  <td>
+                    <input 
+                    type="number" 
+                    value={prod.amount}
+                    onChange={(e) => handleFieldChange(prod.idProduct, "amount", e.target.value)}
+                    style={{ width: "100%" }}
                     />
                   </td>
-                  <td>{producto.description}</td>
-                  <td>{producto.price}</td>
-                  <td>{producto.stock}</td>
+                  <td>$  {prod.price.toFixed(2)}</td>
+                  <td>{prod.stock}</td>
                 </tr>
               ))}
             </tbody>
           </table>
         </div>
-        {/* <div>
-            <label htmlFor="Productos" className="form-label">
-              Productos Disponibles:
-            </label>
-            <table className="table table-bordered" id="ventaTable">
-              <thead className="table-dark">
-                <tr>
-                  <th></th>
-                  <th>Cantidad</th>
-                  <th>Descripcion</th>
-                  <th>Precio</th>
-                  <th>Stock</th>
-                </tr>
-              </thead>
-              <tbody>
-                {productos.map((producto) => (
-                  <tr key={producto.id}>
-                    <td style={{ width: "100px" }}>
-                      <input
-                        type="checkbox"
-                        className="btn-check"
-                        id={`btncheck-${producto.id}`}
-                        onChange={() => CheckboxChange(producto.id)}
-                      />
-                      <label
-                        className="btn btn-outline-primary"
-                        htmlFor={`btncheck-${producto.id}`}
-                      >
-                        Seleccionar
-                      </label>
-                    </td>
-                    <td style={{ width: "100px" }}>
-                      <input
-                        type="number"
-                        name="cantidad"
-                        className="form-control"
-                        onChange={(e) =>
-                          CantidadChange(producto.id, e.target.value)
-                        }
-                        min="1"
-                      />
-                    </td>
-                    <td>{producto.description}</td>
-                    <td>{producto.price}</td>
-                    <td>{producto.stock}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div> */}
         <button type="submit" className="btn btn-primary">
           Guardar Venta
         </button>
       </form>
-
-      {/* {tableVisible && (
-        <div className="table-responsive">
-          <h2>Listado de Ventas</h2>
-          <table className="table table-bordered" id="ventaTable">
-            <thead className="table-dark">
-              <tr>
-                <th>ID</th>
-                <th>Cliente</th>
-                <th>Empleado</th>
-                <th>Sucursal</th>
-                <th>Fecha</th>
-                <th>Total</th>
-                <th>Acciones</th>
-              </tr>
-            </thead>
-            <tbody>
-              {ventas.length > 0 ? (
-                ventas.map((venta) => (
-                  <tr key={venta.id}>
-                    <td>{venta.id}</td>
-                    <td>{venta.idClient}</td>
-                    <td>{venta.idEmp}</td>
-                    <td>{venta.idBranch}</td>
-                    <td>{venta.createdAt}</td>
-                    <td>${venta.total}</td>
-                    <td>
-                      <button
-                        onClick={() => editVenta(venta.codigo)}
-                        className="btn btn-warning btn-sm me-2"
-                      >
-                        Actualizar
-                      </button>
-                      <button
-                        onClick={() => deleteVenta(venta.id)}
-                        className="btn btn-danger btn-sm me-2"
-                      >
-                        Eliminar
-                      </button>
-                      <button
-                        onClick={() => {
-                          cargaFilasVenta(venta.id);
-                          setShowRows(!showRows);
-                        }}
-                        className="btn btn-info btn-sm "
-                      >
-                        {showRows ? "Cerrar" : "Abrir"}
-                      </button>
-                    </td>
-                  </tr>
-                ))
-              ) : (
-                <tr>
-                  <td colSpan={7}>No hay ventas registradas</td>
-                </tr>
-              )}
-              {showRows && (
-                <table className="table table-bordered" id="ventaTable">
-                  <thead className="table-dark">
-                    <tr>
-                      <th>Producto</th>
-                      <th>Precio</th>
-                      <th>Cantidad</th>
-                      <th>Total</th>
-                      <th>Acciones</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {rowsSale.map((row) => (
-                      <tr key={row.id}>
-                        <td>{row.description}</td>
-                        <td>{row.price}</td>
-                        <td>{row.amount}</td>
-                        <td>{row.total}</td>
-                        <td>
-                          <button
-                            className="btn btn-danger btn-sm me-2"
-                            onClick={() => deleteRow(row.id)}
-                          >
-                            Eliminar
-                          </button>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              )}
-            </tbody>
-          </table>
-        </div>
-      )} */}
-      {/* Tabla de Ventas */}
     </div>
   );
 };
