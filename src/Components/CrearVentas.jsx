@@ -5,31 +5,15 @@ import { URL } from "../utils/config";
 import BuscadorProd from "./BuscardorProd";
 
 const CrearVentas = () => {
-  const [formVisible, setFormVisible] = useState(false);
-  const [tableVisible, setTableVisible] = useState(true);
-  const [listProd, setListProd] = useState([]);
+
   const [saleProds, setSaleProds] = useState([]);
-  const [rowsSale, setRowsSale] = useState([]);
   const [productos, setProductos] = useState([]);
   const [empleados, setEmpleados] = useState([]);
   const [clientes, setClientes] = useState([]);
   const [sucursales, setSucursales] = useState([]);
-  const [editingField, setEditingField] = useState({ id: null, field: "" });
   const clienteRef = useRef(null);
   const empleadoRef = useRef(null);
   const sucursalRef = useRef(null);
-  const totalRef = useRef(null);
-
-  //PESTAÑA PARA CREAR UNA VENTA
-  //Obtener productos
-  //Obtener empleados
-  //Obtener clientes
-  //Obtener sucursales
-  //crear buscador de productos
-  //agregarlos en un tabla donde se pueda modificar los campos sin guardar en la base de datos
-  //al guardar se debe crear la venta y los renglones
-  //al guardar se debe actualizar el stock de los productos
-  //al finalzar debe mostrar el total de la venta
 
   useEffect(() => {
     const fetchProd = async () => {
@@ -97,143 +81,83 @@ const CrearVentas = () => {
     fetchEmp();
   }, []);
 
-  // const sumarStock = async (id, stock, cantidad) => {
-  //   try {
-  //     const datos = {
-  //       stock: stock + cantidad,
-  //     };
-  //     await fetch(`http://localhost:8080/allProducts/${id}`, {
-  //       method: "PATCH",
-  //       headers: {
-  //         "Content-Type": "application/json",
-  //       },
-  //       body: JSON.stringify(datos),
-  //     });
-  //   } catch (error) {
-  //     console.log("error al actualiza stock");
-  //   }
-  // };
+  const creatRows = async (id) => {
+    try {
+      const datos = saleProds.map((prod) => {
+        prod.idSale = id;
+        return prod;
+      });
+      await fetch(URL + `/Rows`, {
+        method: "POST",
+        credentials: "include",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(datos),
+      });
+    } catch (error) {
+      console.log("error al crear las filas");
+      return;
+    }
+  };
 
-  // const creatRows = async (datos) => {
-  //   try {
-  //     const res = await fetch(`http://localhost:8080/allRows`, {
-  //       method: "POST",
-  //       headers: {
-  //         "Content-Type": "application/json",
-  //       },
-  //       body: JSON.stringify(datos),
-  //     });
-  //   } catch (error) {
-  //     console.log("error al crear las filas");
-  //     return;
-  //   }
-  // };
+  const updateStock = async () => {
+    try {
+      const datos = saleProds.map((prod) => {
+        const total = prod.stock - prod.amount;
+        return { id: prod.idProduct, amount: total };
+      });
+      datos.forEach(async (d) => {
+        await fetch(URL + `/Products/${d.id}`, {
+          method: "PATCH",
+          credentials: "include",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ stock: d.amount }),
+        });
+      });
+    } catch (error) {
+      console.log("error al actualiza stock");
+    }
+  };
 
-  // const cargaFilasVenta = async (id) => {
-  //   try {
-  //     const res = await fetch(`http://localhost:8080/allRows/${id}`);
-  //     const data = await res.json();
-  //     setRowsSale(data);
-  //     console.log(data);
-  //     console.log(rowsSale);
-  //   } catch (error) {
-  //     console.log("error al actualiza stock");
-  //   }
-  // };
-
-  // const updateStock = async (id, stock, cantidad) => {
-  //   try {
-  //     const datos = {
-  //       stock: stock - cantidad,
-  //     };
-  //     await fetch(`http://localhost:8080/allProducts/${id}`, {
-  //       method: "PATCH",
-  //       headers: {
-  //         "Content-Type": "application/json",
-  //       },
-  //       body: JSON.stringify(datos),
-  //     });
-  //   } catch (error) {
-  //     console.log("error al actualiza stock");
-  //   }
-  // };
-
-  let renglones = [];
   // Crear venta
-  // const createVenta = async (event) => {
-  //   event.preventDefault();
-  //   console.log(renglones);
-  //   toggleFormVisibility();
-  //   const idClient = clienteRef.current.value;
-  //   const idEmp = empleadoRef.current.value;
-  //   const idBranch = sucursalRef.current.value;
+  const creatSale = async (e) => {
+    e.preventDefault();
+    const idClient = clienteRef.current.value;
+    const idEmp = empleadoRef.current.value;
+    const idBranch = sucursalRef.current.value;
 
-  //   if (idClient && idEmp && idBranch) {
-  //     let prodFiltrados = [];
-  //     renglones.forEach((r) => {
-  //       productos.forEach((prod) => {
-  //         if (prod.id === r.id) {
-  //           prodFiltrados.push({ ...prod, cantidad: Number(r.cantidad) });
-  //         }
-  //       });
-  //     });
-  //     let total = 0;
-  //     prodFiltrados.map((pr) => (total += pr.price * pr.cantidad));
-  //     const newSale = {
-  //       idClient: idClient,
-  //       idBranch: idBranch,
-  //       idEmp: idEmp,
-  //       total: total,
-  //     };
-  //     try {
-  //       const res = await fetch(`http://localhost:8080/allSales`, {
-  //         method: "POST",
-  //         headers: {
-  //           "Content-Type": "application/json",
-  //         },
-  //         body: JSON.stringify(newSale),
-  //       });
-  //       if (res.ok) {
-  //         const completeSale = await res.json();
-  //         try {
-  //           const rows = [];
-  //           prodFiltrados.forEach((p) => {
-  //             const newRow = {
-  //               idSale: completeSale.id,
-  //               idProduct: p.id,
-  //               description: p.description,
-  //               price: p.price,
-  //               amount: p.cantidad,
-  //               total: p.cantidad * p.price,
-  //             };
-  //             rows.push(newRow);
-  //           });
-  //           rows.forEach((row) =>
-  //             //carga los productos de la venta
-  //             creatRows(row)
-  //           );
-
-  //           prodFiltrados.forEach((p) =>
-  //             updateStock(p.id, p.stock, p.cantidad)
-  //           );
-  //         } catch (error) {
-  //           console.log(" erro al crear la venta", error);
-  //         }
-  //         setVentas([...ventas, completeSale]);
-  //         resetForm();
-  //         // setEditingClient(null);
-  //       }
-  //     } catch (error) {
-  //       console.log(" erro al crear la venta", error);
-  //     }
-  //   }
-  //   fetchProd();
-  // };
-
-  // Mostrar/ocultar formulario
-  const toggleFormVisibility = () => {
-    setTableVisible(!tableVisible);
-    setFormVisible(!formVisible);
+    if (idClient && idEmp && idBranch) {
+      let total = 0;
+      saleProds.map((prod) => (total += prod.price * prod.amount));
+      const newSale = {
+        idClient: idClient,
+        idBranch: idBranch,
+        idEmp: idEmp,
+        total: total,
+      };
+      try {
+        const res = await fetch(URL + `/Sales`, {
+          method: "POST",
+          credentials: "include",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(newSale),
+        });
+        if (res.ok) {
+          const idSale = await res.json();
+          await creatRows(idSale);
+          await updateStock();
+        }
+      } catch (error) {
+        console.log(" error al crear la venta", error);
+      }
+      setSaleProds([]);
+    }
+    resetForm();
   };
 
   // Limpiar formulario
@@ -241,38 +165,13 @@ const CrearVentas = () => {
     if (clienteRef.current) clienteRef.current.value = "";
     if (empleadoRef.current) empleadoRef.current.value = "";
     if (sucursalRef.current) sucursalRef.current.value = "";
-    if (totalRef.current) totalRef.current.value = "";
   };
 
-  // Función para eliminar venta
-  // const handleDeleteRow = async (id) => {
-  //   const confirmDelete = window.confirm(
-  //     "¿Estás seguro de eliminar esta venta?"
-  //   );
-  //   if (confirmDelete) {
-  //     await fetch(`http://localhost:8080/allSales/${id}`, {
-  //       method: "DELETE",
-  //     });
-  //     await fetch(`http://localhost:8080/allRows/sale/${id}`, {
-  //       method: "DELETE",
-  //     });
-  //     const updatedVentas = ventas.filter((v) => v.id !== id);
-  //     cargaFilasVenta(id);
-  //     rowsSale.forEach((r) => sumarStock(r.idProduct, r.amount));
-
-  //     setRowsSale(null);
-  //   }
-  // };
-
-
-
-    
-    const handleFieldChange = (id, field, value) => {
-      setSaleProds((saleProds) =>
-        saleProds.map((s) => (s.idProduct === id ? { ...s, [field]: value } : s))
-      );
-    };
-  
+  const handleFieldChange = (id, field, value) => {
+    setSaleProds((saleProds) =>
+      saleProds.map((s) => (s.idProduct === id ? { ...s, [field]: value } : s))
+    );
+  };
 
   return (
     <div style={{ marginTop: "5%" }}>
@@ -344,6 +243,7 @@ const CrearVentas = () => {
             className="table table-bordered"
             id="ventaTable"
             style={{ marginTop: "2%" }}
+            onSubmit={creatSale}
           >
             <thead className="table-dark">
               <tr>
@@ -360,14 +260,20 @@ const CrearVentas = () => {
                   <td>{prod.idProduct}</td>
                   <td>{prod.description}</td>
                   <td>
-                    <input 
-                    type="number" 
-                    value={prod.amount}
-                    onChange={(e) => handleFieldChange(prod.idProduct, "amount", e.target.value)}
-                    style={{ width: "100%" }}
+                    <input
+                      type="number"
+                      value={prod.amount}
+                      onChange={(e) =>
+                        handleFieldChange(
+                          prod.idProduct,
+                          "amount",
+                          e.target.value
+                        )
+                      }
+                      style={{ width: "100%" }}
                     />
                   </td>
-                  <td>$  {prod.price.toFixed(2)}</td>
+                  <td>$ {prod.price.toFixed(2)}</td>
                   <td>{prod.stock}</td>
                 </tr>
               ))}

@@ -1,16 +1,21 @@
-import React from "react";
+import React, { useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import "bootstrap/dist/css/bootstrap.min.css";
 import rioColor from "../rio_color.png";
 import { URL } from "../utils/config";
 import { useAuth } from "./AuthContext";
 import "../App.css";
+import "../NavBar.css";
 
 const NavBar = () => {
   const { role, setIsAuthenticated, isAuthenticated } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
-  const showNavBar = location.pathname !== '/login' && location.pathname !== '/register' && location.pathname !== '/recoverPassword';
+  const showNavBar =
+    location.pathname !== "/login" &&
+    location.pathname !== "/register" &&
+    location.pathname !== "/recoverPassword";
+  const [isOpen, setIsOpen] = useState(false);
 
   const handleSession = async () => {
     if (!isAuthenticated) {
@@ -45,89 +50,112 @@ const NavBar = () => {
             />
           </a>
         </li>
-
-         <button
+        <button
           className="navbar-toggler"
           type="button"
           data-bs-toggle="collapse"
           data-bs-target="#collapsibleNavbar"
         >
           <span className="navbar-toggler-icon"></span>
-        </button> *
-        {showNavBar &&(<div
-          className="collapse navbar-collapse justify-content-center"
-          id="collapsibleNavbar"
-        >
-          <ul className="navbar-nav">
-          <li className="nav-item">
-                  <Link className="nav-link" to="/Productos">
-                    Productos
-                  </Link>
-                </li>
-            {(role === 1 && isAuthenticated)&& (
-              <>
-                <li className="nav-item">
-                  <Link className="nav-link" to="/Sucursales">
-                    Sucursales
-                  </Link>
-                </li>
-                <li className="nav-item">
-                  <Link className="nav-link" to="/Clientes">
-                    Clientes
-                  </Link>
-                </li>
-                <li className="nav-item">
-                  <Link className="nav-link" to="/Empleados">
-                    Empleados
-                  </Link>
-                </li>
-                <li className="nav-item">
-                  <Link className="nav-link" to="/Proveedores">
-                    Proveedores
-                  </Link>
-                </li>
-                <li className="nav-item">
-                  <Link className="nav-link" to="/Ventas">
-                    Ventas
-                  </Link>
-                </li>
-              </>
-            )}
-            {(role === 2 && isAuthenticated)&& (
-              <>
-                <li className="nav-item">
-                  <Link className="nav-link" to="/Clientes">
-                    Clientes
-                  </Link>
-                </li>
-                <li className="nav-item">
-                  <Link className="nav-link" to="/Ventas">
-                    Ventas
-                  </Link>
-                </li>
-                <li className="nav-item">
-                  <Link className="nav-link" to="/Proveedores">
-                    Proveedores
-                  </Link>
-                </li>
-              </>
-            )}
-          </ul>
-          <ul className="navbar-nav ms-auto">
-            {isAuthenticated === false && (
+        </button>{" "}
+        *
+        {showNavBar && (
+          <div
+            className="collapse navbar-collapse justify-content-center"
+            id="collapsibleNavbar"
+          >
+            <ul className="navbar-nav">
               <li className="nav-item">
-                <Link className="nav-link" to="/register">
-                  Registrate
+                <Link className="nav-link" to="/Productos">
+                  Productos
                 </Link>
               </li>
-            )}
-            <li className="nav-item">
-              <button className="nav-link btn" onClick={handleSession}>
-                {isAuthenticated ? "Cerrar Sesión" : "Iniciar Sesión"}
-              </button>
-            </li>
-          </ul>
-        </div>)}
+              {role === 1 && isAuthenticated && (
+                <>
+                  <li className="nav-item">
+                    <Link className="nav-link" to="/Sucursales">
+                      Sucursales
+                    </Link>
+                  </li>
+                  <li className="nav-item">
+                    <Link className="nav-link" to="/Clientes">
+                      Clientes
+                    </Link>
+                  </li>
+                  <li className="nav-item">
+                    <Link className="nav-link" to="/Empleados">
+                      Empleados
+                    </Link>
+                  </li>
+                  <li className="nav-item">
+                    <Link className="nav-link" to="/Proveedores">
+                      Proveedores
+                    </Link>
+                  </li>
+                  <li className="nav-item dropdown">
+                    <button
+                      className="nav-link dropdown-toggle"
+                      id="ventasDropdown"
+                    >
+                      Ventas
+                    </button>
+                    <ul
+                      className="dropdown-menu"
+                      aria-labelledby="ventasDropdown"
+                    >
+                      <li>
+                        <Link
+                          className="dropdown-item nav-item"
+                          to="/crear_ventas"
+                        >
+                          Crear Venta
+                        </Link>
+                      </li>
+                      <li>
+                        <Link className="dropdown-item nav-item" to="/ventas">
+                          Consultar Ventas
+                        </Link>
+                      </li>
+                    </ul>
+                  </li>
+                </>
+              )}
+              {role === 2 && isAuthenticated && (
+                <>
+                  <li className="nav-item">
+                    <Link className="nav-link" to="/Clientes">
+                      Clientes
+                    </Link>
+                  </li>
+                  <li className="nav-item">
+                    <Link className="nav-link" to="/Ventas">
+                      Ventas
+                    </Link>
+                  </li>
+                  <li className="nav-item">
+                    <Link className="nav-link" to="/Proveedores">
+                      Proveedores
+                    </Link>
+                  </li>
+                </>
+              )}
+            </ul>
+            <ul className="navbar-nav ms-auto">
+              {isAuthenticated === false && (
+                <li className="nav-item">
+                  <Link className="nav-link" to="/register">
+                    Registrate
+                  </Link>
+                </li>
+              )}
+              <li className="nav-item">
+                <button className="nav-link btn" onClick={handleSession}>
+                  {isAuthenticated ? "Cerrar Sesión" : "Iniciar Sesión"}
+                </button>
+              </li>
+            </ul>
+          </div>
+        )}
       </div>
     </nav>
   );

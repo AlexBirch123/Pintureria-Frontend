@@ -15,27 +15,6 @@ const BuscadorProd = ({ saleProds, setSaleProds ,productos, setProductos}) => {
   //al seleccionar un producto se agrega selectedProducts
   //al cerrar el modal se agrega selectedProducts a saleProds
 
-  // useEffect(() => {
-  //   const fetchProd = async () => {
-  //     const local = getLocalStorage("products");
-  //     try {
-  //       const response = await fetch(URL + "/Products", {
-  //         credentials: "include",
-  //       });
-  //       const data = await response.json();
-  //       if (!data) return setProductos(local?.datos || []);
-  //       setLocalStorage(data, "products");
-  //       setProductos(data);
-  //       setFilteredProductos(productos);
-  //     } catch (error) {
-  //       console.log(error);
-  //       setProductos(local?.datos || []);
-  //     }
-  //   };
-
-  //   fetchProd();
-  // }, []);
-
   const handleSearch = (e) => {
     setSearchTerm(e.target.value);
     setFilteredProductos(
