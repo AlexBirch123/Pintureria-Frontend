@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
+import { URL } from "../utils/config";
 
 const Productos = ({ role }) => {
   const [formVisible, setFormVisible] = useState(false);
@@ -16,7 +17,7 @@ const Productos = ({ role }) => {
   useEffect(() => {
     const fetchProd = async () => {
       try {
-        await fetch("http://localhost:8080/allProducts")
+        await fetch(URL + "/Products")
           .then((res) => res.json())
           .then((data) => {
             setProductos(data);
@@ -32,7 +33,7 @@ const Productos = ({ role }) => {
   useEffect(() => {
     const fetchSupp = async () => {
       try {
-        await fetch("http://localhost:8080/allSuppliers")
+        await fetch(URL + "/Suppliers")
           .then((res) => res.json())
           .then((data) => {
             setProveedores(data);
@@ -63,42 +64,7 @@ const Productos = ({ role }) => {
     const price = Number(precioRef.current?.value);
     const stock = Number(stockRef.current?.value);
     const idProv = Number(idProvRef.current?.value);
-
-    if (editingProduct) {
-      // Actualizar cliente existente
-      let datos = {};
-      if (description) datos.description = description;
-      if (price) datos.price = price;
-      if (stock) datos.stock = stock;
-      if (idProv) datos.idProv = idProv;
-      try {
-        const res = await fetch(
-          `http://localhost:8080/allProducts/${editingProduct.id}`,
-          {
-            method: "PATCH",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify(datos),
-          }
-        );
-        if (res.ok) {
-          if (datos.description) editingProduct.description = datos.description;
-          if (datos.price) editingProduct.price = datos.price;
-          if (datos.stock) editingProduct.stock = datos.stock;
-          if (datos.idProv) editingProduct.idProv = datos.idProv;
-          const updatedProd = productos.map((prod) =>
-            prod.id === editingProduct.id ? { ...productos, updatedProd } : prod
-          );
-          setProductos(updatedProd); //actualiza la lista con los datos actualizados
-          setIsRequired(true);
-          setEditingProduct(null);
-          resetForm();
-        }
-      } catch (error) {
-        console.log(error);
-      }
-    } else if (description && price && idProv) {
+    if (description && price && idProv) {
       // Crear nuevo cliente
       const newProd = {
         description: description,
@@ -107,7 +73,7 @@ const Productos = ({ role }) => {
         idProv: idProv,
       };
       try {
-        const res = await fetch("http://localhost:8080/allProducts", {
+        const res = await fetch(URL + "/Products", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -128,18 +94,18 @@ const Productos = ({ role }) => {
     setFormVisible(false);
   };
 
-  const handleDelete = async (id) => {
-    const confirmDelete = window.confirm(
-      "¿Estás seguro de eliminar este producto?"
-    );
-    if (confirmDelete) {
-      await fetch(`http://localhost:8080/allProducts/${id}`, {
-        method: "DELETE",
-      });
-      const updatedProd = productos.filter((p) => p.id !== id);
-      setProductos(updatedProd);
-    }
-  };
+  // const handleDelete = async (id) => {
+  //   const confirmDelete = window.confirm(
+  //     "¿Estás seguro de eliminar este producto?"
+  //   );
+  //   if (confirmDelete) {
+  //     await fetch(`http://localhost:8080/allProducts/${id}`, {
+  //       method: "DELETE",
+  //     });
+  //     const updatedProd = productos.filter((p) => p.id !== id);
+  //     setProductos(updatedProd);
+  //   }
+  // };
 
   const descripcionProv = (id) => {
     const prov = proveedores.find((p) => p.id == id);
@@ -215,9 +181,8 @@ const Productos = ({ role }) => {
             </select>
           </div>
 
-          {/* Botón de enviar (Crear/Actualizar Producto) */}
           <button type="submit" className="btn btn-primary">
-            {editingProduct ? "Actualizar" : "Crear"}
+            Crear producto
           </button>
         </form>
       )}
@@ -261,7 +226,7 @@ const Productos = ({ role }) => {
                         </button>
                         <button
                           className="btn btn-danger btn-sm"
-                          onClick={() => handleDelete(producto.id)}
+                          // onClick={() => handleDelete(producto.id)}
                           style={{ marginLeft: "10px" }}
                         >
                           Eliminar

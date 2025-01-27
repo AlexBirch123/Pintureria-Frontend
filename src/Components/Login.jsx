@@ -30,11 +30,11 @@ const Login = () => {
         if (!res.ok) {
           return setMessage("Credenciales incorrectas");
         }
-        const level = await res.json();
+        const role = await res.json();
 
         setMessage("Datos correctos");
         setIsAuthenticated(true);
-        setRole(level);
+        setRole(role);
         navigate("/dashboard");
       } catch (error) {
         setMessage("Nombre de usuario o contraseña incorrectos");
