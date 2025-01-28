@@ -10,6 +10,7 @@ const CrearVentas = () => {
   const [empleados, setEmpleados] = useState([]);
   const [clientes, setClientes] = useState([]);
   const [sucursales, setSucursales] = useState([]);
+  const [message, setMessage] = useState("");
   const clienteRef = useRef(null);
   const empleadoRef = useRef(null);
   const sucursalRef = useRef(null);
@@ -95,10 +96,12 @@ const CrearVentas = () => {
         idBranch: idBranch,
         idEmp: idEmp,
         total: total,
-        saleProds:saleProds,
+        saleProds: saleProds,
       };
+      if (!(total > 0))
+        return setMessage("El total de la venta debe ser mayor a 0");
       try {
-          await fetch(URL + `/Sales`, {
+        await fetch(URL + `/Sales`, {
           method: "POST",
           credentials: "include",
           headers: {
@@ -110,6 +113,7 @@ const CrearVentas = () => {
         console.log(" error al crear la venta", error);
       }
       setSaleProds([]);
+      setTimeout(setMessage(null), 3000);
     }
     resetForm();
   };
