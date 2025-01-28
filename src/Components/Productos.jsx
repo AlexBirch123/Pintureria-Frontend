@@ -1,49 +1,68 @@
 import React, { useState, useEffect, useRef } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { URL } from "../utils/config";
+import {setLocalStorage,getLocalStorage} from "../utils/localStorage"
+
 
 const Productos = ({ role }) => {
   const [formVisible, setFormVisible] = useState(false);
-  const [required, setIsRequired] = useState(true);
-  const [localRole, setLocalRole] = useState(role);
+
   const [productos, setProductos] = useState([]);
   const [proveedores, setProveedores] = useState([]);
-  const [editingProduct, setEditingProduct] = useState(null);
+  const [categorias, setcategorias] = useState([]);
+
   const descripcionRef = useRef(null);
   const idProvRef = useRef(null);
+  const idCatRef = useRef(null);
   const stockRef = useRef(null);
   const precioRef = useRef(null);
 
   useEffect(() => {
     const fetchProd = async () => {
+      const local = getLocalStorage("products")
       try {
-        await fetch(URL + "/Products")
+        await fetch(URL + "/Products", {credentials: true})
           .then((res) => res.json())
           .then((data) => {
+            if (!data) return setProductos(local.datos);
             setProductos(data);
+            setLocalStorage(data, "products");
           });
       } catch (error) {
         console.log(error);
       }
     };
-
-    fetchProd();
-  }, []);
-
-  useEffect(() => {
-    const fetchSupp = async () => {
+    const fetchcat = async () => {
+      const local = getLocalStorage("category")
       try {
-        await fetch(URL + "/Suppliers")
+        await fetch(URL + "/category", {credentials: true})
           .then((res) => res.json())
           .then((data) => {
-            setProveedores(data);
+            if (!data) return setcategorias(local.datos);
+            setcategorias(data);
+            setLocalStorage(data, "category");
           });
       } catch (error) {
         console.log(error);
       }
     };
-
-    fetchSupp();
+    const fetchSupp = async () => {
+      const local = getLocalStorage("suppliers")
+      try {
+        await fetch(URL + "/Suppliers", {credentials: true})
+        .then((res) => res.json())
+        .then((data) => {
+          if (!data) return setProveedores(local.datos);
+            setProveedores(data);
+            setLocalStorage(data, "suppliers");
+        });
+      } catch (error) {
+        console.log(error);
+      }
+    };
+      fetchcat();
+      fetchProd();
+      fetchSupp();
   }, []);
 
   const toggleFormVisibility = () => {
@@ -64,6 +83,7 @@ const Productos = ({ role }) => {
     const price = Number(precioRef.current?.value);
     const stock = Number(stockRef.current?.value);
     const idProv = Number(idProvRef.current?.value);
+    const idCat = Number(idCatRef.current?.value);
     if (description && price && idProv) {
       // Crear nuevo cliente
       const newProd = {
@@ -71,6 +91,7 @@ const Productos = ({ role }) => {
         price: price,
         stock: stock,
         idProv: idProv,
+        idCat:idCat,
       };
       try {
         const res = await fetch(URL + "/Products", {
@@ -84,7 +105,7 @@ const Productos = ({ role }) => {
           const completeProd = await res.json();
           setProductos([...productos, completeProd]);
           resetForm();
-          setEditingProduct(null);
+
         }
       } catch (error) {
         console.log(error);
@@ -94,28 +115,34 @@ const Productos = ({ role }) => {
     setFormVisible(false);
   };
 
-  // const handleDelete = async (id) => {
-  //   const confirmDelete = window.confirm(
-  //     "¿Estás seguro de eliminar este producto?"
-  //   );
-  //   if (confirmDelete) {
-  //     await fetch(`http://localhost:8080/allProducts/${id}`, {
-  //       method: "DELETE",
-  //     });
-  //     const updatedProd = productos.filter((p) => p.id !== id);
-  //     setProductos(updatedProd);
-  //   }
-  // };
+  const handleDelete = async (id) => {
+    const confirmDelete = window.confirm(
+      "¿Estás seguro de eliminar este producto?"
+    );
+    if (confirmDelete) {
+      await fetch(URL + `/Products/${id}`, {
+        credentials: true,
+        method: "DELETE",
+      });
+      const updatedProd = productos.filter((p) => p.id !== id);
+      setProductos(updatedProd);
+      setLocalStorage(updatedProd)
+    }
+  };
 
+  const descripcionCat = (id) => {
+    const cat = categorias.find((c) => c.id === id);
+    return cat.description;
+  };
   const descripcionProv = (id) => {
-    const prov = proveedores.find((p) => p.id == id);
-    console.log(prov);
-    // return prov.name;
+    const prov = proveedores.find((p) => p.id === id);
+    
+    return prov.name;
   };
 
   return (
     <div style={{ marginTop: "8%" }}>
-      {(localRole === "Administrador" || localRole === "Vendedor") && (
+      {(role === 1 || role === 2) && (
         <div className="btn-group">
           <button
             id="b_create"
@@ -127,6 +154,12 @@ const Productos = ({ role }) => {
           </button>
         </div>
       )}
+      {/* <div>
+
+          <button onClick={alert("vista de cliente")}>
+            Vista cliente
+          </button>
+      </div> */}
 
       {/* Formulario solo visible si formVisible es true */}
       {formVisible && (
@@ -141,7 +174,7 @@ const Productos = ({ role }) => {
               type="text"
               name="descripcion"
               className="form-control"
-              required={required}
+              required
               ref={descripcionRef}
             />
           </div>
@@ -151,7 +184,7 @@ const Productos = ({ role }) => {
               type="number"
               name="precio"
               className="form-control"
-              required={required}
+              required
               ref={precioRef}
             />
           </div>
@@ -171,12 +204,28 @@ const Productos = ({ role }) => {
               id="idProv"
               style={{ marginLeft: "10px" }}
               className="form-control"
-              required={required}
+              required
               ref={idProvRef}
             >
               <option value="">Elegi un proveedor</option>
               {proveedores.map((prov) => (
                 <option value={prov.id}>{prov.name}</option>
+              ))}
+            </select>
+          </div>
+          <div className="mb-3">
+            <label htmlFor="nombre">Categoria: </label>
+            <select
+              name="idCat"
+              id="idCat"
+              style={{ marginLeft: "10px" }}
+              className="form-control"
+              required
+              ref={idCatRef}
+            >
+              <option value="">Elegi categoria</option>
+              {categorias.map((cat) => (
+                <option value={cat.id}>{cat.description}</option>
               ))}
             </select>
           </div>
@@ -198,6 +247,7 @@ const Productos = ({ role }) => {
               <th>Precio</th>
               <th>Stock</th>
               <th>Proveedor</th>
+              <th>Categoria</th>
               <th>Acciones</th>
             </tr>
           </thead>
@@ -209,30 +259,27 @@ const Productos = ({ role }) => {
                   <td>{producto.description}</td>
                   <td>${producto.price}</td>
                   <td>{producto.stock}</td>
-                  <td>{producto.idProv}</td>
+                   <td>{producto.idProv}</td> {/* poner el nombre del prov */}
+                  <td>{descripcionCat(producto.idCat)}</td>
                   <td>
-                    {(localRole === "Administrador" ||
-                      localRole === "Vendedor") && (
                       <>
                         <button
                           className="btn btn-warning btn-sm"
                           onClick={() => {
-                            toggleFormVisibility();
-                            setEditingProduct(producto);
-                            setIsRequired(false);
+                            
                           }}
                         >
                           Editar
                         </button>
                         <button
                           className="btn btn-danger btn-sm"
-                          // onClick={() => handleDelete(producto.id)}
+                          onClick={() => handleDelete(producto.id)}
                           style={{ marginLeft: "10px" }}
                         >
                           Eliminar
                         </button>
                       </>
-                    )}
+                    
                   </td>
                 </tr>
               ))

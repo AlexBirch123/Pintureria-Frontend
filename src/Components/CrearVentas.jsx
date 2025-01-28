@@ -5,7 +5,6 @@ import { URL } from "../utils/config";
 import BuscadorProd from "./BuscardorProd";
 
 const CrearVentas = () => {
-
   const [saleProds, setSaleProds] = useState([]);
   const [productos, setProductos] = useState([]);
   const [empleados, setEmpleados] = useState([]);
@@ -81,47 +80,6 @@ const CrearVentas = () => {
     fetchEmp();
   }, []);
 
-  const creatRows = async (id) => {
-    try {
-      const datos = saleProds.map((prod) => {
-        prod.idSale = id;
-        return prod;
-      });
-      await fetch(URL + `/Rows`, {
-        method: "POST",
-        credentials: "include",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(datos),
-      });
-    } catch (error) {
-      console.log("error al crear las filas");
-      return;
-    }
-  };
-
-  const updateStock = async () => {
-    try {
-      const datos = saleProds.map((prod) => {
-        const total = prod.stock - prod.amount;
-        return { id: prod.idProduct, amount: total };
-      });
-      datos.forEach(async (d) => {
-        await fetch(URL + `/Products/${d.id}`, {
-          method: "PATCH",
-          credentials: "include",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ stock: d.amount }),
-        });
-      });
-    } catch (error) {
-      console.log("error al actualiza stock");
-    }
-  };
-
   // Crear venta
   const creatSale = async (e) => {
     e.preventDefault();
@@ -137,9 +95,10 @@ const CrearVentas = () => {
         idBranch: idBranch,
         idEmp: idEmp,
         total: total,
+        saleProds:saleProds,
       };
       try {
-        const res = await fetch(URL + `/Sales`, {
+          await fetch(URL + `/Sales`, {
           method: "POST",
           credentials: "include",
           headers: {
@@ -147,11 +106,6 @@ const CrearVentas = () => {
           },
           body: JSON.stringify(newSale),
         });
-        if (res.ok) {
-          const idSale = await res.json();
-          await creatRows(idSale);
-          await updateStock();
-        }
       } catch (error) {
         console.log(" error al crear la venta", error);
       }
@@ -176,7 +130,10 @@ const CrearVentas = () => {
   return (
     <div style={{ marginTop: "5%" }}>
       {/* Formulario visible para crear o editar venta */}
-      <form id="ventaForm" style={{ marginTop: "5%" }}>
+      <form id="ventaForm" style={{ marginTop: "5%" }} onSubmit={creatSale}>
+        <button type="submit" className="btn btn-primary">
+          Guardar Venta
+        </button>
         <div className="mb-3">
           <label htmlFor="Cliente" className="form-label">
             Cliente:
@@ -231,59 +188,56 @@ const CrearVentas = () => {
             ))}
           </select>
         </div>
-        <div className="mb-3">
-          <BuscadorProd
-            saleProds={saleProds}
-            setSaleProds={setSaleProds}
-            productos={productos}
-            setProductos={setProductos}
-          ></BuscadorProd>
-
-          <table
-            className="table table-bordered"
-            id="ventaTable"
-            style={{ marginTop: "2%" }}
-            onSubmit={creatSale}
-          >
-            <thead className="table-dark">
-              <tr>
-                <th>ID</th>
-                <th>Descripcion</th>
-                <th style={{ width: "10%" }}>Cantidad</th>
-                <th>Precio</th>
-                <th>Stock</th>
-              </tr>
-            </thead>
-            <tbody>
-              {saleProds.map((prod) => (
-                <tr key={prod.idProduct}>
-                  <td>{prod.idProduct}</td>
-                  <td>{prod.description}</td>
-                  <td>
-                    <input
-                      type="number"
-                      value={prod.amount}
-                      onChange={(e) =>
-                        handleFieldChange(
-                          prod.idProduct,
-                          "amount",
-                          e.target.value
-                        )
-                      }
-                      style={{ width: "100%" }}
-                    />
-                  </td>
-                  <td>$ {prod.price.toFixed(2)}</td>
-                  <td>{prod.stock}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-        <button type="submit" className="btn btn-primary">
-          Guardar Venta
-        </button>
       </form>
+      <div className="mb-3">
+        <BuscadorProd
+          saleProds={saleProds}
+          setSaleProds={setSaleProds}
+          productos={productos}
+          setProductos={setProductos}
+        ></BuscadorProd>
+
+        <table
+          className="table table-bordered"
+          id="ventaTable"
+          style={{ marginTop: "2%" }}
+          onSubmit={creatSale}
+        >
+          <thead className="table-dark">
+            <tr>
+              <th>ID</th>
+              <th>Descripcion</th>
+              <th style={{ width: "10%" }}>Cantidad</th>
+              <th>Precio</th>
+              <th>Stock</th>
+            </tr>
+          </thead>
+          <tbody>
+            {saleProds.map((prod) => (
+              <tr key={prod.idProduct}>
+                <td>{prod.idProduct}</td>
+                <td>{prod.description}</td>
+                <td>
+                  <input
+                    type="number"
+                    value={prod.amount}
+                    onChange={(e) =>
+                      handleFieldChange(
+                        prod.idProduct,
+                        "amount",
+                        e.target.value
+                      )
+                    }
+                    style={{ width: "100%" }}
+                  />
+                </td>
+                <td>$ {prod.price}</td>
+                <td>{prod.stock}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
     </div>
   );
 };
