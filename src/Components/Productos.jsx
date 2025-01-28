@@ -19,9 +19,9 @@ const Productos = ({ role }) => {
 
   useEffect(() => {
     const fetchProd = async () => {
-      const local = getLocalStorage("products")
+      const local = getLocalStorage("products");
       try {
-        await fetch(URL + "/Products", {credentials: true})
+        await fetch(URL + "/Products", { credentials: "include" })
           .then((res) => res.json())
           .then((data) => {
             if (!data) return setProductos(local.datos);
@@ -33,9 +33,9 @@ const Productos = ({ role }) => {
       }
     };
     const fetchcat = async () => {
-      const local = getLocalStorage("category")
+      const local = getLocalStorage("category");
       try {
-        await fetch(URL + "/category", {credentials: true})
+        await fetch(URL + "/category", { credentials: "include" })
           .then((res) => res.json())
           .then((data) => {
             if (!data) return setcategorias(local.datos);
@@ -47,22 +47,22 @@ const Productos = ({ role }) => {
       }
     };
     const fetchSupp = async () => {
-      const local = getLocalStorage("suppliers")
+      const local = getLocalStorage("suppliers");
       try {
-        await fetch(URL + "/Suppliers", {credentials: true})
-        .then((res) => res.json())
-        .then((data) => {
-          if (!data) return setProveedores(local.datos);
+        await fetch(URL + "/Suppliers", { credentials: "include" })
+          .then((res) => res.json())
+          .then((data) => {
+            if (!data) return setProveedores(local.datos);
             setProveedores(data);
             setLocalStorage(data, "suppliers");
-        });
+          });
       } catch (error) {
         console.log(error);
       }
     };
-      fetchcat();
-      fetchProd();
-      fetchSupp();
+    fetchcat();
+    fetchProd();
+    fetchSupp();
   }, []);
 
   const toggleFormVisibility = () => {
@@ -91,7 +91,7 @@ const Productos = ({ role }) => {
         price: price,
         stock: stock,
         idProv: idProv,
-        idCat:idCat,
+        idCat: idCat,
       };
       try {
         const res = await fetch(URL + "/Products", {
@@ -105,7 +105,6 @@ const Productos = ({ role }) => {
           const completeProd = await res.json();
           setProductos([...productos, completeProd]);
           resetForm();
-
         }
       } catch (error) {
         console.log(error);
@@ -126,7 +125,7 @@ const Productos = ({ role }) => {
       });
       const updatedProd = productos.filter((p) => p.id !== id);
       setProductos(updatedProd);
-      setLocalStorage(updatedProd)
+      setLocalStorage(updatedProd);
     }
   };
 
@@ -136,7 +135,7 @@ const Productos = ({ role }) => {
   };
   const descripcionProv = (id) => {
     const prov = proveedores.find((p) => p.id === id);
-    
+
     return prov.name;
   };
 
@@ -209,7 +208,9 @@ const Productos = ({ role }) => {
             >
               <option value="">Elegi un proveedor</option>
               {proveedores.map((prov) => (
-                <option value={prov.id}>{prov.name}</option>
+                <option value={prov.id}>
+                  {prov.id}-{prov.name}
+                </option>
               ))}
             </select>
           </div>
@@ -225,7 +226,10 @@ const Productos = ({ role }) => {
             >
               <option value="">Elegi categoria</option>
               {categorias.map((cat) => (
-                <option value={cat.id}>{cat.description}</option>
+                <option value={cat.id}>
+                  {" "}
+                  {cat.id}-{cat.description}
+                </option>
               ))}
             </select>
           </div>
@@ -259,33 +263,30 @@ const Productos = ({ role }) => {
                   <td>{producto.description}</td>
                   <td>${producto.price}</td>
                   <td>{producto.stock}</td>
-                   <td>{producto.idProv}</td> {/* poner el nombre del prov */}
+                  <td>{producto.idProv}</td> {/* poner el nombre del prov */}
                   <td>{descripcionCat(producto.idCat)}</td>
                   <td>
-                      <>
-                        <button
-                          className="btn btn-warning btn-sm"
-                          onClick={() => {
-                            
-                          }}
-                        >
-                          Editar
-                        </button>
-                        <button
-                          className="btn btn-danger btn-sm"
-                          onClick={() => handleDelete(producto.id)}
-                          style={{ marginLeft: "10px" }}
-                        >
-                          Eliminar
-                        </button>
-                      </>
-                    
+                    <>
+                      <button
+                        className="btn btn-warning btn-sm"
+                        onClick={() => {}}
+                      >
+                        Editar
+                      </button>
+                      <button
+                        className="btn btn-danger btn-sm"
+                        onClick={() => handleDelete(producto.id)}
+                        style={{ marginLeft: "10px" }}
+                      >
+                        Eliminar
+                      </button>
+                    </>
                   </td>
                 </tr>
               ))
             ) : (
               <tr>
-                <td colSpan={6} className="text-center">
+                <td colSpan={7} className="text-center">
                   No hay productos registrados
                 </td>
               </tr>
