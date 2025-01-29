@@ -1,20 +1,21 @@
 import React from "react";
-import { useHistory } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import "bootstrap/dist/css/bootstrap.min.css";
+import latex from "../utils/images/latex.jpg"
 
 const CategoryCard = ({ category }) => {
-  const history = useHistory();
+  const navigate = useNavigate();
 
   const handleClick = () => {
-    history.push(`/products?category=${category.name}`);
+    console.log("yendo a productos de categoria:" ,category.description)
+    // navigate(`/products?category=${category.name}`);
   };
 
   return (
     <div className="card" style={{ width: "18rem" }} onClick={handleClick}>
-      <img src={category.image} className="card-img-top" alt={category.name} />
+      <img src={latex} className="card-img-top" alt={category.description} />
       <div className="card-body">
-        <h5 className="card-title">{category.name}</h5>
-        <p className="card-text">{category.description}</p>
+        <h5 className="card-title">{category.description}</h5>
       </div>
     </div>
   );
