@@ -1,17 +1,17 @@
 import React from "react";
 import { Card, Button } from "react-bootstrap";
-import { useHistory } from "react-router-dom";
-import latex from "../utils/latex.png";
+import latex from "../utils/images/latex.jpg";
 
 const ProductCard = ({ product }) => {
-  const history = useHistory();
+  // const history = useHistory();
 
   const handleCardClick = () => {
-    history.push(`/product/${product.id}`);
+    // history.push(`/product/${product.id}`);
+    console.log("click en producto")
   };
 
   return (
-    <Card style={{ width: "18rem" }} onClick={handleCardClick}>
+    <Card style={{ width: "18rem" ,cursor:"pointer"} } onClick={handleCardClick} >
       {/* <Card.Img variant="top" src={product.image} /> */}
       <Card.Img variant="top" src={latex} />
       <Card.Body>
@@ -21,7 +21,7 @@ const ProductCard = ({ product }) => {
         <Card.Title>Latex 10lt</Card.Title>
         <Card.Text>Latex 10lt</Card.Text>
         <Card.Text>$10000</Card.Text>
-        <Button variant="primary">Agregar al carrito</Button>
+        {/* <Button variant="primary">Agregar al carrito</Button> */}
       </Card.Body>
     </Card>
   );

@@ -7,8 +7,7 @@ const CategoryCard = ({ category }) => {
   const navigate = useNavigate();
 
   const handleClick = () => {
-    console.log("yendo a productos de categoria:" ,category.description)
-    // navigate(`/products?category=${category.name}`);
+    navigate(`/products?category=${category.id}`);
   };
 
   return (
