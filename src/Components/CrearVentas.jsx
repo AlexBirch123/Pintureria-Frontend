@@ -11,9 +11,11 @@ const CrearVentas = () => {
   const [clientes, setClientes] = useState([]);
   const [sucursales, setSucursales] = useState([]);
   const [message, setMessage] = useState("");
+  const [selectedProductId, setSelectedProductId] = useState(null);
   const clienteRef = useRef(null);
   const empleadoRef = useRef(null);
   const sucursalRef = useRef(null);
+  const tableRef = useRef(null);
 
   useEffect(() => {
     const fetchProd = async () => {
@@ -81,6 +83,23 @@ const CrearVentas = () => {
     fetchEmp();
   }, []);
 
+  useEffect(() => {
+    const deleteRow = (id) => {
+      setSaleProds((saleProds) => saleProds.filter((s) => s.idProduct !== id));
+    };
+    const handleKeyDown = (e) => {
+      if (e.key === "Delete" && selectedProductId !== null) {
+        deleteRow(selectedProductId);
+        setSelectedProductId(null);
+      }
+    };
+
+    document.addEventListener("keydown", handleKeyDown);
+    return () => {
+      document.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [selectedProductId]);
+
   // Crear venta
   const creatSale = async (e) => {
     e.preventDefault();
@@ -99,7 +118,9 @@ const CrearVentas = () => {
         saleProds: saleProds,
       };
       if (!(total > 0))
-        return setMessage("El total de la venta debe ser mayor a 0");
+        return console.log(
+          "El total de la venta debe ser mayor a 0"
+        ); /*setMessage("El total de la venta debe ser mayor a 0");*/
       try {
         await fetch(URL + `/Sales`, {
           method: "POST",
@@ -218,7 +239,15 @@ const CrearVentas = () => {
           </thead>
           <tbody>
             {saleProds.map((prod) => (
-              <tr key={prod.idProduct}>
+              <tr
+                key={prod.idProduct}
+                onClick={() => setSelectedProductId(prod.idProduct)}
+                style={{
+                  backgroundColor:
+                    selectedProductId === prod.idProduct ? "#a8a3a3" : "white",
+                  cursor: "pointer",
+                }}
+              >
                 <td>{prod.idProduct}</td>
                 <td>{prod.description}</td>
                 <td>

@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import "bootstrap/dist/css/bootstrap.min.css";
 import rioColor from "../rio_color.png";
+import carro from "../utils/icons/cartShop.png";
 import { URL } from "../utils/config";
 import { useAuth } from "./AuthContext";
 import "../App.css";
@@ -15,7 +16,6 @@ const NavBar = () => {
     location.pathname !== "/login" &&
     location.pathname !== "/register" &&
     location.pathname !== "/recoverPassword";
-  const [isOpen, setIsOpen] = useState(false);
 
   const handleSession = async () => {
     if (!isAuthenticated) {
@@ -147,6 +147,16 @@ const NavBar = () => {
                     Registrate
                   </Link>
                 </li>
+              )}
+              {isAuthenticated === true && (
+                <a href="/cartShop">
+                  <img
+                    src={carro}
+                    alt="carro"
+                    style={{ width: "70%", height: "auto" }}
+                    className="rounded-pill"
+                  />
+                </a>
               )}
               <li className="nav-item">
                 <button className="nav-link btn" onClick={handleSession}>
