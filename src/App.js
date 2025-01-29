@@ -23,25 +23,7 @@ import { URL } from './utils/config.js';
 function App() {
 
   const { isAuthenticated, role } = useAuth();
-  const { productos, setProductos } = useState();
 
-  useEffect(() => {
-      const fetchProd = async () => {
-        const local = getLocalStorage("products");
-        try {
-          await fetch(URL + "/Products", { credentials: "include" })
-            .then((res) => res.json())
-            .then((data) => {
-              if (!data) return setProductos(local.datos);
-              setProductos(data);
-              setLocalStorage(data, "products");
-            });
-        } catch (error) {
-          console.log(error);
-        }
-      };
-      fetchProd()
-     },[])
 
   return (
     <Router>
@@ -56,7 +38,7 @@ function App() {
         <Route path="/proveedores"element={isAuthenticated && (role === 1 || role === 2) ? (<Proveedores />) : (<Navigate to="/notAuth" />)}/>
         <Route path="/ventas"element={isAuthenticated && (role === 1 || role === 2) ? (<VerVentas />) : (<Navigate to="/notAuth" />)}/>
         <Route path="/crear_ventas" element={<CrearVentas />} />
-        <Route path="/products" element={<ViewProducts productos={productos} />} />
+        <Route path="/products" element={<ViewProducts  />} />
 
         <Route path="/buscador" element={<BuscadorProd />} />
 
