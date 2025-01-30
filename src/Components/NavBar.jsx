@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import "bootstrap/dist/css/bootstrap.min.css";
 import rioColor from "../rio_color.png";
-import carro from "../utils/icons/cartShop.png";
+import cart from "../utils/icons/cart.svg";
 import { URL } from "../utils/config";
 import { useAuth } from "./AuthContext";
 import "../App.css";
@@ -151,9 +151,9 @@ const NavBar = () => {
               {isAuthenticated === true && (
                 <a href="/cartShop">
                   <img
-                    src={carro}
-                    alt="carro"
-                    style={{ width: "70%", height: "auto" }}
+                    src={cart}
+                    alt="cart"
+                    style={{ width: "auto", height: "auto" }}
                     className="rounded-pill"
                   />
                 </a>

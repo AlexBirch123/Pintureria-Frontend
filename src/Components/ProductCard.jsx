@@ -11,16 +11,19 @@ const ProductCard = ({ product }) => {
   };
 
   return (
-    <Card style={{ width: "18rem" ,cursor:"pointer"} } onClick={handleCardClick} >
+    <Card
+      style={{ width: "18rem", cursor: "pointer" }}
+      onClick={handleCardClick}
+    >
       {/* <Card.Img variant="top" src={product.image} /> */}
       <Card.Img variant="top" src={latex} />
       <Card.Body>
         {/* <Card.Title>{product.name}</Card.Title>
                 <Card.Text>{product.description}</Card.Text>
                 <Card.Text>${product.price}</Card.Text> */}
-        <Card.Title>Latex 10lt</Card.Title>
-        <Card.Text>Latex 10lt</Card.Text>
-        <Card.Text>$10000</Card.Text>
+        <Card.Title>{product.description}</Card.Title>
+        <Card.Text>{product.description}</Card.Text>
+        <Card.Text>${product.price}</Card.Text>
         {/* <Button variant="primary">Agregar al carrito</Button> */}
       </Card.Body>
     </Card>
