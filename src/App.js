@@ -15,10 +15,8 @@ import VerVentas from './Components/VerVentas.jsx';
 import BuscadorProd from './Components/BuscardorProd.jsx';
 import CrearVentas from './Components/CrearVentas.jsx';
 import ViewProducts from './Components/ViewProducts.jsx';
-import { useEffect } from 'react';
-import { getLocalStorage, setLocalStorage } from './utils/localStorage.js';
-import { useState } from 'react';
-import { URL } from './utils/config.js';
+import ProductPage from './Components/ProductPage.jsx';
+import Cart from './Components/Cart.jsx';
 
 function App() {
 
@@ -39,6 +37,8 @@ function App() {
         <Route path="/ventas"element={isAuthenticated && (role === 1 || role === 2) ? (<VerVentas />) : (<Navigate to="/notAuth" />)}/>
         <Route path="/crear_ventas" element={<CrearVentas />} />
         <Route path="/products" element={<ViewProducts  />} />
+        <Route path="/productPage" element={<ProductPage  />} />
+        <Route path="/cartShop" element={<Cart/>} />
 
         <Route path="/buscador" element={<BuscadorProd />} />
 

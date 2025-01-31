@@ -35,7 +35,7 @@ const Login = () => {
         setMessage("Datos correctos");
         setIsAuthenticated(true);
         setRole(role);
-        navigate("/dashboard");
+        navigate("/home");
       } catch (error) {
         setMessage("Nombre de usuario o contraseña incorrectos");
       }

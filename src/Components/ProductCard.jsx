@@ -1,19 +1,18 @@
 import React from "react";
 import { Card, Button } from "react-bootstrap";
 import latex from "../utils/images/latex.jpg";
+import { useNavigate } from "react-router";
 
 const ProductCard = ({ product }) => {
-  // const history = useHistory();
-
-  const handleCardClick = () => {
-    // history.push(`/product/${product.id}`);
-    console.log("click en producto")
-  };
-
+  const navigate = useNavigate();
+    
+    const handleClick = () => {
+        navigate(`/productPage?idProd=${product.id}`);
+      };
   return (
     <Card
       style={{ width: "18rem", cursor: "pointer" }}
-      onClick={handleCardClick}
+      onClick={handleClick}
     >
       {/* <Card.Img variant="top" src={product.image} /> */}
       <Card.Img variant="top" src={latex} />

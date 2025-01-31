@@ -1,5 +1,4 @@
-import React, { useState } from "react";
-import { Link, useLocation, useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import "bootstrap/dist/css/bootstrap.min.css";
 import rioColor from "../rio_color.png";
 import cart from "../utils/icons/cart.svg";
@@ -11,11 +10,6 @@ import "../NavBar.css";
 const NavBar = () => {
   const { role, setIsAuthenticated, isAuthenticated } = useAuth();
   const navigate = useNavigate();
-  const location = useLocation();
-  const showNavBar =
-    location.pathname !== "/login" &&
-    location.pathname !== "/register" &&
-    location.pathname !== "/recoverPassword";
 
   const handleSession = async () => {
     if (!isAuthenticated) {
@@ -29,7 +23,7 @@ const NavBar = () => {
       }).then((res) => {
         if (res.ok) {
           setIsAuthenticated(false);
-          navigate("/dashboard");
+          navigate("/home");
         }
       });
     } catch (error) {
@@ -58,8 +52,7 @@ const NavBar = () => {
         >
           <span className="navbar-toggler-icon"></span>
         </button>{" "}
-        *
-        {showNavBar && (
+        
           <div
             className="collapse navbar-collapse justify-content-center"
             id="collapsibleNavbar"
@@ -128,14 +121,35 @@ const NavBar = () => {
                     </Link>
                   </li>
                   <li className="nav-item">
-                    <Link className="nav-link" to="/Ventas">
-                      Ventas
-                    </Link>
-                  </li>
-                  <li className="nav-item">
                     <Link className="nav-link" to="/Proveedores">
                       Proveedores
                     </Link>
+                  </li>
+                  <li className="nav-item dropdown">
+                    <button
+                      className="nav-link dropdown-toggle"
+                      id="ventasDropdown"
+                    >
+                      Ventas
+                    </button>
+                    <ul
+                      className="dropdown-menu"
+                      aria-labelledby="ventasDropdown"
+                    >
+                      <li>
+                        <Link
+                          className="dropdown-item nav-item"
+                          to="/crear_ventas"
+                        >
+                          Crear Venta
+                        </Link>
+                      </li>
+                      <li>
+                        <Link className="dropdown-item nav-item" to="/ventas">
+                          Consultar Ventas
+                        </Link>
+                      </li>
+                    </ul>
                   </li>
                 </>
               )}
@@ -149,14 +163,39 @@ const NavBar = () => {
                 </li>
               )}
               {isAuthenticated === true && (
-                <a href="/cartShop">
-                  <img
-                    src={cart}
-                    alt="cart"
-                    style={{ width: "auto", height: "auto" }}
-                    className="rounded-pill"
-                  />
-                </a>
+              <li className="nav-item dropdown">
+                <button
+                  className="nav-link dropdown-toggle"
+                  id="cartDropdown"
+                  data-bs-toggle="dropdown"
+                  aria-expanded="false"
+                >
+                  <img src={cart} alt="cart" style={{ width: "60%", height: "60%" }} />
+                </button>
+                <ul className="dropdown-menu" aria-labelledby="cartDropdown">
+                  {/* Example items in the cart */}
+                  <li>
+                    <Link className="dropdown-item" to="/cartShop">
+                      Producto 1
+                    </Link>
+                  </li>
+                  <li>
+                    <Link className="dropdown-item" to="/cartShop">
+                      Producto 2
+                    </Link>
+                  </li>
+                  <li>
+                    <Link className="dropdown-item" to="/cartShop">
+                      Producto 3
+                    </Link>
+                  </li>
+                  <li>
+                    <Link className="dropdown-item" to="/cartShop">
+                      Ver Carrito
+                    </Link>
+                  </li>
+                </ul>
+              </li>
               )}
               <li className="nav-item">
                 <button className="nav-link btn" onClick={handleSession}>
@@ -165,7 +204,6 @@ const NavBar = () => {
               </li>
             </ul>
           </div>
-        )}
       </div>
     </nav>
   );

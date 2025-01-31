@@ -56,27 +56,41 @@ const ViewProducts = () => {
 
   useEffect(() => {
     handleFilteredProds();
-    // setMaxMin();
   }, [cat, productos]);
 
   const handleFilteredProds = () => {
-    if (!cat) return setFilteredProds(productos);
-    setFilteredProds(productos.filter((p) => p.idCat === category));
+    if (!cat) {
+      setFilteredProds(productos);
+      return setMaxMin(productos);
+    }
+    const prods = productos.filter((p) => p.idCat === Number(cat));
+    setFilteredProds(prods);
+    setMaxMin(prods);
   };
 
-  const setMaxMin = () => {
-    let min,
-      max = productos[1];
-    for (let i = productos; i < productos.length; i++) {
-      if (productos[i].price < min) {
-        min = productos[i].price;
+  const setMaxMin = (prods) => {
+    if (prods.length === 0) {
+      setMax(0)
+      setMin(0)
+      return
+    };
+    let min = prods[0].price;
+    let max = prods[0].price;
+    for (let i = 1; i < prods.length; i++) {
+      if (prods[i].price < min) {
+        min = prods[i].price;
       }
-      if (productos[i].price > max) {
-        max = productos[i].price;
+      if (prods[i].price > max) {
+        max = prods[i].price;
       }
     }
     setMax(max);
     setMin(min);
+  };
+
+  const searchCat = (id) => {
+    const cat = categorias.find((p) => p.id === id);
+    return cat.description;
   };
 
   return (
@@ -87,11 +101,14 @@ const ViewProducts = () => {
         <h2>Filtrar Productos</h2>
         <div>
           <label>Categoría:</label>
-          <select onChange={(e) => setCat(e.target.value)} value={cat || ""}>
+          <select onChange={(e) => setCat(e.target.value)}
+            value={cat || ""}>
             <option value="">Todas</option>
-            {/* {categorias.map((p) => (
-              <option key={p.idCat} value={p.idCat}>{p.categoryName}</option>
-            ))} */}
+            {categorias.map((c) => (
+              <option key={c.id} value={c.id}>
+                {searchCat(c.id)}
+              </option>
+            ))}
           </select>
         </div>
         <div>
@@ -105,7 +122,11 @@ const ViewProducts = () => {
             onChange={(e) => {
               console.log(e.target.value);
               const maxPrice = e.target.value;
-              // setFilteredProds(productos.filter((p) => p.price <= maxPrice && (!cat || p.idCat === cat)));
+              setFilteredProds(
+                productos.filter(
+                  (p) => p.price <= maxPrice && (!cat || p.idCat === cat)
+                )
+              );
             }}
           />
           {<p>max:{max}</p>}
@@ -114,7 +135,7 @@ const ViewProducts = () => {
       <div style={{ display: "flex" }}>
         <div style={{ flex: 1 }}>
           <h1 style={{ margin: "10%" }}>Productos</h1>
-          {/* {cat && <p>Mostrando productos para la categoría: {cat}</p>} */}
+          {cat && <p>Mostrando productos para la categoría: {cat}</p>}
           {filteredProds.length > 0 ? (
             filteredProds.map((p) => <ProductCard key={p.id} product={p} />)
           ) : (
