@@ -4,12 +4,20 @@ import rioColor from "../rio_color.png";
 import cart from "../utils/icons/cart.svg";
 import { URL } from "../utils/config";
 import { useAuth } from "./AuthContext";
+import { setLocalStorage,getLocalStorage } from "../utils/localStorage";
 import "../App.css";
 import "../NavBar.css";
+import { useEffect, useState } from "react";
 
 const NavBar = () => {
   const { role, setIsAuthenticated, isAuthenticated } = useAuth();
   const navigate = useNavigate();
+  const [cartProds, setCartProds] = useState([])
+  
+  useEffect(()=>{
+    const local = getLocalStorage("cart")
+    if (local) setCartProds( local.datos)
+  },[cartProds])
 
   const handleSession = async () => {
     if (!isAuthenticated) {
@@ -173,27 +181,26 @@ const NavBar = () => {
                   <img src={cart} alt="cart" style={{ width: "60%", height: "60%" }} />
                 </button>
                 <ul className="dropdown-menu" aria-labelledby="cartDropdown">
-                  {/* Example items in the cart */}
-                  <li>
-                    <Link className="dropdown-item" to="/cartShop">
-                      Producto 1
-                    </Link>
+
+                  {cartProds ?(
+                    cartProds.map((p)=>{
+                      <li>
+                      <Link className="dropdown-item" to={`/productPage?idProd=${p.id}`}>
+                        {p.description}
+                      </Link>
+                      </li>
+                    })
+                    
+                  ):(
+                    <li className="dropdown-item">
+                      Carrito vacio
                   </li>
-                  <li>
-                    <Link className="dropdown-item" to="/cartShop">
-                      Producto 2
-                    </Link>
-                  </li>
-                  <li>
-                    <Link className="dropdown-item" to="/cartShop">
-                      Producto 3
-                    </Link>
-                  </li>
-                  <li>
+                  )}
+                    <li>
                     <Link className="dropdown-item" to="/cartShop">
                       Ver Carrito
                     </Link>
-                  </li>
+                    </li>
                 </ul>
               </li>
               )}

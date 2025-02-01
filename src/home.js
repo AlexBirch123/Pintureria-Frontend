@@ -47,7 +47,6 @@ function Home() {
 
   return (
     <div>
-      <NavBar></NavBar>
       <Carousel style={{ height: '500px',marginTop: "8%" }}>
         <Carousel.Item>
           <img

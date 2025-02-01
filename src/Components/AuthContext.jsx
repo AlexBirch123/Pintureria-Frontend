@@ -10,7 +10,7 @@ export const useAuth = () => useContext(AuthContext);
 // Proveedor del contexto que maneja la autenticación
 export const AuthProvider = ({ children }) => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [role, setRole] = useState(3);
+  const [role, setRole] = useState(null);
 
   useEffect(() => {
     const checkAuth = async () => {
@@ -22,7 +22,7 @@ export const AuthProvider = ({ children }) => {
         if (res.ok) {
           const data = await res.json();
           setIsAuthenticated(true);
-          setRole(data.level);
+          setRole(data.role);
         } else {
           setIsAuthenticated(false);
         }

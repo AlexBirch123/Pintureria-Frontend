@@ -9,6 +9,10 @@ const ProductCard = ({ product }) => {
     const handleClick = () => {
         navigate(`/productPage?idProd=${product.id}`);
       };
+
+  const addCart = (()=>{
+    
+  })
   return (
     <Card
       style={{ width: "18rem", cursor: "pointer" }}
@@ -23,7 +27,6 @@ const ProductCard = ({ product }) => {
         <Card.Title>{product.description}</Card.Title>
         <Card.Text>{product.description}</Card.Text>
         <Card.Text>${product.price}</Card.Text>
-        {/* <Button variant="primary">Agregar al carrito</Button> */}
       </Card.Body>
     </Card>
   );

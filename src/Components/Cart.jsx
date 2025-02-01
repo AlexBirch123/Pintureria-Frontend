@@ -1,22 +1,25 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { useNavigate } from 'react-router';
+import { getLocalStorage } from '../utils/localStorage';
 
 const Cart = () => {
     const navigate = useNavigate()
-    const [cartItems, setCartItems] = useState([
-        { id: 1, name: 'Producto 1', quantity: 1, price: 100 },
-        { id: 2, name: 'Producto 2', quantity: 1, price: 200 },
-    ]);
+    const [cartProds, setCartProds] = useState([])
+
+    useEffect(()=>{
+        const local = getLocalStorage("cart")
+        if (local) setCartProds( local.datos)
+      },[cartProds])
 
     const handleQuantityChange = (id, quantity) => {
-        setCartItems(cartItems.map(item => 
-            item.id === id ? { ...item, quantity: quantity } : item
+        setCartProds(cartProds.map(item => 
+            item.idProduct === id ? { ...item, quantity: quantity } : item
         ));
     };
 
     const handleRemoveItem = (id) => {
-        setCartItems(cartItems.filter(item => item.id !== id));
+        setCartProds(cartProds.filter(item => item.idProduct !== id));
     };
 
     const handleCheckout = () => {
@@ -27,8 +30,8 @@ const Cart = () => {
         <div className="container mt-5">
             <h2>Carrito de Compras</h2>
             <ul className="list-group">
-                {cartItems.map(item => (
-                    <li key={item.id} className="list-group-item d-flex justify-content-between align-items-center">
+                {cartProds.length > 0  ?(cartProds.map(item => (
+                    <li key={item.idProduct} className="list-group-item d-flex justify-content-between align-items-center">
                         <div>
                             <h5>{item.name}</h5>
                             <p>Precio: ${item.price}</p>
@@ -36,13 +39,18 @@ const Cart = () => {
                                 type="number" 
                                 className="form-control" 
                                 value={item.quantity} 
-                                onChange={(e) => handleQuantityChange(item.id, parseInt(e.target.value))}
+                                onChange={(e) => handleQuantityChange(item.idProduct, parseInt(e.target.value))}
                                 min="1"
                             />
                         </div>
-                        <button className="btn btn-danger" onClick={() => handleRemoveItem(item.id)}>Eliminar</button>
+                        <button className="btn btn-danger" onClick={() => handleRemoveItem(item.idProduct)}>Eliminar</button>
                     </li>
-                ))}
+                ))):
+                (
+                    <li className="list-group-item d-flex justify-content-center align-items-center">
+                        No hay productos agregados al carrito.
+                    </li>
+                )}
             </ul>
             <button className="btn btn-primary mt-3" onClick={handleCheckout}>Pagar</button>
         </div>
