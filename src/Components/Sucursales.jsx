@@ -245,8 +245,8 @@ const Sucursales = () => {
               sucursales.map((sucursal) => (
                 <tr key={sucursal.id}>
                   <td>{sucursal.id}</td>
-                  {input(sucursal,"address", sucursal.address)}
-                  {input(sucursal,"phone", sucursal.phone)}
+                  <td>{input(sucursal,"address", sucursal.address)}</td>
+                  <td>{input(sucursal,"phone", sucursal.phone)}</td>
                   <td>
                     <button
                       onClick={() => deleteSucursal(sucursal.id)}

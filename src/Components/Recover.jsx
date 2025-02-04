@@ -19,7 +19,7 @@ const Recover = () => {
   //       pswHash: password,
   //     };
   //     try {
-  //       const res = await fetch( URL +"/Users/login", {
+  //       const res = await fetch( URL +"/users/login", {
   //         method: "POST",
   //         credentials: "include",
   //         headers: {

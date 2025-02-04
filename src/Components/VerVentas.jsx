@@ -1,13 +1,13 @@
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { URL } from "../utils/config";
 import { getLocalStorage, setLocalStorage } from "../utils/localStorage";
+import { searchDesc } from "../utils/search";
 
 const VerVentas = () => {
   const [ventas, setVentas] = useState([]);
   const [showRows, setShowRows] = useState(false);
   const [rowsSale, setRowsSale] = useState([]);
-  const [productos, setProductos] = useState([]);
   const [empleados, setEmpleados] = useState([]);
   const [clientes, setClientes] = useState([]);
   const [sucursales, setSucursales] = useState([]);
@@ -32,21 +32,21 @@ const VerVentas = () => {
       }
     };
 
-    const fetchProd = async () => {
-      const local = getLocalStorage("products");
+    // const fetchProd = async () => {
+    //   const local = getLocalStorage("products");
 
-      try {
-        await fetch(URL + "/Products", { credentials: "include" })
-          .then((res) => res.json())
-          .then((data) => {
-            if (!data) return setProductos(local.datos);
-            setProductos(data);
-            setLocalStorage(data, "products");
-          });
-      } catch (error) {
-        console.log(error);
-      }
-    };
+    //   try {
+    //     await fetch(URL + "/Products", { credentials: "include" })
+    //       .then((res) => res.json())
+    //       .then((data) => {
+    //         if (!data) return setProductos(local.datos);
+    //         setProductos(data);
+    //         setLocalStorage(data, "products");
+    //       });
+    //   } catch (error) {
+    //     console.log(error);
+    //   }
+    // };
     const fetchEmp = async () => {
       const local = getLocalStorage("employees");
       try {
@@ -92,13 +92,14 @@ const VerVentas = () => {
       }
     };
 
-    fetchProd();
+    // fetchProd();
     fetchSuc();
     fetchClient();
     fetchEmp();
     fetchSale();
   }, []);
 
+  
   const cargaFilasVenta = async (id) => {
     try {
       const res = await fetch(URL + `/Rows/${id}`, { credentials: "include" });
@@ -146,8 +147,8 @@ const VerVentas = () => {
               ventas.map((venta) => (
                 <tr key={venta.id}>
                   <td>{venta.id}</td>
-                  <td>{venta.idClient}</td>
-                  <td>{venta.idEmp}</td>
+                  <td>{searchDesc(clientes,venta.idClient,"name")}</td>
+                  <td>{searchDesc(empleados,venta.idEmp,"name")}</td>
                   <td>{venta.idBranch}</td>
                   <td>{venta.createdAt}</td>
                   <td>${venta.total}</td>
@@ -175,37 +176,46 @@ const VerVentas = () => {
                 <td colSpan={7}>No hay ventas registradas</td>
               </tr>
             )}
-            {showRows && (
-              <table className="table table-bordered" id="ventaTable">
-                <thead className="table-dark">
-                  <tr>
-                    <th>Producto</th>
-                    <th>Precio</th>
-                    <th>Cantidad</th>
-                    <th>Total</th>
-                    <th>Acciones</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {rowsSale.map((row) => (
-                    <tr key={row.id}>
-                      <td>{row.description}</td>
-                      <td>{row.price}</td>
-                      <td>{row.amount}</td>
-                      <td>{row.total}</td>
-                      <td>
-                        <button
-                          className="btn btn-danger btn-sm me-2"
-                          // onClick={() => deleteRow(row.id)}
-                        >
-                          Eliminar
-                        </button>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            )}
+            
+          {showRows && (
+            <div className="modal show d-block" tabIndex="-1">
+              <div className="modal-dialog">
+                <div className="modal-content">
+                  <div className="modal-header">
+                    <h5 className="modal-title">Detalles de la Venta</h5>
+                    <button type="button" className="btn-close" onClick={() => setShowRows(false)}></button>
+                  </div>
+                  <div className="modal-body">
+                    <table className="table table-bordered">
+                      <thead className="table-dark">
+                        <tr>
+                          <th>Producto</th>
+                          <th>Precio</th>
+                          <th>Cantidad</th>
+                          <th>Total</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {rowsSale.map((row) => (
+                          <tr key={row.id}>
+                            <td>{row.description}</td>
+                            <td>{row.price}</td>
+                            <td>{row.amount}</td>
+                            <td>{row.total}</td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                  <div className="modal-footer">
+                    <button type="button" className="btn btn-secondary" onClick={() => setShowRows(false)}>
+                      Cerrar
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
           </tbody>
         </table>
       </div>

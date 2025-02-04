@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { URL } from "../utils/config";
 import {setLocalStorage,getLocalStorage} from "../utils/localStorage"
+import { searchDesc } from "../utils/search";
 
 
 const Productos = ({ role }) => {
@@ -10,7 +11,8 @@ const Productos = ({ role }) => {
   const [productos, setProductos] = useState([]);
   const [proveedores, setProveedores] = useState([]);
   const [categorias, setcategorias] = useState([]);
-
+  const [editingField, setEditingField] = useState({ id: null, field: null });
+  const [message, setMessage] = useState(null);
   const descripcionRef = useRef(null);
   const idProvRef = useRef(null);
   const idCatRef = useRef(null);
@@ -128,20 +130,63 @@ const Productos = ({ role }) => {
       setLocalStorage(updatedProd);
     }
   };
+    const handleDoubleClick = (id, field, value) => {
+      setEditingField({ id, field });
+    };
+  
+    const handleFieldChange = (id, field, value) => {
+      setProductos((prevProd) =>
+        prevProd.map((prod) =>
+          prod.id === id ? { ...prod, [field]: value } : prod
+        )
+      );
+    };
+  
+    const handleBlur = async (id, field, value) => {
+      const data = { [field]: value };
+      try {
+        await fetch(URL + `/Products/${id}`, {
+          method: "PATCH",
+          credentials: "include",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(data),
+        });
+        setLocalStorage(productos, "products");
+        setEditingField({ id: null, field: null });
+      } catch (error) {
+        setMessage("Error en la solicitud");
+      }
+    };
 
-  const descripcionCat = (id) => {
-    const cat = categorias.find((c) => c.id === id);
-    return cat.description;
-  };
-  const descripcionProv = (id) => {
-    const prov = proveedores.find((p) => p.id === id);
-
-    return prov.name;
+  const input = (suc, field, value) => {
+    return (
+      <td
+        onDoubleClick={() => handleDoubleClick(suc.id, field, value)}
+        title="Doble click para editar"
+      >
+        {editingField.id === suc.id && editingField.field === field ? (
+          <input
+            type="text"
+            value={value}
+            onChange={(e) => handleFieldChange(suc.id, field, e.target.value)}
+            onKeyDown={async (e) => {
+              if (e.key === "Enter") {
+                await handleBlur(suc.id, field, value);
+              }
+            }}
+            autoFocus
+          />
+        ) : (
+          value
+        )}
+      </td>
+    );
   };
 
   return (
     <div style={{ marginTop: "8%" }}>
-      {(role === 1 || role === 2) && (
         <div className="btn-group">
           <button
             id="b_create"
@@ -152,15 +197,6 @@ const Productos = ({ role }) => {
             {formVisible ? "Cancelar" : "Crear Producto"}
           </button>
         </div>
-      )}
-      {/* <div>
-
-          <button onClick={alert("vista de cliente")}>
-            Vista cliente
-          </button>
-      </div> */}
-
-      {/* Formulario solo visible si formVisible es true */}
       {formVisible && (
         <form
           onSubmit={createOrUpdateProducto}
@@ -260,19 +296,13 @@ const Productos = ({ role }) => {
               productos.map((producto) => (
                 <tr key={producto.id}>
                   <td>{producto.id}</td>
-                  <td>{producto.description}</td>
-                  <td>${producto.price}</td>
-                  <td>{producto.stock}</td>
-                  <td>{producto.idProv}</td> {/* poner el nombre del prov */}
-                  <td>{descripcionCat(producto.idCat)}</td>
+                  <td>{input(producto,"description", producto.description)}</td>
+                  <td>{input(producto,"price", producto.price)}</td>
+                  <td>{input(producto,"stock", producto.stock)}</td>
+                  <td>{producto.idProv/*searchDesc(proveedores,producto.idProv,"name")*/}</td> 
+                  <td>{searchDesc(categorias,producto.idCat,"description")}</td>
                   <td>
                     <>
-                      <button
-                        className="btn btn-warning btn-sm"
-                        onClick={() => {}}
-                      >
-                        Editar
-                      </button>
                       <button
                         className="btn btn-danger btn-sm"
                         onClick={() => handleDelete(producto.id)}

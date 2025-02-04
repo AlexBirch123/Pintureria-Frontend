@@ -17,6 +17,7 @@ import CrearVentas from './Components/CrearVentas.jsx';
 import ViewProducts from './Components/ViewProducts.jsx';
 import ProductPage from './Components/ProductPage.jsx';
 import Cart from './Components/Cart.jsx';
+import Usuarios from './Components/Usuarios.jsx';
 
 function App() {
 
@@ -39,6 +40,7 @@ function App() {
         <Route path="/products" element={<ViewProducts  />} />
         <Route path="/productPage" element={<ProductPage  />} />
         <Route path="/cartShop" element={<Cart/>} />
+        <Route path="/usuarios" element={<Usuarios/>} />
 
         <Route path="/buscador" element={<BuscadorProd />} />
 

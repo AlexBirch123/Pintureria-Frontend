@@ -8,6 +8,7 @@ const ViewProducts = () => {
   const location = useLocation();
   const queryParams = new URLSearchParams(location.search);
   const category = queryParams.get('category');
+  const description = queryParams.get('description');
   const [filteredProds,setFilteredProds]= useState([])
   const [cat, setCat] = useState(category);
   const [productos, setProductos] = useState([]);
@@ -56,16 +57,23 @@ const ViewProducts = () => {
 
   useEffect(() => {
     handleFilteredProds();
-  }, [cat, productos]);
+  }, [cat, productos, description]);
 
   const handleFilteredProds = () => {
-    if (!cat) {
-      setFilteredProds(productos);
-      return setMaxMin(productos);
+    if (cat) {
+      const prods = productos.filter((p) => p.idCat === Number(cat));
+      setFilteredProds(prods);
+      setMaxMin(prods);
+      return
     }
-    const prods = productos.filter((p) => p.idCat === Number(cat));
-    setFilteredProds(prods);
-    setMaxMin(prods);
+    if (description) {
+      const prods = productos.filter((p) => p.description.toLowerCase().includes(description.toLowerCase()));
+      setFilteredProds(prods);
+      setMaxMin(prods);
+      return
+    }
+    setFilteredProds(productos);
+    setMaxMin(productos);
   };
 
   const setMaxMin = (prods) => {
@@ -136,6 +144,7 @@ const ViewProducts = () => {
         <div style={{ flex: 1 }}>
           <h1 style={{ margin: "10%" }}>Productos</h1>
           {cat && <p>Mostrando productos para la categoría: {cat}</p>}
+          {description &&<p>Mostrando productos para su busqueda: {description}</p>}
           {filteredProds.length > 0 ? (
             filteredProds.map((p) => <ProductCard key={p.id} product={p} />)
           ) : (

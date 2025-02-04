@@ -4,7 +4,7 @@ import rioColor from "../rio_color.png";
 import cart from "../utils/icons/cart.svg";
 import { URL } from "../utils/config";
 import { useAuth } from "./AuthContext";
-import { setLocalStorage,getLocalStorage } from "../utils/localStorage";
+import {getLocalStorage } from "../utils/localStorage";
 import "../App.css";
 import "../NavBar.css";
 import { useEffect, useState } from "react";
@@ -13,6 +13,7 @@ const NavBar = () => {
   const { role, setIsAuthenticated, isAuthenticated } = useAuth();
   const navigate = useNavigate();
   const [cartProds, setCartProds] = useState([])
+  const [search, setSearch] = useState("")
   
   useEffect(()=>{
     const local = getLocalStorage("cart")
@@ -73,6 +74,11 @@ const NavBar = () => {
               </li>
               {role === 1 && isAuthenticated && (
                 <>
+                <li className="nav-item">
+                    <Link className="nav-link" to="/usuarios">
+                      Usuarios
+                    </Link>
+                  </li>
                   <li className="nav-item">
                     <Link className="nav-link" to="/Sucursales">
                       Sucursales
@@ -162,6 +168,19 @@ const NavBar = () => {
                 </>
               )}
             </ul>
+            <div className="d-flex justify-content-center">
+              <input
+                type="text"
+                className="form-control"
+                placeholder="Buscar productos..."
+                onChange={(e) => setSearch(e.target.value.toLowerCase())}
+                onKeyDown={(e)=>{
+                  if (e.key === "Enter") {
+                    if(search) navigate(`/products?description=${search}`)
+                  }
+                }}
+              />
+            </div>
             <ul className="navbar-nav ms-auto">
               {isAuthenticated === false && (
                 <li className="nav-item">

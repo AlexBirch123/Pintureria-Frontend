@@ -1,5 +1,5 @@
 import React from "react";
-import { Card, Button } from "react-bootstrap";
+import { Card} from "react-bootstrap";
 import latex from "../utils/images/latex.jpg";
 import { useNavigate } from "react-router";
 
@@ -10,9 +10,6 @@ const ProductCard = ({ product }) => {
         navigate(`/productPage?idProd=${product.id}`);
       };
 
-  const addCart = (()=>{
-    
-  })
   return (
     <Card
       style={{ width: "18rem", cursor: "pointer" }}

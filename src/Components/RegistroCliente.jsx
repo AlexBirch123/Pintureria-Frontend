@@ -24,7 +24,7 @@ const RegistroCliente = () => {
 
   const postUser = async () => {
     try {
-      const res = await fetch(URL + `/Users`, {
+      const res = await fetch(URL + `/users`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -41,11 +41,11 @@ const RegistroCliente = () => {
 
   const validateData = async () => {
     try {
-      const res = await fetch(URL + `/Users/email/${formData.email}`);
+      const res = await fetch(URL + `/users/email/${formData.email}`);
       const email = await res.json();
       if (email) return setMessage("Email existente");
       
-      const response = await fetch(URL + `/Users/name/${formData.userName}`);
+      const response = await fetch(URL + `/users/name/${formData.userName}`);
       const name = await response.json();
       if (name) return setMessage("Nombre de usuario existente");
 
