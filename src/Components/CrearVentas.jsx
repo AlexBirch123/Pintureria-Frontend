@@ -109,7 +109,7 @@ const CrearVentas = () => {
 
     if (idClient && idEmp && idBranch) {
       let total = 0;
-      saleProds.map((prod) => (total += prod.price * prod.amount));
+      saleProds.map((prod) => (total = total + (prod.price * prod.quantity)));
       const newSale = {
         idClient: idClient,
         idBranch: idBranch,
@@ -253,11 +253,11 @@ const CrearVentas = () => {
                 <td>
                   <input
                     type="number"
-                    value={prod.amount}
+                    value={prod.quantity}
                     onChange={(e) =>
                       handleFieldChange(
                         prod.idProduct,
-                        "amount",
+                        "quantity",
                         e.target.value
                       )
                     }

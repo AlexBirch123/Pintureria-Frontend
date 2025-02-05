@@ -1,16 +1,20 @@
 import React, { useEffect, useState } from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { useNavigate } from 'react-router';
-import { getLocalStorage } from '../utils/localStorage';
+import { getLocalStorage, setLocalStorage } from '../utils/localStorage';
+import { useAuth } from './AuthContext';
+import { URL } from '../utils/config';
 
-const Cart = () => {
+const Cart = ({setCartChange, cartChange}) => {
     const navigate = useNavigate()
     const [cartProds, setCartProds] = useState([])
+    const {id} = useAuth();
+    const [message,setMessage] = useState("")
 
     useEffect(()=>{
         const local = getLocalStorage("cart")
         if (local) setCartProds( local.datos)
-      },[cartProds])
+      },[])
 
     const handleQuantityChange = (id, quantity) => {
         setCartProds(cartProds.map(item => 
@@ -19,21 +23,52 @@ const Cart = () => {
     };
 
     const handleRemoveItem = (id) => {
-        setCartProds(cartProds.filter(item => item.idProduct !== id));
+        const newCart =cartProds.filter(item => item.idProduct !== id)
+        setCartProds( newCart);
+        setLocalStorage(newCart,"cart")
+        setCartChange(!cartChange)
     };
 
-    const handleCheckout = () => {
-        alert('Procediendo al pago');
-    };
+      const creatSale = async () => {
+          let total = 0;
+          cartProds.map((prod) => (total = total + (prod.price * prod.quantity)));
+          const newSale = {
+            idClient: id,
+            idBranch: 1,
+            idEmp: 1,
+            total: total,
+            saleProds: cartProds,
+          };
+          if (!(total > 0))
+            return console.log(
+              "El total de la venta debe ser mayor a 0"
+            ); /*setMessage("El total de la venta debe ser mayor a 0");*/
+          try {
+            await fetch(URL + `/Sales`, {
+              method: "POST",
+              credentials: "include",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify(newSale),
+            });
+          } catch (error) {
+            console.log(" error al crear la venta", error);
+          }
+          setMessage("Venta Realizada con exito");
+          setTimeout(()=>{setMessage(null)
+            navigate("/home")
+          } , 3000); 
+      };
 
     return (
         <div className="container mt-5">
-            <h2>Carrito de Compras</h2>
+            <h2 style={{marginTop:"5%"}}>Carrito de Compras</h2>
             <ul className="list-group">
                 {cartProds.length > 0  ?(cartProds.map(item => (
                     <li key={item.idProduct} className="list-group-item d-flex justify-content-between align-items-center">
-                        <div>
-                            <h5>{item.name}</h5>
+                        <div >
+                            <h5>{item.description}</h5>
                             <p>Precio: ${item.price}</p>
                             <input 
                                 type="number" 
@@ -52,7 +87,7 @@ const Cart = () => {
                     </li>
                 )}
             </ul>
-            <button className="btn btn-primary mt-3" onClick={handleCheckout}>Pagar</button>
+            <button className="btn btn-primary mt-3" onClick={creatSale}>Pagar</button>
         </div>
     );
 };

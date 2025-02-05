@@ -11,6 +11,7 @@ export const useAuth = () => useContext(AuthContext);
 export const AuthProvider = ({ children }) => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [role, setRole] = useState(null);
+  const [id, setId] = useState(null);
 
   useEffect(() => {
     const checkAuth = async () => {
@@ -23,6 +24,7 @@ export const AuthProvider = ({ children }) => {
           const data = await res.json();
           setIsAuthenticated(true);
           setRole(data.role);
+          setId(data.id)
         } else {
           setIsAuthenticated(false);
         }
@@ -37,7 +39,7 @@ export const AuthProvider = ({ children }) => {
 
   return (
     <AuthContext.Provider
-      value={{ isAuthenticated, setIsAuthenticated, role, setRole }}
+      value={{ isAuthenticated, setIsAuthenticated, role, setRole ,id, setId}}
     >
       {children}
     </AuthContext.Provider>

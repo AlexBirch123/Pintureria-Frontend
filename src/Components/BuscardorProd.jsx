@@ -45,7 +45,7 @@ const BuscadorProd = ({ saleProds, setSaleProds ,productos, setProductos}) => {
             idProduct: product.id,
             description: product.description,
             price: product.price,
-            amount: 1,
+            quantity: 1,
             stock: product.stock,
             total: product.price,
           },

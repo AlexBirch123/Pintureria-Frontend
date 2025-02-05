@@ -10,11 +10,7 @@ const VerVentas = () => {
   const [rowsSale, setRowsSale] = useState([]);
   const [empleados, setEmpleados] = useState([]);
   const [clientes, setClientes] = useState([]);
-  const [sucursales, setSucursales] = useState([]);
 
-  //SOLO PARA MOSTRAR LOS DATOS DE LA VENTA
-  //AL HACER DOBLE CLICK EN UNA VENTA SE MUESTRA
-  //LOS PRODUCTOS DE LA VENTA EN UNA NUEVA VENTANA
 
   useEffect(() => {
     const fetchSale = async () => {
@@ -31,22 +27,6 @@ const VerVentas = () => {
         console.log(error);
       }
     };
-
-    // const fetchProd = async () => {
-    //   const local = getLocalStorage("products");
-
-    //   try {
-    //     await fetch(URL + "/Products", { credentials: "include" })
-    //       .then((res) => res.json())
-    //       .then((data) => {
-    //         if (!data) return setProductos(local.datos);
-    //         setProductos(data);
-    //         setLocalStorage(data, "products");
-    //       });
-    //   } catch (error) {
-    //     console.log(error);
-    //   }
-    // };
     const fetchEmp = async () => {
       const local = getLocalStorage("employees");
       try {
@@ -76,24 +56,6 @@ const VerVentas = () => {
         console.log(error);
       }
     };
-
-    const fetchSuc = async () => {
-      const local = getLocalStorage("clients");
-      try {
-        await fetch(URL + "/Branches", { credentials: "include" })
-          .then((res) => res.json())
-          .then((data) => {
-            if (!data) return setSucursales(local.datos);
-            setSucursales(data);
-            setLocalStorage(data, "branches");
-          });
-      } catch (error) {
-        console.log(error);
-      }
-    };
-
-    // fetchProd();
-    fetchSuc();
     fetchClient();
     fetchEmp();
     fetchSale();
@@ -200,7 +162,7 @@ const VerVentas = () => {
                           <tr key={row.id}>
                             <td>{row.description}</td>
                             <td>{row.price}</td>
-                            <td>{row.amount}</td>
+                            <td>{row.quantity}</td>
                             <td>{row.total}</td>
                           </tr>
                         ))}

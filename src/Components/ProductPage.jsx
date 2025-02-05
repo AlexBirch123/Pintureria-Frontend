@@ -5,13 +5,14 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import { useLocation, useNavigate } from "react-router";
 import { useAuth } from "./AuthContext";
 
-const ProductPage = () => {
+const ProductPage = ({setCartChange,cartChange}) => {
   const {  isAuthenticated } = useAuth();
   const navigate = useNavigate()
   const location = useLocation();
   const queryParams = new URLSearchParams(location.search);
   let idProd = queryParams.get("idProd"); 
   const [product, setProduct] = useState(null);
+  const [message, setMessage] = useState(null);
   
   useEffect(() => {
     const storedProducts = getLocalStorage("products");
@@ -20,23 +21,29 @@ const ProductPage = () => {
   }, [idProd]);
 
   const addToCart = () => {
-    if(!isAuthenticated) return navigate("/login")
-    const local = getLocalStorage("cart")
-    const cartProds = local.datos
+    if (!isAuthenticated) return navigate("/login");
+    const local = getLocalStorage("cart");
     const newCartProd = {
       idProduct: product.id,
-      description: product.descripcion,
+      description: product.description,
       price: product.price,
       quantity: 1,
       total: product.price,
+    };
+    if (local) {
+      console.log(local.datos)
+      const cartProds =local.datos;
+      const alreadyAdd = cartProds.find(p => p.idProduct === newCartProd.idProduct);
+      if (alreadyAdd) {
+        setMessage("Producto ya existente en el carro");
+        return;
+      }
+      setLocalStorage([...cartProds, newCartProd] , "cart");
+    } else {
+      setLocalStorage([newCartProd], "cart");
     }
-    if(cartProds){
-      if(cartProds.include(newCartProd))return
-      setLocalStorage("cart", [...cartProds, newCartProd])
-    }else{ 
-      setLocalStorage("cart", [newCartProd])
-    }
-    console.log(`agregado al carrito`);
+    setMessage("Producto agregado al carrito");
+    setCartChange(!cartChange)
   };
 
   return (
@@ -62,6 +69,7 @@ const ProductPage = () => {
               <h1>{product.description}</h1>
               <p>{product.description}</p>
               <h2>$ {product.price}</h2>
+              <p>Unidades en stock: {product.stock}</p>
               <button className="btn btn-primary" onClick={() => addToCart()}>
                 Agregar al carrito
               </button>
@@ -70,7 +78,8 @@ const ProductPage = () => {
             <p>Loading...</p>
           )}
         </div>
-      </div>
+      </div>     
+      {message && (<p>{message}</p>)}
     </div>
   );
 };
