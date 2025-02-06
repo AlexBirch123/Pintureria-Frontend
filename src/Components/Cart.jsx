@@ -44,16 +44,21 @@ const Cart = ({setCartChange, cartChange}) => {
               "El total de la venta debe ser mayor a 0"
             ); /*setMessage("El total de la venta debe ser mayor a 0");*/
           try {
-            const res = await fetch(URL + "/mp",{
-                method: "POST",
-                credentials: "include",
-                headers: {
-                  "Content-Type": "application/json",
-                },
-                body: JSON.stringify(cartProds),
-              });
-            const data = res.json()
-            window.location(data.body.init_point)
+            console.log(cartProds)
+            const res = await fetch(`${URL}/mp`, {
+              method: "POST",
+              credentials: "include",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify(cartProds),
+            });
+            if (!res.ok) {
+                throw new Error('Network response was not ok');
+            }
+            const data = await res.json();
+            console.log(data)
+            window.location.href = data.init_point;
             // await fetch(URL + `/Sales`, {
             //   method: "POST",
             //   credentials: "include",
