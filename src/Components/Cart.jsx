@@ -44,21 +44,31 @@ const Cart = ({setCartChange, cartChange}) => {
               "El total de la venta debe ser mayor a 0"
             ); /*setMessage("El total de la venta debe ser mayor a 0");*/
           try {
-            await fetch(URL + `/Sales`, {
-              method: "POST",
-              credentials: "include",
-              headers: {
-                "Content-Type": "application/json",
-              },
-              body: JSON.stringify(newSale),
-            });
+            const res = await fetch(URL + "/mp",{
+                method: "POST",
+                credentials: "include",
+                headers: {
+                  "Content-Type": "application/json",
+                },
+                body: JSON.stringify(cartProds),
+              });
+            const data = res.json()
+            window.location(data.body.init_point)
+            // await fetch(URL + `/Sales`, {
+            //   method: "POST",
+            //   credentials: "include",
+            //   headers: {
+            //     "Content-Type": "application/json",
+            //   },
+            //   body: JSON.stringify(newSale),
+            // });
           } catch (error) {
             console.log(" error al crear la venta", error);
           }
-          setMessage("Venta Realizada con exito");
-          setTimeout(()=>{setMessage(null)
-            navigate("/home")
-          } , 3000); 
+          // setMessage("Venta Realizada con exito");
+          // setTimeout(()=>{setMessage(null)
+          //   navigate("/home")
+          // } , 3000); 
       };
 
     return (
