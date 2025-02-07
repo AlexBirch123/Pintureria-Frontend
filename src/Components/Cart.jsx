@@ -57,7 +57,6 @@ const Cart = ({setCartChange, cartChange}) => {
                 throw new Error('Network response was not ok');
             }
             const data = await res.json();
-            console.log(data)
             window.location.href = data.init_point;
             // await fetch(URL + `/Sales`, {
             //   method: "POST",
