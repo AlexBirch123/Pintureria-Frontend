@@ -1,7 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import NavBar from './Components/NavBar';
 import Carousel from 'react-bootstrap/Carousel';
-// import frente from "./utils/frente.jpg"
 import CategoryCard from './Components/CategoryCard';
 import { getLocalStorage,setLocalStorage } from './utils/localStorage';
 import { URL } from './utils/config';

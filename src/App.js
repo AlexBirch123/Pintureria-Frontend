@@ -43,6 +43,7 @@ function App() {
         <Route path="/productPage" element={<ProductPage  setCartChange={setCartChange} cartChange={cartChange}/>} />
         <Route path="/cartShop" element={<Cart setCartChange={setCartChange} cartChange={cartChange}/>} />
         <Route path="/usuarios" element={<Usuarios/>} />
+        <Route path="/payment" element={<Cart setCartChange={setCartChange} cartChange={cartChange}/>} />
 
         <Route path="/buscador" element={<BuscadorProd />} />
 
