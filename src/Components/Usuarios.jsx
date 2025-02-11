@@ -1,6 +1,5 @@
 import React, { useState, useRef, useEffect } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
-import { URL } from "../utils/config";
 
 const Usuarios = () => {
   const emailRef = useRef(null);
@@ -18,7 +17,7 @@ const Usuarios = () => {
     const fetchBranches = async () => {
 
       try {
-        await fetch(URL + "/users",{credentials: "include"})
+        await fetch(process.env.URL + "/users",{credentials: "include"})
           .then((res) => res.json())
           .then((data) => {
             if (!data) return 
@@ -53,7 +52,7 @@ const Usuarios = () => {
           pswHash:psw,
         }
         try {
-          const res = await fetch(URL + "/users", {
+          const res = await fetch(process.env.URL + "/users", {
             method: "POST",
             credentials: "include",
             headers: {
@@ -95,7 +94,7 @@ const Usuarios = () => {
     );
     if (confirmDelete) {
       try {
-        await fetch(URL + `/users/${id}`, {
+        await fetch(process.env.URL + `/users/${id}`, {
           method: "DELETE",
         });
         const updatedSucursales = users.filter(
@@ -136,7 +135,7 @@ const Usuarios = () => {
   //     }
   //   }
   //   try {
-  //     await fetch(URL + `/Branches/${id}`, {
+  //     await fetch(process.env.URL + `/Branches/${id}`, {
   //       method: "PATCH",
   //       credentials: "include",
   //       headers: {

@@ -1,7 +1,9 @@
 import React, { useState, useRef, useEffect } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
-import { URL } from "../utils/config";
+import dotenv from "dotenv"
 import { getLocalStorage, setLocalStorage } from "../utils/localStorage";
+
+dotenv.config()
 
 const Proveedores = () => {
   const [proveedores, setProveedores] = useState([]);
@@ -19,7 +21,7 @@ const Proveedores = () => {
       const local = getLocalStorage("branches");
       
         try {
-          await fetch(URL + "/Suppliers",{credentials: "include"})
+          await fetch(process.env.URL + "/Suppliers",{credentials: "include"})
             .then((res) => res.json())
             .then((data) => {
               if (!data) return setProveedores(local.datos);
@@ -57,7 +59,7 @@ const Proveedores = () => {
           cuit: cuit,
         };
         try {
-          const res = await fetch(URL + "/Suppliers", {
+          const res = await fetch(process.env.URL + "/Suppliers", {
             method: "POST",
             credentials: "include",
             headers: {
@@ -101,7 +103,7 @@ const Proveedores = () => {
       "¿Estás seguro de eliminar este cliente?"
     );
     if (confirmDelete) {
-      await fetch(URL + `/Suppliers/${id}`, {
+      await fetch(process.env.URL + `/Suppliers/${id}`, {
         method: "DELETE",
         credentials: "include",
       });
@@ -138,7 +140,7 @@ const Proveedores = () => {
         }
       }
       try {
-        await fetch(URL + `/Suppliers/${id}`, {
+        await fetch(process.env.URL + `/Suppliers/${id}`, {
           method: "PATCH",
           credentials: "include",
           headers: {

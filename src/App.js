@@ -19,6 +19,9 @@ import ProductPage from './Components/ProductPage.jsx';
 import Cart from './Components/Cart.jsx';
 import Usuarios from './Components/Usuarios.jsx';
 import { useState } from 'react';
+import dotenv from "dotenv"
+
+dotenv.config()
 
 function App() {
 

@@ -1,7 +1,9 @@
 import React, { useState, useRef, useEffect } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
-import { URL } from "../utils/config";
 import { setLocalStorage, getLocalStorage } from "../utils/localStorage";
+import dotenv from "dotenv"
+
+dotenv.config()
 
 const Clientes = () => {
   const [clientes, setClientes] = useState([]);
@@ -19,7 +21,7 @@ const Clientes = () => {
   const fetchClients = async () => {
     const local = getLocalStorage("clients");
     try {
-      await fetch(URL + "/Clients",{credentials: "include"})
+      await fetch(process.env.URL + "/Clients",{credentials: "include"})
         .then((res) => res.json())
         .then((data) => {
           if (!data) return setClientes(local.datos);;
@@ -58,7 +60,7 @@ const Clientes = () => {
           dni: dni,
         };
         try {
-          const res = await fetch(URL + "/Clients", {
+          const res = await fetch(process.env.URL + "/Clients", {
             method: "POST",
             headers: {
               "Content-Type": "application/json",
@@ -103,7 +105,7 @@ const Clientes = () => {
     );
     if (confirmDelete) {
       try {
-        await fetch(URL + `/Clients/${id}`, {
+        await fetch(process.env.URL + `/Clients/${id}`, {
           method: "DELETE",
         });
         const updatedClients = clientes.filter((client) => client.id !== id);
@@ -143,7 +145,7 @@ const Clientes = () => {
       }
     }
     try {
-      await fetch(URL + `/Clients/${id}`, {
+      await fetch(process.env.URL + `/Clients/${id}`, {
         method: "PATCH",
         headers: {
           "Content-Type": "application/json",

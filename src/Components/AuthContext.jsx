@@ -1,5 +1,4 @@
 import { createContext, useContext, useState, useEffect } from "react";
-import { URL } from "../utils/config";
 
 // Crear el AuthContext
 const AuthContext = createContext();
@@ -16,7 +15,7 @@ export const AuthProvider = ({ children }) => {
   useEffect(() => {
     const checkAuth = async () => {
       try {
-        const res = await fetch(URL + "/authorized", {
+        const res = await fetch(process.env.URL + "/authorized", {
           credentials: "include",
         });
 

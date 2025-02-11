@@ -1,7 +1,9 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { URL } from "../utils/config.js";
+import dotenv from "dotenv"
 import { useAuth } from "./AuthContext.jsx";
+
+dotenv.config()
 
 const Recover = () => {
   const [email, setEmail] = useState("");
@@ -19,7 +21,7 @@ const Recover = () => {
   //       pswHash: password,
   //     };
   //     try {
-  //       const res = await fetch( URL +"/users/login", {
+  //       const res = await fetch( process.env.URL +"/users/login", {
   //         method: "POST",
   //         credentials: "include",
   //         headers: {

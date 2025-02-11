@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
-import { URL } from "../utils/config";
 import { getLocalStorage, setLocalStorage } from "../utils/localStorage";
 import { searchDesc } from "../utils/search";
 
@@ -16,7 +15,7 @@ const VerVentas = () => {
     const fetchSale = async () => {
       const local = getLocalStorage("sales");
       try {
-        await fetch(URL + "/Sales", { credentials: "include" })
+        await fetch(process.env.URL + "/Sales", { credentials: "include" })
           .then((res) => res.json())
           .then((data) => {
             if (!data) return setVentas(local.datos);
@@ -30,7 +29,7 @@ const VerVentas = () => {
     const fetchEmp = async () => {
       const local = getLocalStorage("employees");
       try {
-        await fetch(URL + "/Employees", { credentials: "include" })
+        await fetch(process.env.URL + "/Employees", { credentials: "include" })
           .then((res) => res.json())
           .then((data) => {
             if (!data) return setEmpleados(local.datos);
@@ -45,7 +44,7 @@ const VerVentas = () => {
     const fetchClient = async () => {
       const local = getLocalStorage("clients");
       try {
-        await fetch(URL + "/Clients", { credentials: "include" })
+        await fetch(process.env.URL + "/Clients", { credentials: "include" })
           .then((res) => res.json())
           .then((data) => {
             if (!data) return setClientes(local.datos);
@@ -64,7 +63,7 @@ const VerVentas = () => {
   
   const cargaFilasVenta = async (id) => {
     try {
-      const res = await fetch(URL + `/Rows/${id}`, { credentials: "include" });
+      const res = await fetch(process.env.URL + `/Rows/${id}`, { credentials: "include" });
       const data = await res.json();
       setRowsSale(data);
     } catch (error) {
@@ -78,7 +77,7 @@ const VerVentas = () => {
       "¿Estás seguro de eliminar esta venta?"
     );
     if (confirmDelete) {
-      await fetch(URL + `/Sales/${id}`, {
+      await fetch(process.env.URL + `/Sales/${id}`, {
         method: "DELETE",
       });
       const updatedVentas = ventas.filter((v) => v.id !== id);
