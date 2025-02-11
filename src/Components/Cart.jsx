@@ -3,7 +3,8 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import { useLocation, useNavigate } from 'react-router';
 import { getLocalStorage, setLocalStorage } from '../utils/localStorage';
 import { useAuth } from './AuthContext';
-import { URL } from '../utils/config';
+import dotenv from "dotenv"
+dotenv.config()
 
 const Cart = ({setCartChange, cartChange}) => {
   const location = useLocation();
@@ -15,6 +16,7 @@ const Cart = ({setCartChange, cartChange}) => {
   const [message,setMessage] = useState("")
   const [paymentId,setPaymentId] = useState("")
   const {id} = useAuth();
+
   useEffect(()=>{
       const local = getLocalStorage("cart")
       if (local) setCartProds( local.datos)
@@ -29,16 +31,15 @@ const Cart = ({setCartChange, cartChange}) => {
       setPaymentId(queryId);
     }
   }, [queryId]);
-
   useEffect(() => {
-    if (paymentId && !saleCreated) {
+    if (paymentId && !saleCreated && cartProds.length > 0) {
       creatSale();
     }
-  }, [paymentId]);
+  }, [paymentId, cartProds]);
   
   const handleQuantityChange = (id, quantity) => {
     const updateQuantity = cartProds.map((item) =>
-      item.idProduct === id ? { ...item, quantity: quantity } : item
+      item.idProduct === id ? { ...item, quantity: quantity , total:item.price * quantity} : item
     );
     setCartProds(updateQuantity);
     setLocalStorage(updateQuantity, "cart");
@@ -46,14 +47,14 @@ const Cart = ({setCartChange, cartChange}) => {
 
   const handleRemoveItem = (id) => {
       const newCart =cartProds.filter(item => item.idProduct !== id)
-      setCartProds( newCart);
+      setCartProds(newCart);
       setLocalStorage(newCart,"cart")
       setCartChange(!cartChange)
   };
 
   const createOrder = async()=>{
     try {
-      const res = await fetch(`${URL}/mp`, {
+      const res = await fetch(`${process.env.URL}/mp`, {
         method: "POST",
         credentials: "include",
         headers: {
@@ -62,7 +63,7 @@ const Cart = ({setCartChange, cartChange}) => {
         body: JSON.stringify(cartProds),
       });
       if (!res.ok) {
-        throw new Error("Network response was not ok");
+        throw new Error("Error al conectar con Mercado Pago");
       }
       const data = await res.json();
       window.location.href = data.init_point;
@@ -75,7 +76,7 @@ const Cart = ({setCartChange, cartChange}) => {
     let total = 0;
     cartProds.map((prod) => (total = total + prod.price * prod.quantity));
     const newSale = {
-      idClient: id,
+      idUser: id,
       idBranch: 1,
       idEmp: 1,
       total: total,
@@ -86,8 +87,7 @@ const Cart = ({setCartChange, cartChange}) => {
     if (!(total > 0))return setMessage("El total de la venta debe ser mayor a 0");
 
     try {
-      console.log(cartProds);
-      await fetch(URL + `/Sales`, {
+      const res = await fetch(process.env.URL + `/Sales`, {
         method: "POST",
         credentials: "include",
         headers: {
@@ -95,6 +95,7 @@ const Cart = ({setCartChange, cartChange}) => {
         },
         body: JSON.stringify(newSale),
       });
+      if(!res.ok) return console.log("error al crear la venta")
       setSaleCreated(true)
       setCartChange(!cartChange)
       setLocalStorage([],"cart")
@@ -105,9 +106,8 @@ const Cart = ({setCartChange, cartChange}) => {
 
   return (
       <div className="container mt-5">
-        {paymentId ? ( 
+        {(paymentId && saleCreated) ? ( 
           <div className="container mt-5">
-          {creatSale}
           <h2 style={{marginTop:"5%"}}>Compra realizada con exito</h2>
           <h3>Detalle de tu compra</h3>
           <ul className="list-group">
@@ -121,7 +121,7 @@ const Cart = ({setCartChange, cartChange}) => {
                     </li>
                 ))}
             </ul>
-          <button className="btn btn-danger" onClick={navigate("/home")}>Seguir comprando</button>
+          <button className="btn btn-primary mt-3" onClick={()=> navigate("/home")}>Seguir comprando</button>
         </div>
         ):(
           <div>
@@ -149,7 +149,11 @@ const Cart = ({setCartChange, cartChange}) => {
                     </li>
                 )}
             </ul>
-            <button className="btn btn-primary mt-3" onClick={createOrder}>Pagar</button>
+            {cartProds.length > 0 ? (
+              <button className="btn btn-primary mt-3" onClick={createOrder}>Pagar</button>
+            ):(
+              <button className="btn btn-primary mt-3" onClick={()=> navigate("/home")}>Seguir comprando</button>
+            )}
 
             {message&& <p>{message}</p>}
           </div>
