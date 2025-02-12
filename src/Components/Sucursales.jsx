@@ -1,9 +1,6 @@
 import React, { useState, useRef, useEffect } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
-import dotenv from "dotenv"
 import { getLocalStorage, setLocalStorage } from "../utils/localStorage";
-
-dotenv.config()
 
 const Sucursales = () => {
   const [sucursales, setSucursales] = useState([]);
@@ -20,7 +17,7 @@ const Sucursales = () => {
       const local = getLocalStorage("branches");
 
       try {
-        await fetch(process.env.URL + "/Branches",{credentials: "include"})
+        await fetch(process.env.REACT_APP_API_URL + "/Branches",{credentials: "include"})
           .then((res) => res.json())
           .then((data) => {
             if (!data) return setSucursales(local.datos);
@@ -53,7 +50,7 @@ const Sucursales = () => {
         };
 
         try {
-          const res = await fetch(process.env.URL + "/Branches", {
+          const res = await fetch(process.env.REACT_APP_API_URL + "/Branches", {
             method: "POST",
             headers: {
               "Content-Type": "application/json",
@@ -97,7 +94,7 @@ const Sucursales = () => {
     );
     if (confirmDelete) {
       try {
-        await fetch(process.env.URL + `/Branches/${id}`, {
+        await fetch(process.env.REACT_APP_API_URL + `/Branches/${id}`, {
           method: "DELETE",
         });
         const updatedSucursales = sucursales.filter(
@@ -139,7 +136,7 @@ const Sucursales = () => {
       }
     }
     try {
-      await fetch(process.env.URL + `/Branches/${id}`, {
+      await fetch(process.env.REACT_APP_API_URL + `/Branches/${id}`, {
         method: "PATCH",
         credentials: "include",
         headers: {

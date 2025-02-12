@@ -2,7 +2,6 @@ import React, { useEffect, useState } from 'react';
 import Carousel from 'react-bootstrap/Carousel';
 import CategoryCard from './Components/CategoryCard';
 import { getLocalStorage,setLocalStorage } from './utils/localStorage';
-import { URL } from './utils/config';
 import './App.css';
 
 /**
@@ -29,10 +28,10 @@ function Home() {
     const fetchcat = async () => {
           const local = getLocalStorage("category");
           try {
-            await fetch(URL + "/category", { credentials: "include" })
+            await fetch(process.env.REACT_APP_API_URL + "/category", { credentials: "include" })
               .then((res) => res.json())
               .then((data) => {
-                if (!data) return setcategorias(local.datos);
+                if (!data) {if(local) return setcategorias(local.datos);}
                 setcategorias(data);
                 setLocalStorage(data, "category");
               });

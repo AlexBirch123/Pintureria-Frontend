@@ -17,7 +17,7 @@ const Usuarios = () => {
     const fetchBranches = async () => {
 
       try {
-        await fetch(process.env.URL + "/users",{credentials: "include"})
+        await fetch(process.env.REACT_APP_API_URL + "/users",{credentials: "include"})
           .then((res) => res.json())
           .then((data) => {
             if (!data) return 
@@ -52,7 +52,7 @@ const Usuarios = () => {
           pswHash:psw,
         }
         try {
-          const res = await fetch(process.env.URL + "/users", {
+          const res = await fetch(process.env.REACT_APP_API_URL + "/users", {
             method: "POST",
             credentials: "include",
             headers: {
@@ -94,7 +94,7 @@ const Usuarios = () => {
     );
     if (confirmDelete) {
       try {
-        await fetch(process.env.URL + `/users/${id}`, {
+        await fetch(process.env.REACT_APP_API_URL + `/users/${id}`, {
           method: "DELETE",
         });
         const updatedSucursales = users.filter(

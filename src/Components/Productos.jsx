@@ -1,10 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
-import dotenv from "dotenv"
 import {setLocalStorage,getLocalStorage} from "../utils/localStorage"
 import { searchDesc } from "../utils/search";
-
-dotenv.config()
 
 const Productos = ({ role }) => {
   const [formVisible, setFormVisible] = useState(false);
@@ -24,7 +21,7 @@ const Productos = ({ role }) => {
     const fetchProd = async () => {
       const local = getLocalStorage("products");
       try {
-        await fetch(process.env.URL + "/Products", { credentials: "include" })
+        await fetch(process.env.REACT_APP_API_URL + "/Products", { credentials: "include" })
           .then((res) => res.json())
           .then((data) => {
             if (!data) return setProductos(local.datos);
@@ -38,7 +35,7 @@ const Productos = ({ role }) => {
     const fetchcat = async () => {
       const local = getLocalStorage("category");
       try {
-        await fetch(process.env.URL + "/category", { credentials: "include" })
+        await fetch(process.env.REACT_APP_API_URL + "/category", { credentials: "include" })
           .then((res) => res.json())
           .then((data) => {
             if (!data) return setcategorias(local.datos);
@@ -52,7 +49,7 @@ const Productos = ({ role }) => {
     const fetchSupp = async () => {
       const local = getLocalStorage("suppliers");
       try {
-        await fetch(process.env.URL + "/Suppliers", { credentials: "include" })
+        await fetch(process.env.REACT_APP_API_URL + "/Suppliers", { credentials: "include" })
           .then((res) => res.json())
           .then((data) => {
             if (!data) return setProveedores(local.datos);
@@ -97,7 +94,7 @@ const Productos = ({ role }) => {
         idCat: idCat,
       };
       try {
-        const res = await fetch(process.env.URL + "/Products", {
+        const res = await fetch(process.env.REACT_APP_API_URL + "/Products", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -122,7 +119,7 @@ const Productos = ({ role }) => {
       "¿Estás seguro de eliminar este producto?"
     );
     if (confirmDelete) {
-      await fetch(process.env.URL + `/Products/${id}`, {
+      await fetch(process.env.REACT_APP_API_URL + `/Products/${id}`, {
         credentials: true,
         method: "DELETE",
       });
@@ -146,7 +143,7 @@ const Productos = ({ role }) => {
     const handleBlur = async (id, field, value) => {
       const data = { [field]: value };
       try {
-        await fetch(process.env.URL + `/Products/${id}`, {
+        await fetch(process.env.REACT_APP_API_URL + `/Products/${id}`, {
           method: "PATCH",
           credentials: "include",
           headers: {

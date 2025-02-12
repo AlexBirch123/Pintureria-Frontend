@@ -1,9 +1,7 @@
 import React, { useState, useRef, useEffect } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
-import dotenv from "dotenv"
 import { getLocalStorage, setLocalStorage } from "../utils/localStorage";
 
-dotenv.config()
 
 const Empleados = () => {
   const [empleados, setEmpleados] = useState([]);
@@ -20,7 +18,7 @@ const Empleados = () => {
     const fetchEmp = async () => {
       const local = getLocalStorage("employees");
       try {
-        await fetch(process.env.URL + "/Employees", {credentials: "include"})
+        await fetch(process.env.REACT_APP_API_URL + "/Employees", {credentials: "include"})
           .then((res) => res.json())
           .then((data) => {
             if (!data) return setEmpleados(local.datos);
@@ -57,7 +55,7 @@ const Empleados = () => {
           dni: dni,
         };
         try {
-          const res = await fetch(process.env.URL + "/Employees", {
+          const res = await fetch(process.env.REACT_APP_API_URL + "/Employees", {
             method: "POST",
             credentials: "include",
             headers: {
@@ -106,7 +104,7 @@ const Empleados = () => {
       "¿Estás seguro de eliminar este empleado?"
     );
     if (confirmDelete) {
-      await fetch(process.env.URL + `/Employees/${id}`, {
+      await fetch(process.env.REACT_APP_API_URL + `/Employees/${id}`, {
         method: "DELETE",
       });
       const updatedEmp = empleados.filter((e) => e.id !== id);
@@ -139,7 +137,7 @@ const Empleados = () => {
       }
     }
     try {
-      await fetch(process.env.URL + `/Employees/${id}`, {
+      await fetch(process.env.REACT_APP_API_URL + `/Employees/${id}`, {
         method: "PATCH",
         headers: {
           "Content-Type": "application/json",

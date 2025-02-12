@@ -2,14 +2,12 @@ import { Link, useNavigate } from "react-router-dom";
 import "bootstrap/dist/css/bootstrap.min.css";
 import rioColor from "../rio_color.png";
 import cart from "../utils/icons/cart.svg";
-import dotenv from "dotenv"
 import { useAuth } from "./AuthContext";
 import {getLocalStorage, setLocalStorage } from "../utils/localStorage";
 import "../App.css";
 import "../NavBar.css";
 import { useEffect, useState } from "react";
 
-dotenv.config()
 
 const NavBar = ({cartChange}) => {
   const { role, setIsAuthenticated, isAuthenticated } = useAuth();
@@ -32,7 +30,7 @@ const NavBar = ({cartChange}) => {
       return;
     }
     try {
-      await fetch(process.env.URL + "/logout", {
+      await fetch(process.env.REACT_APP_API_URL + "/logout", {
         method: "POST",
         credentials: "include",
       }).then((res) => {

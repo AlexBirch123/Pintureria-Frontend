@@ -3,8 +3,6 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import { useLocation, useNavigate } from 'react-router';
 import { getLocalStorage, setLocalStorage } from '../utils/localStorage';
 import { useAuth } from './AuthContext';
-import dotenv from "dotenv"
-dotenv.config()
 
 const Cart = ({setCartChange, cartChange}) => {
   const location = useLocation();
@@ -54,7 +52,7 @@ const Cart = ({setCartChange, cartChange}) => {
 
   const createOrder = async()=>{
     try {
-      const res = await fetch(`${process.env.URL}/mp`, {
+      const res = await fetch(`${process.env.REACT_APP_API_URL}/mp`, {
         method: "POST",
         credentials: "include",
         headers: {
@@ -87,7 +85,7 @@ const Cart = ({setCartChange, cartChange}) => {
     if (!(total > 0))return setMessage("El total de la venta debe ser mayor a 0");
 
     try {
-      const res = await fetch(process.env.URL + `/Sales`, {
+      const res = await fetch(process.env.REACT_APP_API_URL + `/Sales`, {
         method: "POST",
         credentials: "include",
         headers: {

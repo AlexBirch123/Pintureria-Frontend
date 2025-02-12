@@ -1,9 +1,6 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import dotenv from "dotenv"
 import { useAuth } from "./AuthContext";
-
-dotenv.config()
 
 const Login = () => {
   // const [user, setUser] = useState(null);
@@ -21,7 +18,7 @@ const Login = () => {
         pswHash: password,
       };
       try {
-        const res = await fetch(process.env.URL + "/login", {
+        const res = await fetch(process.env.REACT_APP_API_URL + "/login", {
           method: "POST",
           credentials: "include",
           headers: {

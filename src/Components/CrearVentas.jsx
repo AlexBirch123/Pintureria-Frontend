@@ -1,10 +1,8 @@
 import React, { useState, useRef, useEffect } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { setLocalStorage, getLocalStorage } from "../utils/localStorage";
-import dotenv from "dotenv"
 import BuscadorProd from "./BuscardorProd";
 
-dotenv.config()
 
 const CrearVentas = () => {
   const [saleProds, setSaleProds] = useState([]);
@@ -23,7 +21,7 @@ const CrearVentas = () => {
     const fetchProd = async () => {
       const local = getLocalStorage("products");
       try {
-        await fetch(process.env.URL + "/Products", { credentials: "include" })
+        await fetch(process.env.REACT_APP_API_URL + "/Products", { credentials: "include" })
           .then((res) => res.json())
           .then((data) => {
             if (!data) return setProductos(local.datos);
@@ -37,7 +35,7 @@ const CrearVentas = () => {
     const fetchEmp = async () => {
       const local = getLocalStorage("employees");
       try {
-        await fetch(process.env.URL + "/Employees", { credentials: "include" })
+        await fetch(process.env.REACT_APP_API_URL + "/Employees", { credentials: "include" })
           .then((res) => res.json())
           .then((data) => {
             if (!data) return setEmpleados(local.datos);
@@ -52,7 +50,7 @@ const CrearVentas = () => {
     const fetchClient = async () => {
       const local = getLocalStorage("clients");
       try {
-        await fetch(process.env.URL + "/Clients", { credentials: "include" })
+        await fetch(process.env.REACT_APP_API_URL + "/Clients", { credentials: "include" })
           .then((res) => res.json())
           .then((data) => {
             if (!data) return setEmpleados(local.datos);
@@ -67,7 +65,7 @@ const CrearVentas = () => {
     const fetchSuc = async () => {
       const local = getLocalStorage("branches");
       try {
-        await fetch(process.env.URL + "/Branches", { credentials: "include" })
+        await fetch(process.env.REACT_APP_API_URL + "/Branches", { credentials: "include" })
           .then((res) => res.json())
           .then((data) => {
             if (!data) return setSucursales(local.datos);
@@ -124,7 +122,7 @@ const CrearVentas = () => {
           "El total de la venta debe ser mayor a 0"
         ); /*setMessage("El total de la venta debe ser mayor a 0");*/
       try {
-        await fetch(process.env.URL + `/Sales`, {
+        await fetch(process.env.REACT_APP_API_URL + `/Sales`, {
           method: "POST",
           credentials: "include",
           headers: {

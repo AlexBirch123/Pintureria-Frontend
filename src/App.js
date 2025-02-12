@@ -19,9 +19,6 @@ import ProductPage from './Components/ProductPage.jsx';
 import Cart from './Components/Cart.jsx';
 import Usuarios from './Components/Usuarios.jsx';
 import { useState } from 'react';
-import dotenv from "dotenv"
-
-dotenv.config()
 
 function App() {
 
@@ -54,15 +51,10 @@ function App() {
         <Route path="/home" element={<Home role={role} />} />
 
         {/* Ruta para el Login */}
-        <Route
-          path="/login"
-          element={isAuthenticated ? <Navigate to="/dashboard" /> : <Login />}
+        <Route path="/login" element={isAuthenticated ? <Navigate to="/dashboard" /> : <Login />}
         />
         <Route path="/register" element={<RegistroCliente />} />
-        <Route
-          path="/recoverPassword"
-          element={isAuthenticated ? <Navigate to="/dashboard" /> : <Recover />}
-        />
+        <Route path="/recover" element={isAuthenticated ? <Navigate to="/dashboard" /> : <Recover />}/>
 
         {/* Redirigir al login por defecto */}
         <Route path="/" element={<Navigate to="/home" />} />

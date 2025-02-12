@@ -20,7 +20,7 @@ const ViewProducts = () => {
     const fetchProd = async () => {
       const local = getLocalStorage("products");
       try {
-        await fetch(process.env.URL + "/Products", { credentials: "include" })
+        await fetch(process.env.REACT_APP_API_URL + "/Products", { credentials: "include" })
           .then((res) => res.json())
           .then((data) => {
             if (!data || data.length === 0) {
@@ -39,7 +39,7 @@ const ViewProducts = () => {
     const fetchcat = async () => {
       const local = getLocalStorage("category");
       try {
-        await fetch(process.env.URL + "/category", { credentials: "include" })
+        await fetch(process.env.REACT_APP_API_URL + "/category", { credentials: "include" })
           .then((res) => res.json())
           .then((data) => {
             if (!data) return setcategorias(local.datos);

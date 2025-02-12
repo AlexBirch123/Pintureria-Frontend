@@ -1,7 +1,5 @@
-import { useEffect, useState } from "react";
-import { getLocalStorage, setLocalStorage } from "../utils/localStorage";
+import { useState } from "react";
 import Modal from "react-modal";
-import { URL } from "../utils/config";
 
 const BuscadorProd = ({ saleProds, setSaleProds ,productos, setProductos}) => {
   // const [productos, setProductos] = useState([]);
