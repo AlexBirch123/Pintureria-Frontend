@@ -25,11 +25,6 @@ const Cart = ({setCartChange, cartChange}) => {
     }
   }, [queryId]);
   useEffect(() => {
-    if (queryId) {
-      setPaymentId(queryId);
-    }
-  }, [queryId]);
-  useEffect(() => {
     if (paymentId && !saleCreated && cartProds.length > 0) {
       creatSale();
     }
