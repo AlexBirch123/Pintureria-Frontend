@@ -1,9 +1,6 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import dotenv from "dotenv"
 import { useAuth } from "./AuthContext.jsx";
-
-dotenv.config()
 
 const Recover = () => {
   const [email, setEmail] = useState("");
@@ -46,10 +43,21 @@ const Recover = () => {
   //   }
   // };
 
-  const handleRecover = (e) => {
+  const handleRecover = async (e) => {
     e.preventDefault();
+    try {
+      await fetch(process.env.REACT_APP_API_URL + "/recover", {
+        method:"POST",
+        credentials: "include",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(),
+      })
 
-    setMessage("Correo enviado con éxito");
+    } catch (error) {
+      console.log(error)
+    }
     //   if (username === "" || password === "") {
     //     setMessage("Por favor, ingrese todos los campos.");
     //     return;
@@ -61,8 +69,10 @@ const Recover = () => {
   };
 
   return (
-    <div className="container" style={{ maxWidth: "400px", marginTop: "50px" }}>
-      <h2 className="text-center">Recuperacion de contraseña</h2>
+    <div className="container" style={{ maxWidth: "400px", marginTop: "200px" }}>
+      
+      <button onClick={handleRecover}>Enviar mail</button>
+      {/* <h2 className="text-center">Recuperacion de contraseña</h2>
       <form onSubmit={handleRecover}>
         <div className="mb-3">
           <label htmlFor="username" className="form-label">
@@ -80,7 +90,7 @@ const Recover = () => {
           Confirmar
         </button>
       </form>
-      {message && <p className="text-danger text-center">{message}</p>}
+      {message && <p className="text-danger text-center">{message}</p>} */}
 
       {/* Botón de Registro */}
       {/* <div className="text-center mt-3">
