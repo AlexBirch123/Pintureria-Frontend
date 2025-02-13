@@ -19,24 +19,56 @@ const Recover = () => {
 
 
   useEffect(() => {
-    console.log(queryToken)
-    const fetchToken = async () => {
+    const fetchAndDeleteToken = async () => {
       try {
+        //buscar si existe el token
         const res = await fetch(`http://localhost:8080/recover/${queryToken}`, {
           credentials: "include",
         });
         const data = await res.json();
-        console.log(data)
-        if (data) {
-          setEmail(data.email)
-        };
+        console.log(data);
+        if (data && data.email) {
+          console.log(Date.now())
+          const timeStamp = new Date(data.cretedAt).getTime()
+          console.log(timeStamp)
+          const timeToken = Date.now() - new Date(data.cretedAt).getTime();
+          console.log(timeToken)
+          if (timeToken < 900000) setEmail(data.email);
+          else {
+            setMessage("Token Invalido")
+            setTimeout(()=> setMessage(null),5000)
+          }
+        }
+
+        //eliminar tokens expirados
+        if(email){
+          const res = await fetch(process.env.REACT_APP_API_URL + `/recover/${email}`, {
+            credentials: "include",
+          });
+          const data = await res.json();
+          if (data) {
+            for (const t of data) {
+              const timeToken = Date.now() - new Date(t.cretedAt).getTime();
+              if (timeToken > 900000){
+                await fetch(
+                  process.env.REACT_APP_API_URL + `/recover/${t.id}`,
+                  {
+                    method: "DELETE",
+                    credentials: "include",
+                  }
+                );
+              } 
+            }
+          }
+        }
+
       } catch (error) {
         console.log(error);
       }
     };
     if (queryToken) {
       setToken(queryToken);
-      fetchToken();
+      fetchAndDeleteToken();
     }
   }, [queryToken]);
 
