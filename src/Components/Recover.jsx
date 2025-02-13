@@ -19,13 +19,17 @@ const Recover = () => {
 
 
   useEffect(() => {
+    console.log(queryToken)
     const fetchToken = async () => {
       try {
         const res = await fetch(`http://localhost:8080/recover/${queryToken}`, {
           credentials: "include",
         });
         const data = await res.json();
-        if (data) setEmail(data.email);
+        console.log(data)
+        if (data) {
+          setEmail(data.email)
+        };
       } catch (error) {
         console.log(error);
       }
@@ -55,6 +59,10 @@ const Recover = () => {
       if (res.ok) {
         setMessage("Contraseña modificada con exito, redirigiendo al login");
         setTimeout(() => navigate("/login"), 3000);
+        await fetch(process.env.REACT_APP_API_URL + `/recover/${queryToken}`, {
+          method: "DELETE",
+          credentials: "include",
+        });
       }
     } catch (error) {
       setMessage("Error en la solicitud");
@@ -63,6 +71,9 @@ const Recover = () => {
 
   const handleRecover = async (e) => {
     e.preventDefault();
+    const data = {
+      email:email
+    }
     try {
         const res = await fetch("http://localhost:8080/recover", {
           method:"POST",
@@ -70,7 +81,7 @@ const Recover = () => {
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify(email),
+          body: JSON.stringify(data),
         })
         if(res.ok) {
           setMessage(`Se envio un correo de recuperacion a ${email}`)

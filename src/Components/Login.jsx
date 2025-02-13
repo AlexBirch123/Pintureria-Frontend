@@ -90,7 +90,7 @@ const Login = () => {
 
       {/* Botón de Registro */}
       <div className="text-center mt-3">
-        <Link className="link" to="/recoverPassword">
+        <Link className="link" to="/recover">
           ¿Olvidó su contraseña?
         </Link>
         <p>¿No tienes una cuenta?</p>
