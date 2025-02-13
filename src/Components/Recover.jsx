@@ -28,10 +28,7 @@ const Recover = () => {
         const data = await res.json();
         console.log(data);
         if (data && data.email) {
-          console.log(Date.now())
-          const timeStamp = new Date(data.cretedAt).getTime()
-          console.log(timeStamp)
-          const timeToken = Date.now() - new Date(data.cretedAt).getTime();
+          const timeToken = Date.now() - new Date(data.createdAt).getTime();
           console.log(timeToken)
           if (timeToken < 900000) setEmail(data.email);
           else {
@@ -74,7 +71,10 @@ const Recover = () => {
 
   const changePass = async (e) => {
     e.preventDefault();
-    if (!(pass === pass2)) return setMessage("Las contraseñas no coinciden");
+    if (!(pass === pass2)) {  
+      setMessage("Las contraseñas no coinciden")
+      return setTimeout(() => {setMessage(null)}, 3000);
+    };
     const data = {
       pswHash: pass,
       email: email,
