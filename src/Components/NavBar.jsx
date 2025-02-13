@@ -71,11 +71,16 @@ const NavBar = ({cartChange}) => {
           id="collapsibleNavbar"
         >
           <ul className="navbar-nav">
-            <li className="nav-item">
-              <Link className="nav-link" to="/Productos">
+
+          {(isAuthenticated === false || role === 3)&& (
+          <li className="nav-item">
+              <Link className="nav-link" to="/products">
                 Productos
               </Link>
             </li>
+          ) 
+          }
+
             {role === 1 && isAuthenticated && (
               <>
                 <li className="nav-item">
@@ -84,55 +89,19 @@ const NavBar = ({cartChange}) => {
                   </Link>
                 </li>
                 <li className="nav-item">
-                  <Link className="nav-link" to="/Sucursales">
+                  <Link className="nav-link" to="/sucursales">
                     Sucursales
                   </Link>
                 </li>
-                <li className="nav-item">
-                  <Link className="nav-link" to="/Clientes">
-                    Clientes
-                  </Link>
-                </li>
-                <li className="nav-item">
-                  <Link className="nav-link" to="/Empleados">
-                    Empleados
-                  </Link>
-                </li>
-                <li className="nav-item">
-                  <Link className="nav-link" to="/Proveedores">
-                    Proveedores
-                  </Link>
-                </li>
-                <li className="nav-item dropdown">
-                  <button
-                    className="nav-link dropdown-toggle"
-                    id="ventasDropdown"
-                  >
-                    Ventas
-                  </button>
-                  <ul
-                    className="dropdown-menu"
-                    aria-labelledby="ventasDropdown"
-                  >
-                    <li>
-                      <Link
-                        className="dropdown-item nav-item"
-                        to="/crear_ventas"
-                      >
-                        Crear Venta
-                      </Link>
-                    </li>
-                    <li>
-                      <Link className="dropdown-item nav-item" to="/ventas">
-                        Consultar Ventas
-                      </Link>
-                    </li>
-                  </ul>
-                </li>
               </>
             )}
-            {role === 2 && isAuthenticated && (
+            {((role === 2 || role === 1) && isAuthenticated) && (
               <>
+              <li className="nav-item">
+                  <Link className="nav-link" to="/productos">
+                    Productos
+                  </Link>
+                </li>
                 <li className="nav-item">
                   <Link className="nav-link" to="/Clientes">
                     Clientes

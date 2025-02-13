@@ -11,11 +11,12 @@ export const AuthProvider = ({ children }) => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [role, setRole] = useState(null);
   const [id, setId] = useState(null);
+  const [userName, setUserName] = useState(null);
 
   useEffect(() => {
     const checkAuth = async () => {
       try {
-        const res = await fetch(process.env.URL + "/authorized", {
+        const res = await fetch(process.env.REACT_APP_API_URL + "/authorized", {
           credentials: "include",
         });
 
@@ -24,6 +25,7 @@ export const AuthProvider = ({ children }) => {
           setIsAuthenticated(true);
           setRole(data.role);
           setId(data.id)
+          setUserName(data.userName)
         } else {
           setIsAuthenticated(false);
         }
@@ -38,7 +40,7 @@ export const AuthProvider = ({ children }) => {
 
   return (
     <AuthContext.Provider
-      value={{ isAuthenticated, setIsAuthenticated, role, setRole ,id, setId}}
+      value={{ isAuthenticated, setIsAuthenticated, role, setRole ,id, setId, userName,setUserName}}
     >
       {children}
     </AuthContext.Provider>
