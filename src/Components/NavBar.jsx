@@ -93,6 +93,11 @@ const NavBar = ({cartChange}) => {
                     Sucursales
                   </Link>
                 </li>
+                <li className="nav-item">
+                  <Link className="nav-link" to="/empleados">
+                    Empleados
+                  </Link>
+                </li>
               </>
             )}
             {((role === 2 || role === 1) && isAuthenticated) && (

@@ -177,77 +177,35 @@ const Empleados = () => {
   };
 
   return (
-    <div style={{ marginTop: "5%" }}>
-      <div className="btn-group" style={{ marginBottom: "3%" }}>
-        <button
-          id="b_create"
-          onClick={toggleFormVisibility}
-          type="button"
-          className="btn btn-primary"
-        >
-          {formVisible ? "Cancelar" : "Crear Empleado"}
-        </button>
-      </div>
+    <div className="container mt-5">
+      <button onClick={toggleFormVisibility} className="btn btn-primary mb-3"  style={{marginTop:"20px"}}>
+        {formVisible ? "Cancelar" : "Crear Empleado"}
+      </button>
 
       {/* Formulario visible para crear o editar empleado */}
       {formVisible && (
-        <form
-          id="empleadoForm"
-          onSubmit={createEmp}
-          style={{ marginTop: "5%" }}
-        >
+        <div className="card p-4 mb-4">
+        <h3 className="text-center">Registro de Empleado</h3>
+        <form onSubmit={createEmp}>
           <div className="mb-3">
-            <label htmlFor="Nombre" className="form-label">
-              Nombre:
-            </label>
-            <input
-              type="text"
-              ref={nombreRef}
-              name="Nombre"
-              className="form-control"
-              required={true}
-            />
+            <label className="form-label">Nombre:</label>
+            <input type="text" ref={nombreRef} className="form-control" required />
           </div>
           <div className="mb-3">
-            <label htmlFor="DNI" className="form-label">
-              DNI:
-            </label>
-            <input
-              type="text"
-              ref={dniRef}
-              name="DNI"
-              className="form-control"
-              required={true}
-            />
+            <label className="form-label">DNI:</label>
+            <input type="text" ref={dniRef} className="form-control" required />
           </div>
           <div className="mb-3">
-            <label htmlFor="sueldo" className="form-label">
-              sueldo:
-            </label>
-            <input
-              type="number"
-              ref={sueldoRef}
-              name="sueldo"
-              className="form-control"
-              required={true}
-            />
+            <label className="form-label">Sueldo:</label>
+            <input type="number" ref={sueldoRef} className="form-control" required />
           </div>
           <div className="mb-3">
-            <label htmlFor="Telefono" className="form-label">
-              Teléfono:
-            </label>
-            <input
-              type="text"
-              ref={telefonoRef}
-              name="Telefono"
-              className="form-control"
-            />
+            <label className="form-label">Teléfono:</label>
+            <input type="text" ref={telefonoRef} className="form-control" />
           </div>
-
-          <button type="submit" className="btn btn-primary">
-            Guardar Empleado
-          </button>
+          <button type="submit" className="btn btn-success w-100">Guardar</button>
         </form>
+      </div>
       )}
       {message && <div className="alert alert-info">{message}</div>}
 
@@ -286,7 +244,7 @@ const Empleados = () => {
               ))
             ) : (
               <tr>
-                <td colSpan={6}>No hay empleados registrados</td>
+                <td colSpan={6} className="text-center">No hay empleados registrados</td>
               </tr>
             )}
           </tbody>

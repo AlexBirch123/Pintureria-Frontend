@@ -153,67 +153,41 @@ const CrearVentas = () => {
   };
 
   return (
-    <div style={{ marginTop: "5%" }}>
+    <div className="container mt-5">
+      <h2 className="mb-4"style={{marginTop:"70px"}}>Registrar Nueva Venta</h2 >
+      {message && <div className="alert alert-info">{message}</div>}
       {/* Formulario visible para crear o editar venta */}
-      <form id="ventaForm" style={{ marginTop: "5%" }} onSubmit={creatSale}>
-        <button type="submit" className="btn btn-primary">
-          Guardar Venta
-        </button>
-        <div className="mb-3">
-          <label htmlFor="Cliente" className="form-label">
-            Cliente:
-          </label>
-          <select
-            ref={clienteRef}
-            name="Cliente"
-            className="form-control"
-            required
-          >
-            <option value="">Seleccione un cliente</option>
-            {clientes.map((cliente) => (
-              <option key={cliente.id} value={cliente.id}>
-                {cliente.id + " - " + cliente.name}
-              </option>
-            ))}
-          </select>
+
+      <form onSubmit={creatSale} className="card p-4 shadow-sm">
+        <div className="row" style={{ marginBottom: "2%" }}>
+          <div className="col-md-4">
+            <label className="form-label">Cliente</label>
+            <select ref={clienteRef} className="form-select" required>
+              <option value="">Seleccione un cliente</option>
+              {clientes.map((cliente) => (
+                <option key={cliente.id} value={cliente.id}>{cliente.name}</option>
+              ))}
+            </select>
+          </div>
+          <div className="col-md-4">
+            <label className="form-label">Empleado</label>
+            <select ref={empleadoRef} className="form-select" required>
+              <option value="">Seleccione un empleado</option>
+              {empleados.map((empleado) => (
+                <option key={empleado.id} value={empleado.id}>{empleado.name}</option>
+              ))}
+            </select>
+          </div>
+          <div className="col-md-4">
+            <label className="form-label">Sucursal</label>
+            <select ref={sucursalRef} className="form-select" required>
+              <option value="">Seleccione una sucursal</option>
+              {sucursales.map((sucursal) => (
+                <option key={sucursal.id} value={sucursal.id}>{sucursal.address}</option>
+              ))}
+            </select>
+          </div>
         </div>
-        <div className="mb-3">
-          <label htmlFor="Empleado" className="form-label">
-            Empleado:
-          </label>
-          <select
-            ref={empleadoRef}
-            name="Empleado"
-            className="form-control"
-            required
-          >
-            <option value="">Seleccione un empleado</option>
-            {empleados.map((empleado) => (
-              <option key={empleado.id} value={empleado.id}>
-                {empleado.id + " - " + empleado.name}
-              </option>
-            ))}
-          </select>
-        </div>
-        <div className="mb-3">
-          <label htmlFor="sucursal" className="form-label">
-            Sucursal:
-          </label>
-          <select
-            ref={sucursalRef}
-            name="sucursal"
-            className="form-control"
-            required
-          >
-            <option value="">Seleccione una Sucursal</option>
-            {sucursales.map((suc) => (
-              <option key={suc.id} value={suc.id}>
-                {suc.id + " - " + suc.address}
-              </option>
-            ))}
-          </select>
-        </div>
-      </form>
       <div className="mb-3">
         <BuscadorProd
           saleProds={saleProds}
@@ -221,7 +195,8 @@ const CrearVentas = () => {
           productos={productos}
           setProductos={setProductos}
         ></BuscadorProd>
-
+      </div>
+      <div className="table-responsive mt-4">
         <table
           className="table table-bordered"
           id="ventaTable"
@@ -253,6 +228,7 @@ const CrearVentas = () => {
                 <td>
                   <input
                     type="number"
+                    className="form-control"
                     value={prod.quantity}
                     onChange={(e) =>
                       handleFieldChange(
@@ -261,16 +237,17 @@ const CrearVentas = () => {
                         e.target.value
                       )
                     }
-                    style={{ width: "100%" }}
                   />
                 </td>
-                <td>$ {prod.price}</td>
-                <td>{prod.stock}</td>
+                <td>${prod.price.toFixed(2)}</td>
+                <td>${(prod.price * prod.amount).toFixed(2)}</td>
               </tr>
             ))}
           </tbody>
         </table>
       </div>
+      <button type="submit" className="btn btn-primary mt-3">Guardar Venta</button>
+      </form>
     </div>
   );
 };

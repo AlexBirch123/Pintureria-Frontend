@@ -184,7 +184,7 @@ const Clientes = () => {
 
   return (
     <div style={{ marginTop: "5%" }}>
-      <div className="btn-group" style={{ marginBottom: "3%" }}>
+      <div className="d-flex justify-content-between mb-3" style={{marginTop:"20px"}}>
         <button
           id="b_create"
           onClick={toggleFormVisibility}
@@ -197,6 +197,8 @@ const Clientes = () => {
       {message && <div className="alert alert-success">{message}</div>}
       {/* Formulario visible para crear o editar cliente */}
       {formVisible && (
+        <div className="card shadow p-4 mb-4">
+            <h4 className="mb-3">Nuevo Cliente</h4>
         <form
           id="clienteForm"
           onSubmit={createClient}
@@ -248,16 +250,18 @@ const Clientes = () => {
               className="form-control"
             />
           </div>
-          <button type="submit" className="btn btn-primary">
+          <button type="submit" className="btn btn-success w-100">
             Guardar Cliente
           </button>
         </form>
+        </div>
+        
       )}
 
       {/* Tabla de Clientes */}
       <div className="table-responsive">
         <h2>Listado de Clientes</h2>
-        <table className="table table-bordered" id="clienteTable">
+        <table className="table table-striped table-hover" id="clienteTable">
           <thead className="table-dark">
             <tr>
               <th>ID</th>
@@ -289,7 +293,7 @@ const Clientes = () => {
               ))
             ) : (
               <tr>
-                <td colSpan={6}>No hay clientes registrados</td>
+                <td colSpan={6} className="text-center">No hay clientes registrados</td>
               </tr>
             )}
           </tbody>
