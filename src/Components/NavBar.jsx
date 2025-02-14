@@ -45,19 +45,47 @@ const NavBar = ({cartChange}) => {
     }
   };
 
+  const handleSearch = (e) => {
+    e.preventDefault();
+    if (search.trim() !== "") {
+      navigate(`/products?description=${search}`);
+    }
+  };
+
+
   return (
     <nav className="navbar navbar-expand-sm bg-dark navbar-dark fixed-top">
-      <div className="container-fluid d-flex justify-content-center">
-        <li className="nav-item">
-          <a href="/">
+      <div className="container-fluid d-flex align-items-center justify-content-between">
+        {/* Logo y Barra de Búsqueda */}
+        <div className="d-flex align-items-center">
+          <Link to="/home">
             <img
               src={rioColor}
               alt="Logo"
-              style={{ width: "30%", height: "auto" }}
+              style={{ width: "80px", height: "auto", marginRight: "10px" }}
               className="rounded-pill"
             />
-          </a>
-        </li>
+          </Link>
+          {/* Barra de búsqueda más pequeña */}
+          <form className="d-flex" onSubmit={handleSearch}>
+            <input
+              type="text"
+              className="form-control me-2"
+              placeholder="Buscar..."
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") handleSearch(e);
+              }}
+              style={{ width: "170px" }}
+            />
+            <button className="btn btn-outline-light" type="submit">
+              Buscar
+            </button>
+          </form>
+        </div>
+
+        {/* Botón de menú para móviles */}
         <button
           className="navbar-toggler"
           type="button"
@@ -65,48 +93,45 @@ const NavBar = ({cartChange}) => {
           data-bs-target="#collapsibleNavbar"
         >
           <span className="navbar-toggler-icon"></span>
-        </button>{" "}
+        </button>
+
+        {/* Links de navegación */}
         <div
           className="collapse navbar-collapse justify-content-center"
           id="collapsibleNavbar"
+          style={{ marginRight: "250px" }}
         >
           <ul className="navbar-nav">
-
-          {(isAuthenticated === false || role === 3)&& (
-          <li className="nav-item">
-              <Link className="nav-link" to="/products">
+            <li className="nav-item">
+              <Link
+                className="nav-link"
+                to={role === 1 || role === 2 ? "/productos" : "/products"}
+                style={{ justifySelf: "initial" }}
+              >
                 Productos
               </Link>
             </li>
-          ) 
-          }
-
             {role === 1 && isAuthenticated && (
               <>
+                <li className="nav-item">
+                  <Link className="nav-link" to="/Sucursales">
+                    Sucursales
+                  </Link>
+                </li>
+                <li className="nav-item">
+                  <Link className="nav-link" to="/Empleados">
+                    Empleados
+                  </Link>
+                </li>
                 <li className="nav-item">
                   <Link className="nav-link" to="/usuarios">
                     Usuarios
                   </Link>
                 </li>
-                <li className="nav-item">
-                  <Link className="nav-link" to="/sucursales">
-                    Sucursales
-                  </Link>
-                </li>
-                <li className="nav-item">
-                  <Link className="nav-link" to="/empleados">
-                    Empleados
-                  </Link>
-                </li>
               </>
             )}
-            {((role === 2 || role === 1) && isAuthenticated) && (
+            {(role === 2 || role === 1) && isAuthenticated && (
               <>
-              <li className="nav-item">
-                  <Link className="nav-link" to="/productos">
-                    Productos
-                  </Link>
-                </li>
                 <li className="nav-item">
                   <Link className="nav-link" to="/Clientes">
                     Clientes
@@ -129,15 +154,12 @@ const NavBar = ({cartChange}) => {
                     aria-labelledby="ventasDropdown"
                   >
                     <li>
-                      <Link
-                        className="dropdown-item nav-item"
-                        to="/crear_ventas"
-                      >
+                      <Link className="dropdown-item" to="/crear_ventas">
                         Crear Venta
                       </Link>
                     </li>
                     <li>
-                      <Link className="dropdown-item nav-item" to="/ventas">
+                      <Link className="dropdown-item" to="/ventas">
                         Consultar Ventas
                       </Link>
                     </li>
@@ -146,94 +168,75 @@ const NavBar = ({cartChange}) => {
               </>
             )}
           </ul>
-          <div className="d-flex justify-content-center">
-            <input
-              type="text"
-              className="form-control"
-              placeholder="Buscar productos..."
-              onChange={(e) => setSearch(e.target.value.toLowerCase())}
-              onKeyDown={(e) => {
-                if (e.key === "Enter") {
-                  if (search) navigate(`/products?description=${search}`);
-                }
-              }}
-            />
-          </div>
-          <ul className="navbar-nav ms-auto">
-            {isAuthenticated ===false && (<li>
-              <button className="nav-link btn" onClick={handleSession}>
-                Iniciar sesion
+        </div>
+
+        {/* Carrito + Botón de Sesión */}
+        <div className="d-flex align-items-center navbar-nav">
+          {isAuthenticated && (
+            <li className="nav-item me-2">
+              <Link className="nav-link" to="/userSales">
+                Compras
+              </Link>
+            </li>
+          )}
+          {isAuthenticated && (
+            <li className="nav-item dropdown me-2">
+              <button
+                className="nav-link dropdown-toggle d-flex align-items-center"
+                id="cartDropdown"
+                data-bs-toggle="dropdown"
+                aria-expanded="false"
+              >
+                <img
+                  src={cart}
+                  alt="cart"
+                  style={{ width: "30px", height: "30px" }}
+                />
               </button>
-            </li>)}
-            {isAuthenticated === false && (
-              <li className="nav-item">
-                <Link className="nav-link" to="/register">
-                  Registrate
-                </Link>
-              </li>
-            )}
-            {isAuthenticated === true && (
-              <li className="nav-item dropdown">
-                <button
-                  className="nav-link dropdown-toggle"
-                  id="cartDropdown"
-                  data-bs-toggle="dropdown"
-                  aria-expanded="false"
+              <ul
+                className="dropdown-menu dropdown-menu-end"
+                aria-labelledby="cartDropdown"
                 >
-                  <img
-                    src={cart}
-                    alt="cart"
-                    style={{ width: "60%", height: "60%" }}
-                  />
-                </button>
-                <ul className="dropdown-menu" aria-labelledby="cartDropdown">
-                  {cartProds ? (
-                    cartProds.map((p) => {
-                      return (
-                        <li>
-                          <Link
-                            className="dropdown-item"
-                            to={`/productPage?idProd=${p.idProduct}`}
-                          >
-                            {p.description}
-                          </Link>
-                        </li>
-                      );
-                    })
-                  ) : (
-                    <li className="dropdown-item">Carrito vacio</li>
-                  )}
-                  <li>
-                    <Link className="dropdown-item" to="/cartShop">
-                      Ver Carrito
-                    </Link>
-                  </li>
-                </ul>
-              </li>
-            )}
-            {isAuthenticated && (
-              <li className="nav-item dropdown">
-                <button
-                  className="nav-link dropdown-toggle"
-                  id="ventasDropdown"
-                >
-                  Cuenta
-                </button>
-                <ul className="dropdown-menu" aria-labelledby="ventasDropdown">
-                  <li>
-                    <Link className="dropdown-item nav-item" to="/userSales">
-                      Mis compras
-                    </Link>
-                  </li>
-                  <li>
-                    <button className="nav-link btn" onClick={handleSession}>
-                      Cerrar Sesión
-                    </button>
-                  </li>
-                </ul>
-              </li>
-            )}
-          </ul>
+                {cartProds ? (
+                  cartProds.map((p) => {
+                    return (
+                      <li>
+                        <Link
+                          className="dropdown-item"
+                          to={`/productPage?idProd=${p.idProduct}`}
+                        >
+                          {p.description}
+                        </Link>
+                      </li>
+                    );
+                  })
+                ) : (
+                  <li className="dropdown-item">Carrito vacio</li>
+                )}
+                <li>
+                  <Link className="dropdown-item" to="/cartShop">
+                    Ver Carrito
+                  </Link>
+                </li>
+              </ul>
+            </li>
+          )}
+          {!isAuthenticated && (
+            <li className="nav-item" style={{ marginRight: "10px" }}>
+              <button
+                className="btn btn-outline-light"
+                onClick={() => navigate("/register")}
+              >
+                Registrate
+              </button>
+            </li>
+          )}
+          {/* Botón de Inicio/Cierre de Sesión */}
+          <li className="nav-item">
+            <button className="btn btn-outline-light" onClick={handleSession}>
+              {isAuthenticated ? "Cerrar Sesión" : "Iniciar Sesión"}
+            </button>
+          </li>
         </div>
       </div>
     </nav>

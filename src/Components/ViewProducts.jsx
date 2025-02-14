@@ -101,9 +101,9 @@ const ViewProducts = () => {
   };
 
   return (
-    <div>
+    <div style={{ display: "flex" }}>
       <div
-        style={{ flex: 0.3, padding: "20px", borderRight: "1px solid #ccc" }}
+        style={{ flex: 0.3, padding: "20px", borderRight: "1px solid #ccc", marginTop: "5%" }}
       >
         <h2>Filtrar Productos</h2>
         <div>
@@ -139,13 +139,17 @@ const ViewProducts = () => {
           {<p>max:{max}</p>}
         </div>
       </div>
-      <div style={{ display: "flex" }}>
-        <div style={{ flex: 1 }}>
-          <h1 style={{ margin: "10%" }}>Productos</h1>
-          {cat && <p>Mostrando productos para la categoría: {cat}</p>}
-          {description &&<p>Mostrando productos para su busqueda: {description}</p>}
+      <div style={{ flex: 1 ,marginLeft: "3%"}}>
+        <h1 style={{ marginTop: "8%" }}>Productos</h1>
+        {cat && <p>Mostrando productos para la categoría: {cat}</p>}
+        {description &&<p>Mostrando productos para su busqueda: {description}</p>}
+        <div style={{ display: "flex", flexWrap: "wrap" }}>
           {filteredProds.length > 0 ? (
-            filteredProds.map((p) => <ProductCard key={p.id} product={p} />)
+            filteredProds.map((p) => (
+              <div key={p.id} style={{ flex: "1 0 21%", margin: "10px" }}>
+                <ProductCard product={p} />
+              </div>
+            ))
           ) : (
             <p>No hay productos disponibles.</p>
           )}

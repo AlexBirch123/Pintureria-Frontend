@@ -88,14 +88,15 @@ const VerVentas = () => {
   };
 
   return (
-    <div style={{ marginTop: "5%" }}>
-      <div className="table-responsive">
-        <h2>Listado de Ventas</h2>
-        <table className="table table-bordered" id="ventaTable">
+    <div className="container mt-5" >
+      <h2 className="text-center mb-4" style={{marginTop:"8%"}}>Listado de Ventas</h2>
+      <div className="table-responsive" >
+        <table className="table table-striped table-hover">
           <thead className="table-dark">
             <tr>
               <th>ID</th>
               <th>Cliente</th>
+              <th>Usuario</th>
               <th>Empleado</th>
               <th>Sucursal</th>
               <th>Fecha</th>
@@ -108,7 +109,8 @@ const VerVentas = () => {
               ventas.map((venta) => (
                 <tr key={venta.id}>
                   <td>{venta.id}</td>
-                  <td>{searchDesc(clientes,venta.idClient,"name")}</td>
+                  <td>{searchDesc(clientes,venta.idClient,"name")|| "-"}</td>
+                  <td>{venta.idUser || "-"}</td>
                   <td>{searchDesc(empleados,venta.idEmp,"name")}</td>
                   <td>{venta.idBranch}</td>
                   <td>{venta.createdAt}</td>
@@ -134,7 +136,7 @@ const VerVentas = () => {
               ))
             ) : (
               <tr>
-                <td colSpan={7}>No hay ventas registradas</td>
+                <td colSpan={7} className="text-center">No hay ventas registradas</td>
               </tr>
             )}
             
@@ -180,7 +182,6 @@ const VerVentas = () => {
           </tbody>
         </table>
       </div>
-      {/* Tabla de Ventas */}
     </div>
   );
 };

@@ -62,13 +62,13 @@ const RegistroCliente = () => {
       if (data) {
         // Mostrar mensaje de éxito y redirigir al login después de unos segundos
         setSubmitted(true);
-        setTimeout(() => {navigate("/login");}, 2000); 
+        setTimeout(() => {navigate("/login");}, 4000); 
       }
     }
   };
 
   return (
-    <div className="container" style={{ maxWidth: "500px", marginTop: "50px" }}>
+    <div className="container" style={{ maxWidth: "500px", marginTop: "80px" }}>
       <div className="card shadow">
         <div className="card-body">
           <h2 className="text-center mb-4">Registro</h2>
@@ -126,7 +126,8 @@ const RegistroCliente = () => {
             <div className="alert alert-success mt-3" role="alert">
               ¡Cliente registrado con éxito! Redirigiendo al inicio de sesión...
             </div>
-          )}
+          )
+          }
           {message && <p className="text-danger text-center">{message}</p>}
         </div>
       </div>

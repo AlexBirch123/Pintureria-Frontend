@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { getLocalStorage, setLocalStorage } from "../utils/localStorage";
+import { motion } from "framer-motion";
 
 const Proveedores = () => {
   const [proveedores, setProveedores] = useState([]);
@@ -178,7 +179,8 @@ const Proveedores = () => {
     };
 
   return (
-    <div style={{ marginTop: "8%" }}>
+    <div style={{ marginTop: "8%", marginLeft: "1%", marginRight: "1%" }}>
+      
       <div className="btn-group" style={{ marginBottom: "3%" }}>
         <button
           id="b_create"
@@ -190,71 +192,45 @@ const Proveedores = () => {
         </button>
       </div>
 
+      {message && (
+      <motion.div
+           initial={{ y: -50, opacity: 0 }}
+           animate={{ y: 0, opacity: 1 }}
+           exit={{ y: -50, opacity: 0 }}
+           className="fixed top-0 left-1/2 -translate-x-1/2 mt-4 px-6 py-2 bg-green-500 text-white rounded-lg shadow-lg z-50"
+         >
+           Producto creado exitosamente 🎉
+         </motion.div>
+        )} 
       {/* Formulario visible para crear o editar proveedor */}
       {formVisible && (
-        <form
-          id="proveedorForm"
-          onSubmit={createUpdateSupp}
-          style={{ marginTop: "5%" }}
-        >
-          <div className="mb-3">
-            <label htmlFor="Nombre" className="form-label">
-              Nombre:
-            </label>
-            <input
-              type="text"
-              ref={nombreRef}
-              name="Nombre"
-              className="form-control"
-              required={true}
-            />
-          </div>
-          <div className="mb-3">
-            <label htmlFor="cuit" className="form-label">
-              CUIT/CUIL:
-            </label>
-            <input
-              type="text"
-              ref={cuitRef}
-              name="cuit"
-              className="form-control"
-              required={true}
-            />
-          </div>
-          <div className="mb-3">
-            <label htmlFor="Direccion" className="form-label">
-              Dirección:
-            </label>
-            <input
-              type="text"
-              ref={direccionRef}
-              name="Direccion"
-              className="form-control"
-            />
-          </div>
-          <div className="mb-3">
-            <label htmlFor="Telefono" className="form-label">
-              Teléfono:
-            </label>
-            <input
-              type="text"
-              ref={telefonoRef}
-              name="Telefono"
-              className="form-control"
-            />
-          </div>
-          <button type="submit" className="btn btn-primary">
-            Guardar Proveedor
-          </button>
-        </form>
+        <form onSubmit={createUpdateSupp} className="card p-3 shadow-sm">
+        <div className="mb-3">
+          <label className="form-label">Nombre:</label>
+          <input type="text" ref={nombreRef} className="form-control" required />
+        </div>
+        <div className="mb-3">
+          <label className="form-label">CUIT/CUIL:</label>
+          <input type="text" ref={cuitRef} className="form-control" required />
+        </div>
+        <div className="mb-3">
+          <label className="form-label">Dirección:</label>
+          <input type="text" ref={direccionRef} className="form-control" />
+        </div>
+        <div className="mb-3">
+          <label className="form-label">Teléfono:</label>
+          <input type="text" ref={telefonoRef} className="form-control" />
+        </div>
+        <button type="submit" className="btn btn-success">Guardar</button>
+      </form>
       )}
 
-      {message && <div className="alert alert-info">{message}</div>}
+        
 
       {/* Tabla de Proveedores */}
       <div className="table-responsive">
-        <h2>Listado de Proveedores</h2>
-        <table className="table table-bordered" id="proveedorTable">
+        <h2 className="mt-4">Listado de Proveedores</h2>
+        <table className="table table-striped table-bordered mt-3">
           <thead className="table-dark">
             <tr>
               <th>ID</th>

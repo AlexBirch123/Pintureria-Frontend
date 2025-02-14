@@ -177,59 +177,34 @@ const Sucursales = () => {
   };
 
   return (
-    <div style={{ marginTop: "5%" }}>
-      <div className="btn-group">
-        <button
-          id="b_create"
-          onClick={toggleFormVisibility}
-          type="button"
-          className="btn btn-primary"
-        >
+    <div className="container mt-5" >
+      <div className="d-flex justify-content-between align-items-center mb-4">
+        <button className="btn btn-primary" onClick={toggleFormVisibility} style={{marginTop:"5%"}}>
           {formVisible ? "Cancelar" : "Crear Sucursal"}
         </button>
       </div>
 
       {/* Formulario visible para crear o editar sucursal */}
       {formVisible && (
-        <form
-          id="sucursalForm"
-          onSubmit={createSucursal}
-          style={{ marginBottom: "3%" }}
-        >
+        <div className="card p-4 shadow-sm mb-4">
+        <form onSubmit={createSucursal}>
           <div className="mb-3">
-            <label htmlFor="direccion" className="form-label">
-              Dirección:
-            </label>
-            <input
-              type="text"
-              ref={direccionRef}
-              name="direccion"
-              className="form-control"
-              required
-            />
+            <label className="form-label">Dirección</label>
+            <input type="text" ref={direccionRef} className="form-control" required />
           </div>
           <div className="mb-3">
-            <label htmlFor="telefono" className="form-label">
-              Teléfono:
-            </label>
-            <input
-              type="text"
-              ref={telefonoRef}
-              name="telefono"
-              className="form-control"
-              required
-            />
+            <label className="form-label">Teléfono</label>
+            <input type="text" ref={telefonoRef} className="form-control" required />
           </div>
-          <button type="submit" className="btn btn-primary">
-            Guardar Sucursal
-          </button>
+          <button type="submit" className="btn btn-success w-100">Guardar</button>
         </form>
+      </div>
       )}
       {message && <div className="alert alert-info">{message}</div>}
 
       {/* Tabla de Sucursales */}
-      <div className="table-responsive" style={{ marginTop: "3%" }}>
-        <h2>Listado de Sucursales</h2>
+      <div className="table-responsive"> 
+        <h2 className="mt-4">Listado de Sucursales</h2>
         <table className="table table-bordered" id="sucursalTable">
           <thead className="table-dark">
             <tr>
@@ -258,7 +233,7 @@ const Sucursales = () => {
               ))
             ) : (
               <tr>
-                <td colSpan={4}>No hay sucursales registradas</td>
+                <td colSpan={4} className="text-center">No hay sucursales registradas</td>
               </tr>
             )}
           </tbody>

@@ -12,6 +12,7 @@ const Productos = ({ role }) => {
   const [editingField, setEditingField] = useState({ id: null, field: null });
   const [message, setMessage] = useState(null);
   const descripcionRef = useRef(null);
+  const titleRef = useRef(null);
   const idProvRef = useRef(null);
   const idCatRef = useRef(null);
   const stockRef = useRef(null);
@@ -75,6 +76,7 @@ const Productos = ({ role }) => {
     if (stockRef.current) stockRef.current.value = "";
     if (precioRef.current) precioRef.current.value = "";
     if (idProvRef.current) idProvRef.current.value = "";
+    if (titleRef.current) titleRef.current.value = "";
   };
 
   const createOrUpdateProducto = async (event) => {
@@ -84,8 +86,8 @@ const Productos = ({ role }) => {
     const stock = Number(stockRef.current?.value);
     const idProv = Number(idProvRef.current?.value);
     const idCat = Number(idCatRef.current?.value);
-    if (description && price && idProv) {
-      // Crear nuevo cliente
+    const title = titleRef.current?.value
+    if (title && price && idProv && idCat && stock) {
       const newProd = {
         description: description,
         price: price,
@@ -184,108 +186,105 @@ const Productos = ({ role }) => {
   };
 
   return (
-    <div style={{ marginTop: "8%" }}>
-        <div className="btn-group">
-          <button
-            id="b_create"
-            onClick={toggleFormVisibility}
-            type="button"
-            className="btn btn-primary"
-          >
-            {formVisible ? "Cancelar" : "Crear Producto"}
-          </button>
-        </div>
+    <div style={{ marginLeft: "1%", marginRight: "1%", marginTop: "8%" }}>
+      <div className="btn-group">
+        <button
+          id="b_create"
+          onClick={toggleFormVisibility}
+          type="button"
+          className="btn btn-primary"
+        >
+          {formVisible ? "Cancelar" : "Crear Producto"}
+        </button>
+      </div>
+      <div className="btn-group" style={{ float: "right" }}>
+        <button
+          onClick={() => (window.location.href = "/products")}
+          type="button"
+          className="btn btn-primary"
+        >
+          Vista de tienda
+        </button>
+      </div>
       {formVisible && (
         <form
           onSubmit={createOrUpdateProducto}
           id="productoData"
-          style={{ marginTop: "20px" }}
+          className="mt-3 p-3 border rounded bg-light"
         >
-          <div className="mb-3">
-            <label htmlFor="nombre">Descripcion: </label>
-            <input
-              type="text"
-              name="descripcion"
-              className="form-control"
-              required
-              ref={descripcionRef}
-            />
+          <div className="row g-2">
+            <div className="col-md-6">
+              <label className="form-label">Descripción:</label>
+              <input
+                type="text"
+                className="form-control"
+                required
+                ref={descripcionRef}
+              />
+            </div>
+            <div className="col-md-6">
+              <label className="form-label">Precio:</label>
+              <input
+                type="number"
+                className="form-control"
+                required
+                ref={precioRef}
+              />
+            </div>
+            <div className="col-md-6">
+              <label className="form-label">Stock:</label>
+              <input type="number" className="form-control" ref={stockRef} />
+            </div>
+            <div className="col-md-6">
+              <label className="form-label">Proveedor:</label>
+              <select className="form-select" required ref={idProvRef}>
+                <option value="">Elegir proveedor</option>
+                {proveedores.map((prov) => (
+                  <option key={prov.id} value={prov.id}>
+                    {prov.name}
+                  </option>
+                ))}
+              </select>
+            </div>
+            <div className="col-md-6">
+              <label className="form-label">Categoría:</label>
+              <select className="form-select" required ref={idCatRef}>
+                <option value="">Elegir categoría</option>
+                {categorias.map((cat) => (
+                  <option key={cat.id} value={cat.id}>
+                    {cat.description}
+                  </option>
+                ))}
+              </select>
+            </div>
           </div>
-          <div className="mb-3">
-            <label htmlFor="precio">Precio: </label>
-            <input
-              type="number"
-              name="precio"
-              className="form-control"
-              required
-              ref={precioRef}
-            />
-          </div>
-          <div className="mb-3">
-            <label htmlFor="nombre">stock: </label>
-            <input
-              type="number"
-              ref={stockRef}
-              name="stock"
-              className="form-control"
-            />
-          </div>
-          <div className="mb-3">
-            <label htmlFor="nombre">Proveedor: </label>
-            <select
-              name="idProv"
-              id="idProv"
-              style={{ marginLeft: "10px" }}
-              className="form-control"
-              required
-              ref={idProvRef}
+          <div className="mt-3 text-end">
+            <button type="submit" className="btn btn-primary me-2">
+              Crear
+            </button>
+            <button
+              type="button"
+              className="btn btn-secondary"
+              onClick={toggleFormVisibility}
             >
-              <option value="">Elegi un proveedor</option>
-              {proveedores.map((prov) => (
-                <option value={prov.id}>
-                  {prov.id}-{prov.name}
-                </option>
-              ))}
-            </select>
+              Cancelar
+            </button>
           </div>
-          <div className="mb-3">
-            <label htmlFor="nombre">Categoria: </label>
-            <select
-              name="idCat"
-              id="idCat"
-              style={{ marginLeft: "10px" }}
-              className="form-control"
-              required
-              ref={idCatRef}
-            >
-              <option value="">Elegi categoria</option>
-              {categorias.map((cat) => (
-                <option value={cat.id}>
-                  {" "}
-                  {cat.id}-{cat.description}
-                </option>
-              ))}
-            </select>
-          </div>
-
-          <button type="submit" className="btn btn-primary">
-            Crear producto
-          </button>
         </form>
       )}
 
       {/* Tabla de productos */}
-      <div className="table-responsive" style={{ marginTop: "10%" }}>
-        <h2>Listado de Productos</h2>
-        <table className="table table-bordered" id="productoTable">
+      <div className="table-responsive mt-4" style={{ marginTop: "5%" }}>
+        <h2 className="fs-4">Listado de Productos</h2>
+        <table className="table table-sm table-bordered table-hover text-center">
           <thead className="table-dark">
             <tr>
               <th>ID</th>
-              <th>Descipcion</th>
+              <th>Titulo</th>
               <th>Precio</th>
               <th>Stock</th>
               <th>Proveedor</th>
-              <th>Categoria</th>
+              <th>Categoría</th>
               <th>Acciones</th>
             </tr>
           </thead>
@@ -294,15 +293,15 @@ const Productos = ({ role }) => {
               productos.map((producto) => (
                 <tr key={producto.id}>
                   <td>{producto.id}</td>
-                  <td>{input(producto,"description", producto.description)}</td>
-                  <td>{input(producto,"price", producto.price)}</td>
-                  <td>{input(producto,"stock", producto.stock)}</td>
-                  <td>{producto.idProv/*searchDesc(proveedores,producto.idProv,"name")*/}</td> 
-                  <td>{searchDesc(categorias,producto.idCat,"description")}</td>
+                  <td className="text-truncate">{input(producto, "title", producto.title)}</td>
+                  <td>{input(producto, "price", producto.price)}</td>
+                  <td>{input(producto, "stock", producto.stock)}</td>
+                  <td>{ producto.idProv /*searchDesc(proveedores,producto.idProv,"name")*/}</td>
+                  <td>{searchDesc(categorias, producto.idCat, "description")}</td>
                   <td>
                     <>
                       <button
-                        className="btn btn-danger btn-sm"
+                        className="btn btn-danger btn-sm mx-1"
                         onClick={() => handleDelete(producto.id)}
                         style={{ marginLeft: "10px" }}
                       >
@@ -314,7 +313,7 @@ const Productos = ({ role }) => {
               ))
             ) : (
               <tr>
-                <td colSpan={7} className="text-center">
+                <td colSpan={7} className="text-center text-muted">
                   No hay productos registrados
                 </td>
               </tr>

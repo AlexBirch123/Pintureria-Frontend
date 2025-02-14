@@ -3,10 +3,8 @@ import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "./AuthContext";
 
 const Login = () => {
-  // const [user, setUser] = useState(null);
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-  // const [role, setLocalRole] = useState("");
   const [message, setMessage] = useState("");
   const { setIsAuthenticated, setRole } = useAuth();
   const navigate = useNavigate();
