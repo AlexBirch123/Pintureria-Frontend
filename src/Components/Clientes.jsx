@@ -4,17 +4,19 @@ import { setLocalStorage, getLocalStorage } from "../utils/localStorage";
 
 const Clientes = () => {
   const [clientes, setClientes] = useState([]);
+  const [filteredClients, setFilteredClients] = useState([]);
   const [formVisible, setFormVisible] = useState(false);
   const [message, setMessage] = useState(null);
   const [editingField, setEditingField] = useState({ id: null, field: null });
   const [prevValue, setPrevValue] = useState(null);
+  const [search, setSearch] = useState(null);
   const nombreRef = useRef(null);
   const direccionRef = useRef(null);
   const telefonoRef = useRef(null);
   const dniRef = useRef(null);
 
   useEffect(() => {
-  // Obtener sucursales
+
   const fetchClients = async () => {
     const local = getLocalStorage("clients");
     try {
@@ -23,6 +25,7 @@ const Clientes = () => {
         .then((data) => {
           if (!data) return setClientes(local.datos);;
           setClientes(data);
+          setFilteredClients(data);
           setLocalStorage(data, "clients");
         });
     } catch (error) {
@@ -107,6 +110,7 @@ const Clientes = () => {
         });
         const updatedClients = clientes.filter((client) => client.id !== id);
         setClientes(updatedClients);
+        setFilteredClients(updatedClients); 
         setLocalStorage(updatedClients, "clients");
       } catch (error) {
         setMessage("Error al eliminar cliente");
@@ -120,11 +124,11 @@ const Clientes = () => {
   };
 
   const handleFieldChange = (id, field, value) => {
-    setClientes((cli) =>
-      cli.map((c) =>
-        c.id === id ? { ...c, [field]: value } : c
-      )
+    const newList = clientes.map((cli) =>
+      cli.id === id ? { ...cli, [field]: value } : cli
     );
+    setFilteredClients(newList);
+    setClientes(newList);
   };
 
   const handleBlur = async (id, field, value) => {
@@ -182,9 +186,42 @@ const Clientes = () => {
     );
   };
 
+  const handleSearch = (e) => {
+    e.preventDefault();
+    setFilteredClients(
+      clientes.filter(
+        (c) =>
+          c.description.toLowerCase().includes(search.toLowerCase().trim()) ||
+          c.dni.includes(Number(search.trim())) ||
+          c.address.includes(Number(search.trim())) ||
+          c.phone.includes(Number(search.trim()))
+      )
+    );
+  }
+
+  const sortList = (field) => {
+    return () => {
+      const sorted = [...filteredClients].sort((a, b) => {
+        if (a[field] < b[field]) return -1;
+        if (a[field] > b[field]) return 1;
+        return 0;
+      });
+      setFilteredClients(sorted);
+    };
+  }
+
   return (
     <div style={{ marginTop: "5%" }}>
       <div className="d-flex justify-content-between mb-3" style={{marginTop:"20px"}}>
+        <input
+          type="text"
+          placeholder="Buscar cliente..."
+          className="form-control w-25"
+          onChange={(e) => {setSearch(e.target.value) }}
+          onKeyDown={(e)=>{
+            if(e.key === "Enter") {handleSearch()}
+          }}
+        />
         <button
           id="b_create"
           onClick={toggleFormVisibility}
@@ -264,17 +301,17 @@ const Clientes = () => {
         <table className="table table-striped table-hover" id="clienteTable">
           <thead className="table-dark">
             <tr>
-              <th>ID</th>
-              <th>Nombre</th>
-              <th>DNI</th>
-              <th>Dirección</th>
-              <th>Teléfono</th>
+              <th onClick={sortList("id")} style={{cursor:"pointer"}}>ID</th>
+              <th onClick={sortList("name")}style={{cursor:"pointer"}}>Nombre</th>
+              <th onClick={sortList("dni")}style={{cursor:"pointer"}}>DNI</th>
+              <th onClick={sortList("address")}style={{cursor:"pointer"}}>Dirección</th>
+              <th onClick={sortList("phone")}style={{cursor:"pointer"}}>Teléfono</th>
               <th>Acciones</th>
             </tr>
           </thead>
           <tbody>
-            {clientes.length > 0 ? (
-              clientes.map((cliente) => (
+            {filteredClients.length > 0 ? (
+              filteredClients.map((cliente) => (
                 <tr key={cliente.id}>
                   <td>{cliente.id}</td>
                   {input(cliente, "name",cliente.name)}

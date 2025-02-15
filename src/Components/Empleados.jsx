@@ -5,6 +5,7 @@ import { getLocalStorage, setLocalStorage } from "../utils/localStorage";
 
 const Empleados = () => {
   const [empleados, setEmpleados] = useState([]);
+  const [filteredEmpleados, setFilteredEmpleados] = useState([]);
   const [formVisible, setFormVisible] = useState(false);
   const [message, setMessage] = useState(null);
   const [prevValue, setPrevValue] = useState(null);
@@ -23,6 +24,7 @@ const Empleados = () => {
           .then((data) => {
             if (!data) return setEmpleados(local.datos);
             setLocalStorage(data, "employees");
+            setFilteredEmpleados(data);
             setEmpleados(data);
           });
       } catch (error) {
@@ -224,8 +226,8 @@ const Empleados = () => {
             </tr>
           </thead>
           <tbody>
-            {empleados.length > 0 ? (
-              empleados.map((emp) => (
+            {filteredEmpleados.length > 0 ? (
+              filteredEmpleados.map((emp) => (
                 <tr key={emp.id}>
                   <td>{emp.id}</td>
                   {input(emp, "name", emp.name)}
