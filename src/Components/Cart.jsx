@@ -107,6 +107,7 @@ const Cart = ({setCartChange, cartChange}) => {
                 {cartProds.map(item => (
                     <li key={item.idProduct} className="list-group-item d-flex justify-content-between align-items-center">
                         <div >
+                            <img src={item.imgUrl || "https://upload.wikimedia.org/wikipedia/commons/a/a3/Image-not-found.png"} alt={item.title} style={{ width: '100px', height: '100px', marginRight: '10px' }} />
                             <h5>{item.description}</h5>
                             <p>Precio: ${item.price}</p>
                             <p>Catidad: {item.quantity}</p>
