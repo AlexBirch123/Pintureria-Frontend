@@ -53,7 +53,7 @@ const Login = () => {
   };
 
   return (
-    <div className="container" style={{ maxWidth: "400px", marginTop: "50px" }}> 
+    <div className="container" style={{ maxWidth: "20%", marginTop: "50px" }}> 
       <form onSubmit={handleLogin}>
       <h2 className="text-center">Inicio de sesión</h2>
         <div className="mb-3">
@@ -92,10 +92,10 @@ const Login = () => {
           Registrarse
         </button>
       </div>
+      {message && <p className="text-danger text-center">{message}</p>}
       </form>
       {/* Botón de Registro */}
 
-      {message && <p className="text-danger text-center">{message}</p>}
     </div>
   );
 };

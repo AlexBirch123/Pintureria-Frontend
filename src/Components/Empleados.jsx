@@ -6,7 +6,9 @@ import { getLocalStorage, setLocalStorage } from "../utils/localStorage";
 const Empleados = () => {
   const [empleados, setEmpleados] = useState([]);
   const [filteredEmpleados, setFilteredEmpleados] = useState([]);
+  const [search, setSearch] = useState("");
   const [formVisible, setFormVisible] = useState(false);
+  const [sortedOrder, setSortedOrder] = useState(false);
   const [message, setMessage] = useState(null);
   const [prevValue, setPrevValue] = useState(null);
   const [editingField, setEditingField] = useState({ id: null, field: "" });
@@ -68,6 +70,7 @@ const Empleados = () => {
           if (res.ok) {
             const completeEmp = await res.json();
             setEmpleados([...empleados, completeEmp]);
+            setFilteredEmpleados([...filteredEmpleados, completeEmp]);
             setLocalStorage(empleados, "employees");
             resetForm();
             setMessage("Empleado creado con éxito");
@@ -111,6 +114,7 @@ const Empleados = () => {
       });
       const updatedEmp = empleados.filter((e) => e.id !== id);
       setEmpleados(updatedEmp);
+      setFilteredEmpleados(updatedEmp);
       setLocalStorage(updatedEmp, "employees");
     }
   };
@@ -121,20 +125,17 @@ const Empleados = () => {
   };
 
   const handleFieldChange = (id, field, value) => {
-    setEmpleados((empleados) =>
-      empleados.map((emp) => (emp.id === id ? { ...emp, [field]: value } : emp))
-    );
-  };
-
+    const newList = empleados.map((emp) => (emp.id === id ? { ...emp, [field]: value } : emp))
+    setEmpleados(newList);
+    setFilteredEmpleados(newList);
+  }
   const handleBlur = async (id, field, value) => {
     const data = { [field]: value };
     if (field === "address") {
-      const addressExists = searchEmp(value);
-      if (addressExists && addressExists.id !== id) {
+      const empExists = searchEmp(value);
+      if (empExists && empExists.id !== id) {
         alert("La direccion ya existe.");
-        setEmpleados((empleados) =>
-          empleados.map((e) => (e.id === id ? { ...e, [field]: prevValue } : e))
-        );
+        handleFieldChange(id, field, prevValue);
         return setPrevValue(null);
       }
     }
@@ -178,11 +179,65 @@ const Empleados = () => {
     );
   };
 
+  const handleSearch = (e) => {
+    e.preventDefault();
+    setFilteredEmpleados(
+      empleados.filter(
+        (c) =>
+          c.name.toLowerCase().includes(search.toLowerCase().trim()) ||
+          c.dni.toString().includes(search.trim()) ||
+          c.phone.toString().includes(search.trim())
+      )
+    );
+  }
+
+  const sortList = (field) => {
+    if(sortedOrder){
+      const sorted = [...filteredEmpleados].sort((a, b) => {
+          if (a[field] < b[field]) return -1;
+          if (a[field] > b[field]) return 1;
+          return 0;
+        });
+        setFilteredEmpleados(sorted);
+    }else{
+      const sorted = [...filteredEmpleados].sort((a, b) => {
+        if (a[field] > b[field]) return -1;
+        if (a[field] < b[field]) return 1;
+        return 0;
+      });
+      setFilteredEmpleados(sorted);
+    };
+  }
+
   return (
-    <div className="container mt-5">
-      <button onClick={toggleFormVisibility} className="btn btn-primary mb-3"  style={{marginTop:"20px"}}>
-        {formVisible ? "Cancelar" : "Crear Empleado"}
-      </button>
+    <div style={{ marginTop: "5%", marginLeft: "1%", marginRight: "1%" }}>
+      <div
+        className="d-flex justify-content-between mb-3"
+        style={{ marginTop: "20px" }}
+      >
+        <input
+          type="text"
+          placeholder="Buscar cliente..."
+          className="form-control w-25"
+          onChange={(e) => {
+            setSearch(e.target.value);
+          }}
+          onKeyDown={(e) => {
+            if (e.key === "Enter") {
+              console.log(search);
+              handleSearch(e);
+            }
+          }}
+        />
+        <button
+          id="b_create"
+          onClick={toggleFormVisibility}
+          type="button"
+          className="btn btn-primary"
+        >
+          {formVisible ? "Cancelar" : "Crear Cliente"}
+        </button>
+      </div>
 
       {/* Formulario visible para crear o editar empleado */}
       {formVisible && (
@@ -217,11 +272,27 @@ const Empleados = () => {
         <table className="table table-bordered" id="empleadoTable">
           <thead className="table-dark">
             <tr>
-              <th>ID</th>
-              <th>Nombre</th>
-              <th>DNI</th>
-              <th>Sueldo</th>
-              <th>Teléfono</th>
+              <th onClick={() => {
+                  setSortedOrder(!sortedOrder);
+                  sortList("id");}}
+                style={{ cursor: "pointer" }}>
+                ID</th>
+              <th onClick={() => {
+                  setSortedOrder(!sortedOrder);
+                  sortList("name");}}
+                style={{ cursor: "pointer" }}>Nombre</th>
+              <th onClick={() => {
+                  setSortedOrder(!sortedOrder);
+                  sortList("dni");}}
+                style={{ cursor: "pointer" }}>DNI</th>
+              <th onClick={() => {
+                  setSortedOrder(!sortedOrder);
+                  sortList("salary");}}
+                style={{ cursor: "pointer" }}>Sueldo</th>
+              <th onClick={() => {
+                  setSortedOrder(!sortedOrder);
+                  sortList("phone");}}
+                style={{ cursor: "pointer" }}>Teléfono</th>
               <th>Acciones</th>
             </tr>
           </thead>

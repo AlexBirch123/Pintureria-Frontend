@@ -9,7 +9,8 @@ const Clientes = () => {
   const [message, setMessage] = useState(null);
   const [editingField, setEditingField] = useState({ id: null, field: null });
   const [prevValue, setPrevValue] = useState(null);
-  const [search, setSearch] = useState(null);
+  const [search, setSearch] = useState("");
+  const [sortedOrder, setSortedOrder] = useState(false);
   const nombreRef = useRef(null);
   const direccionRef = useRef(null);
   const telefonoRef = useRef(null);
@@ -71,6 +72,7 @@ const Clientes = () => {
             const completeClient = await res.json();
             const newClients = [...clientes, completeClient];
             setClientes(newClients);
+            setFilteredClients(newClients);
             setLocalStorage(newClients, "clients");
             resetForm();
             setMessage("Cliente creado exitosamente");
@@ -196,28 +198,41 @@ const Clientes = () => {
   }
 
   const sortList = (field) => {
-    return () => {
-      const sorted = [...filteredClients].sort((a, b) => {
-        if (a[field] < b[field]) return -1;
-        if (a[field] > b[field]) return 1;
-        return 0;
-      });
-      setFilteredClients(sorted);
-    };
+      if(sortedOrder){
+        const sorted = [...filteredClients].sort((a, b) => {
+            if (a[field] < b[field]) return -1;
+            if (a[field] > b[field]) return 1;
+            return 0;
+          });
+          setFilteredClients(sorted);
+      }else{
+        const sorted = [...filteredClients].sort((a, b) => {
+          if (a[field] > b[field]) return -1;
+          if (a[field] < b[field]) return 1;
+          return 0;
+        });
+        setFilteredClients(sorted);
+      };
   }
 
   return (
-    <div style={{ marginTop: "5%", marginLeft:"1%", marginRight:"1%" }}>
-      <div className="d-flex justify-content-between mb-3" style={{marginTop:"20px"}}>
+    <div style={{ marginTop: "5%", marginLeft: "1%", marginRight: "1%" }}>
+      <div
+        className="d-flex justify-content-between mb-3"
+        style={{ marginTop: "20px" }}
+      >
         <input
           type="text"
           placeholder="Buscar cliente..."
           className="form-control w-25"
-          onChange={(e) => {setSearch(e.target.value) }}
-          onKeyDown={(e)=>{
-            if(e.key === "Enter") {
-              console.log(search)
-              handleSearch(e)}
+          onChange={(e) => {
+            setSearch(e.target.value);
+          }}
+          onKeyDown={(e) => {
+            if (e.key === "Enter") {
+              console.log(search);
+              handleSearch(e);
+            }
           }}
         />
         <button
@@ -233,64 +248,63 @@ const Clientes = () => {
       {/* Formulario visible para crear o editar cliente */}
       {formVisible && (
         <div className="card shadow p-4 mb-4">
-            <h4 className="mb-3">Nuevo Cliente</h4>
-        <form
-          id="clienteForm"
-          onSubmit={createClient}
-          style={{ marginTop: "5%" }}
-        >
-          <div className="mb-3">
-            <label htmlFor="Nombre" className="form-label">
-              Nombre:
-            </label>
-            <input
-              type="text"
-              ref={nombreRef}
-              name="Nombre"
-              className="form-control"
-              required={true}
-            />
-          </div>
-          <div className="mb-3">
-            <label htmlFor="dni" className="form-label">
-              DNI:
-            </label>
-            <input
-              type="text"
-              ref={dniRef}
-              name="dni"
-              className="form-control"
-              required={true}
-            />
-          </div>
-          <div className="mb-3">
-            <label htmlFor="Direccion" className="form-label">
-              Dirección:
-            </label>
-            <input
-              type="text"
-              ref={direccionRef}
-              name="Direccion"
-              className="form-control"
-            />
-          </div>
-          <div className="mb-3">
-            <label htmlFor="Telefono" className="form-label">
-              Teléfono:
-            </label>
-            <input
-              type="text"
-              ref={telefonoRef}
-              name="Telefono"
-              className="form-control"
-            />
-          </div>
-          <button type="submit" className="btn btn-success w-100">
-            Guardar Cliente
-          </button>
-        </form>
+          <h4 className="mb-3">Nuevo Cliente</h4>
+          <form
+            id="clienteForm"
+            onSubmit={createClient}
+            style={{ marginTop: "5%" }}
+          >
+            <div className="mb-3">
+              <label htmlFor="Nombre" className="form-label">
+                Nombre:
+              </label>
+              <input
+                type="text"
+                ref={nombreRef}
+                name="Nombre"
+                className="form-control"
+                required={true}
+              />
+            </div>
+            <div className="mb-3">
+              <label htmlFor="dni" className="form-label">
+                DNI:
+              </label>
+              <input
+                type="text"
+                ref={dniRef}
+                name="dni"
+                className="form-control"
+                required={true}
+              />
+            </div>
+            <div className="mb-3">
+              <label htmlFor="Direccion" className="form-label">
+                Dirección:
+              </label>
+              <input
+                type="text"
+                ref={direccionRef}
+                name="Direccion"
+                className="form-control"
+              />
+            </div>
+            <div className="mb-3">
+              <label htmlFor="Telefono" className="form-label">
+                Teléfono:
+              </label>
+              <input
+                type="text"
+                ref={telefonoRef}
+                name="Telefono"
+                className="form-control"
+              />
+            </div>
+            <button type="submit" className="btn btn-success w-100">
+              Guardar Cliente
+            </button>
+          </form>
         </div>
-        
       )}
 
       {/* Tabla de Clientes */}
@@ -299,11 +313,41 @@ const Clientes = () => {
         <table className="table table-striped table-hover" id="clienteTable">
           <thead className="table-dark">
             <tr>
-              <th onClick={sortList("id")} style={{cursor:"pointer"}}>ID</th>
-              <th onClick={sortList("name")}style={{cursor:"pointer"}}>Nombre</th>
-              <th onClick={sortList("dni")}style={{cursor:"pointer"}}>DNI</th>
-              <th onClick={sortList("address")}style={{cursor:"pointer"}}>Dirección</th>
-              <th onClick={sortList("phone")}style={{cursor:"pointer"}}>Teléfono</th>
+              <th
+                onClick={() => {
+                  setSortedOrder(!sortedOrder);
+                  sortList("id");}}
+                style={{ cursor: "pointer" }}>
+                ID
+              </th>
+              <th
+                onClick={() => {
+                  setSortedOrder(!sortedOrder);
+                  sortList("name");}}
+                style={{ cursor: "pointer" }}>
+                Nombre
+              </th>
+              <th
+                onClick={() => {
+                  setSortedOrder(!sortedOrder);
+                  sortList("dni");}}
+                style={{ cursor: "pointer" }}>
+                DNI
+              </th>
+              <th
+                onClick={() => {
+                  setSortedOrder(!sortedOrder);
+                  sortList("address");}}
+                style={{ cursor: "pointer" }}>
+                Dirección
+              </th>
+              <th
+                onClick={() => {
+                  setSortedOrder(!sortedOrder);
+                  sortList("phone");}}
+                style={{ cursor: "pointer" }}>
+                Teléfono
+              </th>
               <th>Acciones</th>
             </tr>
           </thead>
@@ -312,10 +356,10 @@ const Clientes = () => {
               filteredClients.map((cliente) => (
                 <tr key={cliente.id}>
                   <td>{cliente.id}</td>
-                  {input(cliente, "name",cliente.name)}
-                  {input(cliente, "dni",cliente.dni)}
-                  {input(cliente, "address",cliente.address)}
-                  {input(cliente, "phone",cliente.phone)}
+                  {input(cliente, "name", cliente.name)}
+                  {input(cliente, "dni", cliente.dni)}
+                  {input(cliente, "address", cliente.address)}
+                  {input(cliente, "phone", cliente.phone)}
                   <td>
                     <button
                       onClick={() => deleteCliente(cliente.id)}
@@ -328,7 +372,9 @@ const Clientes = () => {
               ))
             ) : (
               <tr>
-                <td colSpan={6} className="text-center">No hay clientes registrados</td>
+                <td colSpan={6} className="text-center">
+                  No hay clientes registrados
+                </td>
               </tr>
             )}
           </tbody>

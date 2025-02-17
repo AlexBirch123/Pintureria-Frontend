@@ -3,14 +3,16 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import {setLocalStorage,getLocalStorage} from "../utils/localStorage"
 import { searchDesc } from "../utils/search";
 
-const Productos = ({ role }) => {
+const Productos = () => {
   const [formVisible, setFormVisible] = useState(false);
-
+  const [filteredProductos, setFilteredProductos] = useState([]);
   const [productos, setProductos] = useState([]);
   const [proveedores, setProveedores] = useState([]);
   const [categorias, setcategorias] = useState([]);
   const [editingField, setEditingField] = useState({ id: null, field: null });
   const [message, setMessage] = useState(null);
+  const [search, setSearch] = useState("");
+  const [sortedOrder, setSortedOrder] = useState("");
   const descripcionRef = useRef(null);
   const titleRef = useRef(null);
   const idProvRef = useRef(null);
@@ -27,6 +29,7 @@ const Productos = ({ role }) => {
           .then((data) => {
             if (!data) return setProductos(local.datos);
             setProductos(data);
+            setFilteredProductos(data);
             setLocalStorage(data, "products");
           });
       } catch (error) {
@@ -106,6 +109,7 @@ const Productos = ({ role }) => {
         if (res.ok) {
           const completeProd = await res.json();
           setProductos([...productos, completeProd]);
+          setFilteredProductos([...productos, completeProd]);
           resetForm();
         }
       } catch (error) {
@@ -127,6 +131,7 @@ const Productos = ({ role }) => {
       });
       const updatedProd = productos.filter((p) => p.id !== id);
       setProductos(updatedProd);
+      setFilteredProductos(updatedProd);
       setLocalStorage(updatedProd);
     }
   };
@@ -135,11 +140,11 @@ const Productos = ({ role }) => {
     };
   
     const handleFieldChange = (id, field, value) => {
-      setProductos((prevProd) =>
-        prevProd.map((prod) =>
-          prod.id === id ? { ...prod, [field]: value } : prod
-        )
-      );
+      const newList = productos.map((prod) =>
+        prod.id === id ? { ...prod, [field]: value } : prod
+      )
+      setProductos(newList);
+      setFilteredProductos(newList);
     };
   
     const handleBlur = async (id, field, value) => {
@@ -160,20 +165,20 @@ const Productos = ({ role }) => {
       }
     };
 
-  const input = (suc, field, value) => {
+  const input = (pr, field, value) => {
     return (
       <td
-        onDoubleClick={() => handleDoubleClick(suc.id, field, value)}
+        onDoubleClick={() => handleDoubleClick(pr.id, field, value)}
         title="Doble click para editar"
       >
-        {editingField.id === suc.id && editingField.field === field ? (
+        {editingField.id === pr.id && editingField.field === field ? (
           <input
             type="text"
             value={value}
-            onChange={(e) => handleFieldChange(suc.id, field, e.target.value)}
+            onChange={(e) => handleFieldChange(pr.id, field, e.target.value)}
             onKeyDown={async (e) => {
               if (e.key === "Enter") {
-                await handleBlur(suc.id, field, value);
+                await handleBlur(pr.id, field, value);
               }
             }}
             autoFocus
@@ -184,94 +189,176 @@ const Productos = ({ role }) => {
       </td>
     );
   };
+  const handleSearch = (e) => {
+    e.preventDefault();
+    if(search.trim() === "")return setFilteredProductos(productos);
+    filteredProductos(
+      proveedores.filter(
+        (c) =>c.title.toLowerCase().includes(search.toLowerCase().trim()))
+    );
+  }
+
+  const sortList = (field) => {
+      if(sortedOrder){
+        const sorted = [...filteredProductos].sort((a, b) => {
+            if (a[field] < b[field]) return -1;
+            if (a[field] > b[field]) return 1;
+            return 0;
+          });
+          setFilteredProductos(sorted);
+      }else{
+        const sorted = [...filteredProductos].sort((a, b) => {
+          if (a[field] > b[field]) return -1;
+          if (a[field] < b[field]) return 1;
+          return 0;
+        });
+        setFilteredProductos(sorted);
+      };
+  }
 
   return (
-    <div style={{ marginLeft: "1%", marginRight: "1%", marginTop: "8%" }}>
-      <div className="btn-group">
-        <button
-          id="b_create"
-          onClick={toggleFormVisibility}
-          type="button"
-          className="btn btn-primary"
-        >
-          {formVisible ? "Cancelar" : "Crear Producto"}
-        </button>
+    <div style={{ marginLeft: "1%", marginRight: "1%", marginTop: "5%" }}>
+      <div className="d-flex justify-content-between align-items-center mb-2">
+        <div className="w-25">
+          <input
+            type="text"
+            placeholder="Buscar producto..."
+            className="form-control w-100"
+            onChange={(e) => {
+              setSearch(e.target.value);
+            }}
+            onKeyDown={(e) => {
+              if (e.key === "Enter") {
+                console.log(search);
+                handleSearch(e);
+              }
+            }}
+          />
+          <select name="idProv" id="idProv" 
+            className="form-select mt-2"
+            onChange={(e) => {
+              if (e.target.value === "") {
+                setFilteredProductos(productos);
+              } else {
+                const filtered = productos.filter(
+                  (p) => p.idProv === Number(e.target.value)
+                );
+                setFilteredProductos(filtered);
+              }
+            }}>
+            <option value="">Todos</option>
+            {proveedores.map((prov) => (
+              <option key={prov.id} value={prov.id}>
+                {prov.name}
+              </option>
+            ))}
+          </select>
+          <select name="idCat" id="idCat" 
+            className="form-select mt-2"
+            onChange={(e) => {
+              if (e.target.value === "") {
+                setFilteredProductos(productos);
+              } else {
+                const filtered = productos.filter(
+                  (p) => p.idCat === Number(e.target.value)
+                );
+                setFilteredProductos(filtered);
+              }
+            }}>
+            <option value="">Todos</option>
+            {categorias.map((cat) => (
+              <option key={cat.id} value={cat.id}>
+                {cat.description}
+              </option>
+            ))}
+          </select>
+        </div>
+        <div className="d-flex flex-column align-items-end">
+          <button
+            id="b_create"
+            onClick={toggleFormVisibility}
+            type="button"
+            className="btn btn-primary mb-2"
+          >
+            {formVisible ? "Cancelar" : "Crear Producto"}
+          </button>
+          <button
+            onClick={() => (window.location.href = "/products")}
+            type="button"
+            className="btn btn-primary"
+          >
+            Vista de tienda
+          </button>
+        </div>
       </div>
-      <div className="btn-group" style={{ float: "right" }}>
-        <button
-          onClick={() => (window.location.href = "/products")}
-          type="button"
-          className="btn btn-primary"
-        >
-          Vista de tienda
-        </button>
+      <div>
+        {formVisible && (
+          <form
+            onSubmit={createOrUpdateProducto}
+            id="productoData"
+            className="mt-3 p-3 border rounded bg-light "
+          >
+            <div className="row g-2">
+              <div className="col-md-6">
+                <label className="form-label">Descripción:</label>
+                <input
+                  type="text"
+                  className="form-control"
+                  required
+                  ref={descripcionRef}
+                />
+              </div>
+              <div className="col-md-6">
+                <label className="form-label">Precio:</label>
+                <input
+                  type="number"
+                  className="form-control"
+                  required
+                  ref={precioRef}
+                />
+              </div>
+              <div className="col-md-6">
+                <label className="form-label">Stock:</label>
+                <input type="number" className="form-control" ref={stockRef} />
+              </div>
+              <div className="col-md-6">
+                <label className="form-label">Proveedor:</label>
+                <select className="form-select" required ref={idProvRef}>
+                  <option value="">Elegir proveedor</option>
+                  {proveedores.map((prov) => (
+                    <option key={prov.id} value={prov.id}>
+                      {prov.name}
+                    </option>
+                  ))}
+                </select>
+              </div>
+              <div className="col-md-6">
+                <label className="form-label">Categoría:</label>
+                <select className="form-select" required ref={idCatRef}>
+                  <option value="">Elegir categoría</option>
+                  {categorias.map((cat) => (
+                    <option key={cat.id} value={cat.id}>
+                      {cat.description}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            </div>
+            <div className="mt-3 text-end">
+              <button type="submit" className="btn btn-primary me-2">
+                Crear
+              </button>
+              <button
+                type="button"
+                className="btn btn-secondary"
+                onClick={toggleFormVisibility}
+              >
+                Cancelar
+              </button>
+            </div>
+          </form>
+        )}
       </div>
-      {formVisible && (
-        <form
-          onSubmit={createOrUpdateProducto}
-          id="productoData"
-          className="mt-3 p-3 border rounded bg-light"
-        >
-          <div className="row g-2">
-            <div className="col-md-6">
-              <label className="form-label">Descripción:</label>
-              <input
-                type="text"
-                className="form-control"
-                required
-                ref={descripcionRef}
-              />
-            </div>
-            <div className="col-md-6">
-              <label className="form-label">Precio:</label>
-              <input
-                type="number"
-                className="form-control"
-                required
-                ref={precioRef}
-              />
-            </div>
-            <div className="col-md-6">
-              <label className="form-label">Stock:</label>
-              <input type="number" className="form-control" ref={stockRef} />
-            </div>
-            <div className="col-md-6">
-              <label className="form-label">Proveedor:</label>
-              <select className="form-select" required ref={idProvRef}>
-                <option value="">Elegir proveedor</option>
-                {proveedores.map((prov) => (
-                  <option key={prov.id} value={prov.id}>
-                    {prov.name}
-                  </option>
-                ))}
-              </select>
-            </div>
-            <div className="col-md-6">
-              <label className="form-label">Categoría:</label>
-              <select className="form-select" required ref={idCatRef}>
-                <option value="">Elegir categoría</option>
-                {categorias.map((cat) => (
-                  <option key={cat.id} value={cat.id}>
-                    {cat.description}
-                  </option>
-                ))}
-              </select>
-            </div>
-          </div>
-          <div className="mt-3 text-end">
-            <button type="submit" className="btn btn-primary me-2">
-              Crear
-            </button>
-            <button
-              type="button"
-              className="btn btn-secondary"
-              onClick={toggleFormVisibility}
-            >
-              Cancelar
-            </button>
-          </div>
-        </form>
-      )}
 
       {/* Tabla de productos */}
       <div className="table-responsive mt-4" style={{ marginTop: "5%" }}>
@@ -279,25 +366,51 @@ const Productos = ({ role }) => {
         <table className="table table-sm table-bordered table-hover text-center">
           <thead className="table-dark">
             <tr>
-              <th>ID</th>
-              <th>Titulo</th>
-              <th>Precio</th>
-              <th>Stock</th>
-              <th>Proveedor</th>
-              <th>Categoría</th>
+              <th onClick={() => {
+                  setSortedOrder(!sortedOrder);
+                  sortList("id");}}
+                style={{ cursor: "pointer" }}>ID</th>
+              <th onClick={() => {
+                  setSortedOrder(!sortedOrder);
+                  sortList("title");}}
+                style={{ cursor: "pointer" }}>Titulo</th>
+              <th onClick={() => {
+                  setSortedOrder(!sortedOrder);
+                  sortList("price");}}
+                style={{ cursor: "pointer" }}>Precio</th>
+              <th onClick={() => {
+                  setSortedOrder(!sortedOrder);
+                  sortList("stock");}}
+                style={{ cursor: "pointer" }}>Stock</th>
+              <th onClick={() => {
+                  setSortedOrder(!sortedOrder);
+                  sortList("idProv");}}
+                style={{ cursor: "pointer" }}>Proveedor</th>
+              <th onClick={() => {
+                  setSortedOrder(!sortedOrder);
+                  sortList("idCat");}}
+                style={{ cursor: "pointer" }}>Categoría</th>
               <th>Acciones</th>
             </tr>
           </thead>
           <tbody>
-            {productos.length > 0 ? (
-              productos.map((producto) => (
+            {filteredProductos.length > 0 ? (
+              filteredProductos.map((producto) => (
                 <tr key={producto.id}>
                   <td>{producto.id}</td>
-                  <td className="text-truncate">{input(producto, "title", producto.title)}</td>
+                  <td className="text-truncate">
+                    {input(producto, "title", producto.title)}
+                  </td>
                   <td>{input(producto, "price", producto.price)}</td>
                   <td>{input(producto, "stock", producto.stock)}</td>
-                  <td>{ producto.idProv /*searchDesc(proveedores,producto.idProv,"name")*/}</td>
-                  <td>{searchDesc(categorias, producto.idCat, "description")}</td>
+                  <td>
+                    {
+                      searchDesc(proveedores,producto.idProv,"name")
+                    }
+                  </td>
+                  <td>
+                    {searchDesc(categorias, producto.idCat, "description")}
+                  </td>
                   <td>
                     <>
                       <button

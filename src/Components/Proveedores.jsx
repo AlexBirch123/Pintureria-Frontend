@@ -5,10 +5,13 @@ import { motion } from "framer-motion";
 
 const Proveedores = () => {
   const [proveedores, setProveedores] = useState([]);
+  const [filteredProveedores, setFilteredProveedores] = useState([]);
   const [formVisible, setFormVisible] = useState(false);
   const [editingField, setEditingField] = useState({ id: null, field: null });
   const [message, setMessage] = useState(null);
   const [prevValue, setPrevValue] = useState(null);
+  const [search, setSearch] = useState("");
+  const [sortedOrder, setSortedOrder] = useState(false);
   const nombreRef = useRef(null);
   const direccionRef = useRef(null);
   const telefonoRef = useRef(null);
@@ -24,6 +27,7 @@ const Proveedores = () => {
             .then((data) => {
               if (!data) return setProveedores(local.datos);
               setProveedores(data);
+              setFilteredProveedores(data);
               setLocalStorage(data, "suppliers");
             });
         } catch (error) {
@@ -69,6 +73,7 @@ const Proveedores = () => {
             const completeSupp = await res.json();
             setProveedores([...proveedores, completeSupp]);
             setLocalStorage([...proveedores, completeSupp], "suppliers");
+            setFilteredProveedores([...proveedores, completeSupp]);
             resetForm();
             setMessage("Sucursal creada correctamente");
             setTimeout(() => setMessage(null), 3000);
@@ -107,6 +112,7 @@ const Proveedores = () => {
       });
       const updatedSupp = proveedores.filter((p) => p.id !== id);
       setProveedores(updatedSupp);
+      setFilteredProveedores(updatedSupp);
     }
   };
 
@@ -116,11 +122,11 @@ const Proveedores = () => {
     };
   
     const handleFieldChange = (id, field, value) => {
-      setProveedores((prevProv) =>
-        prevProv.map((prov) =>
-          prov.id === id ? { ...prov, [field]: value } : prov
-        )
-      );
+      const newList = proveedores.map((prov) =>
+        prov.id === id ? { ...prov, [field]: value } : prov
+      )
+      setProveedores(newList);
+      setFilteredProveedores(newList);
     };
   
     const handleBlur = async (id, field, value) => {
@@ -129,11 +135,7 @@ const Proveedores = () => {
         const addressExists = searchSupp(value);
         if (addressExists && addressExists.id !== id) {
           alert("La direccion ya existe.");
-          setProveedores((prevProv) =>
-            prevProv.map((prov) =>
-              prov.id === id ? { ...prov, [field]: prevValue } : prov
-            )
-          );
+          handleFieldChange(id, field, prevValue);
           return setPrevValue(null);
         }
       }
@@ -178,17 +180,64 @@ const Proveedores = () => {
       );
     };
 
+    const handleSearch = (e) => {
+      e.preventDefault();
+      setFilteredProveedores(
+        proveedores.filter(
+          (c) =>
+            c.name.toLowerCase().includes(search.toLowerCase().trim()) ||
+            c.cuit.toString().includes(search.trim()) ||
+            c.address.toLowerCase().includes(search.toLowerCase().trim()) ||
+            c.phone.toString().includes(search.trim())
+        )
+      );
+    }
+  
+    const sortList = (field) => {
+        if(sortedOrder){
+          const sorted = [...filteredProveedores].sort((a, b) => {
+              if (a[field] < b[field]) return -1;
+              if (a[field] > b[field]) return 1;
+              return 0;
+            });
+            setFilteredProveedores(sorted);
+        }else{
+          const sorted = [...filteredProveedores].sort((a, b) => {
+            if (a[field] > b[field]) return -1;
+            if (a[field] < b[field]) return 1;
+            return 0;
+          });
+          setFilteredProveedores(sorted);
+        };
+    }
+
   return (
-    <div style={{ marginTop: "8%", marginLeft: "1%", marginRight: "1%" }}>
-      
-      <div className="btn-group" style={{ marginBottom: "3%" }}>
+    <div style={{ marginTop: "5%", marginLeft: "1%", marginRight: "1%" }}>
+      <div
+        className="d-flex justify-content-between mb-3"
+        style={{ marginTop: "20px" }}
+      >
+        <input
+          type="text"
+          placeholder="Buscar cliente..."
+          className="form-control w-25"
+          onChange={(e) => {
+            setSearch(e.target.value);
+          }}
+          onKeyDown={(e) => {
+            if (e.key === "Enter") {
+              console.log(search);
+              handleSearch(e);
+            }
+          }}
+        />
         <button
           id="b_create"
           onClick={toggleFormVisibility}
           type="button"
           className="btn btn-primary"
         >
-          {formVisible ? "Cancelar" : "Crear Proveedor"}
+          {formVisible ? "Cancelar" : "Crear proveedor"}
         </button>
       </div>
 
@@ -233,17 +282,32 @@ const Proveedores = () => {
         <table className="table table-striped table-bordered mt-3">
           <thead className="table-dark">
             <tr>
-              <th>ID</th>
-              <th>Nombre</th>
-              <th>CUIT/CUIL</th>
-              <th>Teléfono</th>
-              <th>Dirección</th>
+              <th onClick={() => {
+                  setSortedOrder(!sortedOrder);
+                  sortList("id");}}
+                style={{ cursor: "pointer" }}>ID</th>
+              <th onClick={() => {
+                  setSortedOrder(!sortedOrder);
+                  sortList("name");}}
+                style={{ cursor: "pointer" }}>Nombre</th>
+              <th onClick={() => {
+                  setSortedOrder(!sortedOrder);
+                  sortList("cuit");}}
+                style={{ cursor: "pointer" }}>CUIT/CUIL</th>
+              <th onClick={() => {
+                  setSortedOrder(!sortedOrder);
+                  sortList("phone");}}
+                style={{ cursor: "pointer" }}>Teléfono</th>
+              <th onClick={() => {
+                  setSortedOrder(!sortedOrder);
+                  sortList("address");}}
+                style={{ cursor: "pointer" }}>Dirección</th>
               <th>Acciones</th>
             </tr>
           </thead>
           <tbody>
-            {proveedores.length > 0 ? (
-              proveedores.map((prov) => (
+            {filteredProveedores.length > 0 ? (
+              filteredProveedores.map((prov) => (
                 <tr key={prov.id}>
                   <td>{prov.id}</td>
                   {input(prov,"name", prov.name)}
