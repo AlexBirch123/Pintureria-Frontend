@@ -98,7 +98,7 @@ const Cart = ({setCartChange, cartChange}) => {
   };
 
   return (
-    <div className="d-flex justify-content-center align-items-center min-vh-100 bg-light">
+    <div className="d-flex justify-content-center align-items-center min-vh-100">
       {paymentId && saleCreated ? (
         <div
           className="card shadow-lg p-4"
