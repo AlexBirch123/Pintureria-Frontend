@@ -45,14 +45,16 @@ function Home() {
   },[])
 
   return (
-    <div style={{ 
-      display: "flex", 
-      flexDirection: "column", 
-      alignItems: "center", 
-      justifyContent: "center", 
-      textAlign: "center",
-      width: "100%", 
-    }}>
+    <div
+      style={{
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+        justifyContent: "center",
+        textAlign: "center",
+        width: "100%",
+      }}
+    >
       <Carousel
         style={{
           maxHeight: "500px",
@@ -61,40 +63,73 @@ function Home() {
           width: "97%", // ✅ Hace que el carrusel no sea demasiado ancho
         }}
       >
-          <Carousel.Item>
-                  <img
-                    className="d-block w-100"
-                    src={frente}
-                    alt="First slide"
-                    style={{ height: "500px", objectFit: "cover", background: "white" }}
-                  />
-                </Carousel.Item>
-                <Carousel.Item>
-                  <img
-                    className="d-block w-100"
-                    src={carru2}
-                    alt="Second slide"
-                    style={{ height: "500px", objectFit: "cover", background: "white" }}
-                  />
-                  <Carousel.Caption style={{top: "50%", transform: "translateY(-50%)"}}>
-                  </Carousel.Caption>
-                </Carousel.Item>
-                <Carousel.Item>
-                  <img
-                    className="d-block w-100"
-                    src={carru3}
-                    alt="Third slide"
-                    style={{ height: "500px", objectFit: "contain", background: "white" }}
-                  />
-                </Carousel.Item>
-              </Carousel>
-    <div style={{display: "flex", flexWrap: "wrap", justifyContent: "center" }}>
-    {categorias.map((category) => (
-      <div style={{margin:"10px" , cursor:"pointer"}}>
-        <CategoryCard category={category} />
+        <Carousel.Item>
+          <img
+            className="d-block w-100"
+            src={frente}
+            alt="First slide"
+            style={{ height: "500px", objectFit: "cover", background: "white" }}
+          />
+        </Carousel.Item>
+        <Carousel.Item>
+          <img
+            className="d-block w-100"
+            src={carru2}
+            alt="Second slide"
+            style={{ height: "500px", objectFit: "cover", background: "white" }}
+          />
+          <Carousel.Caption
+            style={{
+              top: "50%",
+              transform: "translateY(-40%)",
+              padding: "20px",
+              borderRadius: "10px",
+              color: "#000",
+              textAlign: "left",
+            }}
+          >
+            <h3
+              style={{
+                fontSize: "2.5rem",
+                fontWeight: "bold",
+                textShadow: "2px 2px 10px rgba(0, 0, 0, 0.5)",
+              }}
+            >
+              🎨 Es hora de pintar tu casa
+            </h3>
+            <p
+              style={{
+                fontSize: "2rem",
+                textShadow: "1px 1px 5px rgba(0, 0, 0, 0.3)",
+              }}
+            >
+              Vení a nuestra sucursal y elegí la gama de colores que más te
+              guste
+            </p>
+          </Carousel.Caption>
+        </Carousel.Item>
+        <Carousel.Item>
+          <img
+            className="d-block w-100"
+            src={carru3}
+            alt="Third slide"
+            style={{
+              height: "500px",
+              objectFit: "contain",
+              background: "white",
+            }}
+          />
+        </Carousel.Item>
+      </Carousel>
+      <div
+        style={{ display: "flex", flexWrap: "wrap", justifyContent: "center" }}
+      >
+        {categorias.map((category) => (
+          <div style={{ margin: "10px", cursor: "pointer" }}>
+            <CategoryCard category={category} />
+          </div>
+        ))}
       </div>
-    ))}
-    </div>
     </div>
   );
 }

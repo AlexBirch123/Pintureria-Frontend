@@ -19,6 +19,8 @@ import ProductPage from './Components/ProductPage.jsx';
 import Cart from './Components/Cart.jsx';
 import Usuarios from './Components/Usuarios.jsx';
 import { useState } from 'react';
+import Footer from './Components/Footer.jsx';
+import UserSales from './Components/UserSales.jsx';
 
 function App() {
 
@@ -43,6 +45,7 @@ function App() {
         <Route path="/productPage" element={<ProductPage  setCartChange={setCartChange} cartChange={cartChange}/>} />
         <Route path="/cartShop" element={<Cart setCartChange={setCartChange} cartChange={cartChange}/>} />
         <Route path="/usuarios" element={<Usuarios/>} />
+        <Route path="/userSales" element={<UserSales/>} />
         <Route path="/payment" element={<Cart setCartChange={setCartChange} cartChange={cartChange}/>} />
 
         <Route path="/buscador" element={<BuscadorProd />} />
@@ -59,6 +62,7 @@ function App() {
         {/* Redirigir al login por defecto */}
         <Route path="/" element={<Navigate to="/home" />} />
       </Routes>
+      <Footer/>
     </Router>
   );
 }

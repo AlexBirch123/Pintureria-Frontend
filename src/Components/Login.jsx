@@ -53,9 +53,9 @@ const Login = () => {
   };
 
   return (
-    <div className="container" style={{ maxWidth: "400px", marginTop: "50px" }}>
-      <h2 className="text-center">Inicio de sesión</h2>
+    <div className="container" style={{ maxWidth: "400px", marginTop: "50px" }}> 
       <form onSubmit={handleLogin}>
+      <h2 className="text-center">Inicio de sesión</h2>
         <div className="mb-3">
           <label htmlFor="username" className="form-label">
             Nombre de Usuario:
@@ -83,10 +83,6 @@ const Login = () => {
         <button type="submit" className="btn btn-primary w-100">
           Iniciar Sesión
         </button>
-      </form>
-      {message && <p className="text-danger text-center">{message}</p>}
-
-      {/* Botón de Registro */}
       <div className="text-center mt-3">
         <Link className="link" to="/recover">
           ¿Olvidó su contraseña?
@@ -96,6 +92,10 @@ const Login = () => {
           Registrarse
         </button>
       </div>
+      </form>
+      {/* Botón de Registro */}
+
+      {message && <p className="text-danger text-center">{message}</p>}
     </div>
   );
 };

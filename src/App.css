@@ -41,6 +41,10 @@ body {
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
-  height: 100vh;
-  margin: 0;
+  height: auto;
+  padding-bottom: 60px; 
+  position: relative;
+  min-height: 160vh;
+  display: flex;
+  flex-direction: column;
 }

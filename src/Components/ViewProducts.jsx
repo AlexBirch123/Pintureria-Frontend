@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { useLocation } from 'react-router-dom';
 import ProductCard from './ProductCard';
 import { getLocalStorage,setLocalStorage } from '../utils/localStorage';
+import '../utils/styles/ViewProducts.css';
 
 const ViewProducts = () => {
   const location = useLocation();
@@ -11,10 +12,9 @@ const ViewProducts = () => {
   const [filteredProds,setFilteredProds]= useState([])
   const [cat, setCat] = useState(category);
   const [productos, setProductos] = useState([]);
-  const [max, setMax] = useState([]);
-  const [min, setMin] = useState([]);
+  const [max, setMax] = useState(0);
+  const [min, setMin] = useState(0);
   const [categorias, setcategorias] = useState([]);
-  //PONER ALGO PARA FILTRAR LOS PRODUCTOS
 
   useEffect(() => {
     const fetchProd = async () => {
@@ -81,18 +81,8 @@ const ViewProducts = () => {
       setMin(0)
       return
     };
-    let min = prods[0].price;
-    let max = prods[0].price;
-    for (let i = 1; i < prods.length; i++) {
-      if (prods[i].price < min) {
-        min = prods[i].price;
-      }
-      if (prods[i].price > max) {
-        max = prods[i].price;
-      }
-    }
-    setMax(max);
-    setMin(min);
+    setMax(Math.max(...prods.map(p => p.price)));
+    setMin(Math.min(...prods.map(p => p.price)));
   };
 
   const searchCat = (id) => {
@@ -101,10 +91,8 @@ const ViewProducts = () => {
   };
 
   return (
-    <div style={{ display: "flex" }}>
-      <div
-        style={{ flex: 0.3, padding: "20px", borderRight: "1px solid #ccc", marginTop: "5%" }}
-      >
+    <div className="view-products-container">
+      <aside className="filters">
         <h2>Filtrar Productos</h2>
         <div>
           <label>Categoría:</label>
@@ -120,7 +108,7 @@ const ViewProducts = () => {
         </div>
         <div>
           <label>Precio</label>
-          {<p>min:{min}</p>}
+          {<p>Min:{min}</p>}
           <input
             type="range"
             min={min}
@@ -131,30 +119,24 @@ const ViewProducts = () => {
               const maxPrice = e.target.value;
               setFilteredProds(
                 productos.filter(
-                  (p) => p.price <= maxPrice && (!cat || p.idCat === cat)
+                  (p) => p.price <= maxPrice && (!cat || p.idCat === Number(cat))
                 )
               );
             }}
           />
-          {<p>max:{max}</p>}
+          {<p>Max:{max}</p>}
         </div>
-      </div>
-      <div style={{ flex: 1 ,marginLeft: "3%"}}>
-        <h1 style={{ marginTop: "8%" }}>Productos</h1>
+        </aside>
+      <main className="products">
+        <h1>Productos</h1>
         {cat && <p>Mostrando productos para la categoría: {cat}</p>}
         {description &&<p>Mostrando productos para su busqueda: {description}</p>}
-        <div style={{ display: "flex", flexWrap: "wrap" }}>
-          {filteredProds.length > 0 ? (
-            filteredProds.map((p) => (
-              <div key={p.id} style={{ flex: "1 0 21%", margin: "10px" }}>
-                <ProductCard product={p} />
-              </div>
-            ))
-          ) : (
-            <p>No hay productos disponibles.</p>
-          )}
-        </div>
-      </div>
+        {filteredProds.length > 0 ? (
+          filteredProds.map((p) => <ProductCard key={p.id} product={p} />)
+        ) : (
+          <p>No hay productos disponibles.</p>
+        )}
+      </main>
     </div>
   );
 };

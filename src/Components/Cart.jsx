@@ -98,61 +98,119 @@ const Cart = ({setCartChange, cartChange}) => {
   };
 
   return (
-      <div className="container mt-5">
-        {(paymentId && saleCreated) ? ( 
-          <div className="container mt-5">
-          <h2 style={{marginTop:"5%"}}>Compra realizada con exito</h2>
+    <div className="d-flex justify-content-center align-items-center min-vh-100 bg-light">
+      {paymentId && saleCreated ? (
+        <div
+          className="card shadow-lg p-4"
+          style={{ maxWidth: "600px", width: "100%" }}
+        >
+          <h2 style={{ marginTop: "5%" }}>Compra realizada con exito</h2>
           <h3>Detalle de tu compra</h3>
           <ul className="list-group">
-                {cartProds.map(item => (
-                    <li key={item.idProduct} className="list-group-item d-flex justify-content-between align-items-center">
-                        <div >
-                            <img src={item.imgUrl || "https://upload.wikimedia.org/wikipedia/commons/a/a3/Image-not-found.png"} alt={item.title} style={{ width: '100px', height: '100px', marginRight: '10px' }} />
-                            <h5>{item.description}</h5>
-                            <p>Precio: ${item.price}</p>
-                            <p>Catidad: {item.quantity}</p>
-                        </div>
-                    </li>
+            {cartProds.map((item) => (
+              <li
+                key={item.idProduct}
+                className="list-group-item d-flex justify-content-between align-items-center"
+              >
+                <div>
+                  <img
+                    src={
+                      item.imgUrl ||
+                      "https://upload.wikimedia.org/wikipedia/commons/a/a3/Image-not-found.png"
+                    }
+                    alt={item.title}
+                    style={{
+                      width: "100px",
+                      height: "100px",
+                      marginRight: "10px",
+                    }}
+                  />
+                  <h5>{item.description}</h5>
+                  <p>Precio: ${item.price}</p>
+                  <p>Catidad: {item.quantity}</p>
+                </div>
+              </li>
+            ))}
+          </ul>
+          <button
+            className="btn btn-primary mt-3"
+            onClick={() => navigate("/home")}
+          >
+            Seguir comprando
+          </button>
+        </div>
+      ) : (
+        <div
+          className="card shadow-lg p-4"
+          style={{ maxWidth: "600px", width: "100%" }}
+        >
+          <h2 className="text-center mb-4">🛒 Carrito de Compras</h2>
+          {cartProds.length > 0 ? (
+            <ul className="list-group">
+              {
+                cartProds.map((item) => (
+                  <li
+                    key={item.idProduct}
+                    className="list-group-item d-flex justify-content-between align-items-center"
+                  >
+                    <div>
+                      <img
+                        src={item.imgUrl ||"https://upload.wikimedia.org/wikipedia/commons/a/a3/Image-not-found.png"}
+                        alt={item.title}
+                        style={{
+                          width: "100px",
+                          height: "100px",
+                          cursor:"pointer",
+                        }}
+                        onClick={()=> navigate(`/productPage?idProd=${item.idProduct}`)}
+                      />
+                    </div>
+                    <div>
+                      <h5 className="mb-1" onClick={()=> navigate(`/productPage?idProd=${item.idProduct}`)} style={{cursor:"pointer"}}>{item.description}</h5>
+                      <p className="text-muted">Precio: ${item.price}</p>
+                      <input
+                        type="number"
+                        className="form-control"
+                        value={item.quantity}
+                        onChange={(e) =>
+                          handleQuantityChange(
+                            item.idProduct,
+                            parseInt(e.target.value)
+                          )
+                        }
+                        min="1"
+                        style={{ maxWidth: "80px" }}
+                      />
+                    </div>
+                    <button
+                      className="btn btn-danger btn-sm"
+                      onClick={() => handleRemoveItem(item.idProduct)}
+                    >
+                      ❌
+                    </button>
+                  </li>
                 ))}
             </ul>
-          <button className="btn btn-primary mt-3" onClick={()=> navigate("/home")}>Seguir comprando</button>
-        </div>
-        ):(
-          <div>
-            <h2 style={{marginTop:"5%"}}>Carrito de Compras</h2>
-            <ul className="list-group">
-                {cartProds.length > 0  ?(cartProds.map(item => (
-                    <li key={item.idProduct} className="list-group-item d-flex justify-content-between align-items-center">
-                        <div >
-                            <h5>{item.description}</h5>
-                            <p>Precio: ${item.price}</p>
-                            <input 
-                                type="number" 
-                                className="form-control" 
-                                value={item.quantity} 
-                                onChange={(e) => handleQuantityChange(item.idProduct, parseInt(e.target.value))}
-                                min="1"
-                            />
-                        </div>
-                        <button className="btn btn-danger" onClick={() => handleRemoveItem(item.idProduct)}>Eliminar</button>
-                    </li>
-                ))):
-                (
-                    <li className="list-group-item d-flex justify-content-center align-items-center">
-                        No hay productos agregados al carrito.
-                    </li>
-                )}
-            </ul>
-            {cartProds.length > 0 ? (
-              <button className="btn btn-primary mt-3" onClick={createOrder}>Pagar</button>
-            ):(
-              <button className="btn btn-primary mt-3" onClick={()=> navigate("/home")}>Seguir comprando</button>
+            ) : (
+              <p className="text-center text-muted">El carrito está vacío 🛍️</p>
             )}
+          {cartProds.length > 0 ? (
+            <button className="btn btn-success" onClick={createOrder}>
+              💳 Pagar
+            </button>
+          ) : (
+            <button
+              className="btn btn-primary mt-3"
+              onClick={() => navigate("/home")}
+            >
+              🔙 Seguir Comprando
+            </button>
+          )}
 
-            {message&& <p>{message}</p>}
-          </div>
-        ) }
-      </div>
+          {message && <p>{message}</p>}
+        </div>
+      )}
+    </div>
   );
 };
 

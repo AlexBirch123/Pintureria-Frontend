@@ -23,7 +23,7 @@ const UserSales = () => {
             try {
                 const res = await fetch(`${process.env.REACT_APP_API_URL}/Rows/${idSale}`, { credentials: "include" })
                 const data = await res.json(); 
-                if (!data) return setItems([...items]);
+                if (!data) return setItems([]);
                 setItems([...items, data]);
             } catch (error) {
                 console.log(error);
@@ -49,7 +49,7 @@ const UserSales = () => {
     }, [id]);
 
     return (
-        <div>
+        <div style={{ marginTop: "5%", marginLeft: "1%" }}>
             <h2>Tus compras</h2>
             {items.length === 0 ? (
                 <li className="list-group-item d-flex justify-content-center align-items-center">

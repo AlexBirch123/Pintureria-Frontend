@@ -1,0 +1,79 @@
+/* Estilos generales */
+.container {
+    display: flex;
+    gap: 20px;
+    padding: 20px;
+  }
+  
+  /* Barra lateral de filtros */
+  .sidebar {
+    flex: 0.3;
+    padding: 20px;
+    border-right: 1px solid #ccc;
+    background-color: #f8f9fa;
+    border-radius: 10px;
+  }
+  
+  .sidebar h2 {
+    font-size: 1.5rem;
+    margin-bottom: 15px;
+  }
+  
+  .sidebar label {
+    font-weight: bold;
+    display: block;
+    margin-top: 10px;
+  }
+  
+  .sidebar select,
+  .sidebar input {
+    width: 100%;
+    padding: 5px;
+    margin-top: 5px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+  }
+  
+  /* Contenedor de productos */
+  .products-container {
+    flex: 1;
+    text-align: center;
+  }
+  
+  .products-container h1 {
+    font-size: 2rem;
+    margin-bottom: 20px;
+  }
+  
+  .products-container p {
+    font-size: 1rem;
+    color: #555;
+  }
+  
+  /* Estilos de ProductCard */
+  .product-card {
+    background: white;
+    border-radius: 10px;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+    padding: 15px;
+    margin: 10px;
+    transition: transform 0.2s ease-in-out;
+  }
+  
+  .product-card:hover {
+    transform: scale(1.05);
+  }
+  
+  /* Responsive */
+  @media (max-width: 768px) {
+    .container {
+      flex-direction: column;
+    }
+  
+    .sidebar {
+      flex: 1;
+      border-right: none;
+      border-bottom: 1px solid #ccc;
+    }
+  }
+  

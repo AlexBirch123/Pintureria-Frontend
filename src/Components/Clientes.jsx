@@ -135,13 +135,9 @@ const Clientes = () => {
     const data = { [field]: value };
     if (field === "dni") {
       const dniExists = searchClient(value);
-      if (dniExists) {
+      if (dniExists && dniExists.id !== id) {
         alert("El DNI ya existe.");
-        setClientes((cli) =>
-          cli.map((c) =>
-            c.id === id ? { ...c, [field]: prevValue } : c
-          )
-        );
+        handleFieldChange(id, field, prevValue);
         return setPrevValue(null);
       }
     }
@@ -191,10 +187,10 @@ const Clientes = () => {
     setFilteredClients(
       clientes.filter(
         (c) =>
-          c.description.toLowerCase().includes(search.toLowerCase().trim()) ||
-          c.dni.includes(Number(search.trim())) ||
-          c.address.includes(Number(search.trim())) ||
-          c.phone.includes(Number(search.trim()))
+          c.name.toLowerCase().includes(search.toLowerCase().trim()) ||
+          c.dni.toString().includes(search.trim()) ||
+          c.address.toLowerCase().includes(search.toLowerCase().trim()) ||
+          c.phone.toString().includes(search.trim())
       )
     );
   }
@@ -211,7 +207,7 @@ const Clientes = () => {
   }
 
   return (
-    <div style={{ marginTop: "5%" }}>
+    <div style={{ marginTop: "5%", marginLeft:"1%", marginRight:"1%" }}>
       <div className="d-flex justify-content-between mb-3" style={{marginTop:"20px"}}>
         <input
           type="text"
@@ -219,7 +215,9 @@ const Clientes = () => {
           className="form-control w-25"
           onChange={(e) => {setSearch(e.target.value) }}
           onKeyDown={(e)=>{
-            if(e.key === "Enter") {handleSearch()}
+            if(e.key === "Enter") {
+              console.log(search)
+              handleSearch(e)}
           }}
         />
         <button

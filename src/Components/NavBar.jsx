@@ -14,6 +14,7 @@ const NavBar = ({cartChange}) => {
   const navigate = useNavigate();
   const [cartProds, setCartProds] = useState([])
   const [search, setSearch] = useState("")
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
   
   useEffect(() => {
     const updateCart = () => {
@@ -54,8 +55,8 @@ const NavBar = ({cartChange}) => {
 
 
   return (
-    <nav className="navbar navbar-expand-sm bg-dark navbar-dark fixed-top">
-      <div className="container-fluid d-flex align-items-center justify-content-between">
+    <nav className="navbar navbar-expand-lg bg-dark navbar-dark fixed-top">
+      <div className="container-fluid">
         {/* Logo y Barra de Búsqueda */}
         <div className="d-flex align-items-center">
           <Link to="/home">
@@ -91,21 +92,18 @@ const NavBar = ({cartChange}) => {
           type="button"
           data-bs-toggle="collapse"
           data-bs-target="#collapsibleNavbar"
+          onClick={() => setIsMenuOpen(!isMenuOpen)}
         >
           <span className="navbar-toggler-icon"></span>
         </button>
 
         {/* Links de navegación */}
-        <div
-          className="collapse navbar-collapse justify-content-center"
-          id="collapsibleNavbar"
-          style={{ marginRight: "250px" }}
-        >
-          <ul className="navbar-nav">
+        <div className={`collapse navbar-collapse ${isMenuOpen ? "show" : ""}`} id="collapsibleNavbar">
+          <ul className="navbar-nav ms-auto text-start">
             <li className="nav-item">
               <Link
                 className="nav-link"
-                to={role === 1 || role === 2 ? "/productos" : "/products"}
+                to={(role === 1 || role === 2) && isAuthenticated ? "/productos" : "/products"}
                 style={{ justifySelf: "initial" }}
               >
                 Productos
@@ -146,6 +144,7 @@ const NavBar = ({cartChange}) => {
                   <button
                     className="nav-link dropdown-toggle"
                     id="ventasDropdown"
+                    data-bs-toggle="dropdown"
                   >
                     Ventas
                   </button>
@@ -191,6 +190,7 @@ const NavBar = ({cartChange}) => {
                   src={cart}
                   alt="cart"
                   style={{ width: "30px", height: "30px" }}
+                  onClick={() => navigate("/cartShop")}
                 />
               </button>
               <ul
