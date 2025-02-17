@@ -82,7 +82,7 @@ const Productos = () => {
     if (titleRef.current) titleRef.current.value = "";
   };
 
-  const createOrUpdateProducto = async (event) => {
+  const createProducto = async (event) => {
     event.preventDefault();
     const description = descripcionRef.current?.value;
     const price = Number(precioRef.current?.value);
@@ -92,6 +92,7 @@ const Productos = () => {
     const title = titleRef.current?.value
     if (title && price && idProv && idCat && stock) {
       const newProd = {
+        title: title,
         description: description,
         price: price,
         stock: stock,
@@ -193,7 +194,7 @@ const Productos = () => {
     e.preventDefault();
     if(search.trim() === "")return setFilteredProductos(productos);
     filteredProductos(
-      proveedores.filter(
+      filteredProductos.filter(
         (c) =>c.title.toLowerCase().includes(search.toLowerCase().trim()))
     );
   }
@@ -294,17 +295,25 @@ const Productos = () => {
       <div>
         {formVisible && (
           <form
-            onSubmit={createOrUpdateProducto}
+            onSubmit={createProducto}
             id="productoData"
             className="mt-3 p-3 border rounded bg-light "
           >
             <div className="row g-2">
+            <div className="col-md-6">
+                <label className="form-label">Titulo:</label>
+                <input
+                  type="text"
+                  className="form-control"
+                  required
+                  ref={titleRef}
+                />
+              </div>
               <div className="col-md-6">
                 <label className="form-label">Descripción:</label>
                 <input
                   type="text"
                   className="form-control"
-                  required
                   ref={descripcionRef}
                 />
               </div>

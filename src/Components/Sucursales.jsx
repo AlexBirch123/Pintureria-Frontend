@@ -4,6 +4,9 @@ import { getLocalStorage, setLocalStorage } from "../utils/localStorage";
 
 const Sucursales = () => {
   const [sucursales, setSucursales] = useState([]);
+  const [filteredSucursales, setFilteredSucursales] = useState([]);
+  const [search, setSearch] = useState([]);
+  const [sortedOrder, setSortedOrder] = useState([]);
   const [formVisible, setFormVisible] = useState(false);
   const [editingField, setEditingField] = useState({ id: null, field: null });
   const [message, setMessage] = useState(null);
@@ -22,6 +25,7 @@ const Sucursales = () => {
           .then((data) => {
             if (!data) return setSucursales(local.datos);
             setSucursales(data);
+            setFilteredSucursales(data);
             setLocalStorage(data, "branches");
           });
       } catch (error) {
@@ -61,6 +65,7 @@ const Sucursales = () => {
             const completeBranch = await res.json();
             setSucursales([...sucursales, completeBranch]); // Actualiza la lista de productos con el nuevo
             setLocalStorage([...sucursales, completeBranch], "branches");
+            setFilteredSucursales([...sucursales, completeBranch]);
             resetForm();
             setMessage("Sucursal creada correctamente");
             setTimeout(() => setMessage(null), 3000);
@@ -102,6 +107,7 @@ const Sucursales = () => {
         );
         setSucursales(updatedSucursales);
         setLocalStorage(updatedSucursales);
+        setFilteredSucursales(updatedSucursales);
       } catch (error) {
         setMessage("Error al eliminar la sucursal");
       }
@@ -114,11 +120,11 @@ const Sucursales = () => {
   };
 
   const handleFieldChange = (id, field, value) => {
-    setSucursales((prevSucursales) =>
-      prevSucursales.map((sucursal) =>
-        sucursal.id === id ? { ...sucursal, [field]: value } : sucursal
-      )
-    );
+    const newList = sucursales.map((sucursal) =>
+      sucursal.id === id ? { ...sucursal, [field]: value } : sucursal
+    )
+    setSucursales(newList);
+    setFilteredSucursales(newList);
   };
 
   const handleBlur = async (id, field, value) => {
@@ -127,11 +133,7 @@ const Sucursales = () => {
       const addressExists = searchBranch(value);
       if (addressExists && addressExists.id !== id) {
         alert("La direccion ya existe.");
-        setSucursales((prevSucursales) =>
-          prevSucursales.map((sucursal) =>
-            sucursal.id === id ? { ...sucursal, [field]: prevValue } : sucursal
-          )
-        );
+        handleFieldChange(id, field, prevValue);
         return setPrevValue(null);
       }
     }
@@ -176,10 +178,62 @@ const Sucursales = () => {
     );
   };
 
+  const handleSearch = (e) => {
+    e.preventDefault();
+    setFilteredSucursales(
+      sucursales.filter(
+        (c) =>
+          c.address.toLowerCase().includes(search.toLowerCase().trim()) ||
+          c.phone.toString().includes(search.trim())
+      )
+    );
+  }
+
+  const sortList = (field) => {
+      if(sortedOrder){
+        const sorted = [...filteredSucursales].sort((a, b) => {
+            if (a[field] < b[field]) return -1;
+            if (a[field] > b[field]) return 1;
+            return 0;
+          });
+          setFilteredSucursales(sorted);
+      }else{
+        const sorted = [...filteredSucursales].sort((a, b) => {
+          if (a[field] > b[field]) return -1;
+          if (a[field] < b[field]) return 1;
+          return 0;
+        });
+        setFilteredSucursales(sorted);
+      };
+  }
+
+
   return (
-    <div className="container mt-5" >
-      <div className="d-flex justify-content-between align-items-center mb-4">
-        <button className="btn btn-primary" onClick={toggleFormVisibility} style={{marginTop:"5%"}}>
+    <div style={{ marginTop: "5%", marginLeft: "1%", marginRight: "1%" }}>
+      <div
+        className="d-flex justify-content-between mb-3"
+        style={{ marginTop: "20px" }}
+      >
+        <input
+          type="text"
+          placeholder="Buscar sucursal..."
+          className="form-control w-25"
+          onChange={(e) => {
+            setSearch(e.target.value);
+          }}
+          onKeyDown={(e) => {
+            if (e.key === "Enter") {
+              console.log(search);
+              handleSearch(e);
+            }
+          }}
+        />
+        <button
+          id="b_create"
+          onClick={toggleFormVisibility}
+          type="button"
+          className="btn btn-primary"
+        >
           {formVisible ? "Cancelar" : "Crear Sucursal"}
         </button>
       </div>
@@ -208,15 +262,24 @@ const Sucursales = () => {
         <table className="table table-bordered" id="sucursalTable">
           <thead className="table-dark">
             <tr>
-              <th>ID</th>
-              <th>Dirección</th>
-              <th>Teléfono</th>
+              <th onClick={() => {
+                  setSortedOrder(!sortedOrder);
+                  sortList("id");}}
+                style={{ cursor: "pointer" }}>ID</th>
+              <th onClick={() => {
+                  setSortedOrder(!sortedOrder);
+                  sortList("address");}}
+                style={{ cursor: "pointer" }}>Dirección</th>
+              <th onClick={() => {
+                  setSortedOrder(!sortedOrder);
+                  sortList("phone");}}
+                style={{ cursor: "pointer" }}>Teléfono</th>
               <th>Acciones</th>
             </tr>
           </thead>
           <tbody>
-            {sucursales.length > 0 ? (
-              sucursales.map((sucursal) => (
+            {filteredSucursales.length > 0 ? (
+              filteredSucursales.map((sucursal) => (
                 <tr key={sucursal.id}>
                   <td>{sucursal.id}</td>
                   <td>{input(sucursal,"address", sucursal.address)}</td>

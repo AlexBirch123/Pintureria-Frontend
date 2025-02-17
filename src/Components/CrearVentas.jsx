@@ -117,12 +117,9 @@ const CrearVentas = () => {
         total: total,
         saleProds: saleProds,
       };
-      if (!(total > 0))
-        return console.log(
-          "El total de la venta debe ser mayor a 0"
-        ); /*setMessage("El total de la venta debe ser mayor a 0");*/
+      if (!(total > 0))return setMessage("El total de la venta debe ser mayor a 0");
       try {
-        await fetch(process.env.REACT_APP_API_URL + `/Sales`, {
+        const res = await fetch(process.env.REACT_APP_API_URL + `/Sales`, {
           method: "POST",
           credentials: "include",
           headers: {
@@ -130,6 +127,8 @@ const CrearVentas = () => {
           },
           body: JSON.stringify(newSale),
         });
+        if(res.ok){
+          setMessage("Venta creada con éxito");}
       } catch (error) {
         console.log(" error al crear la venta", error);
       }
@@ -153,13 +152,14 @@ const CrearVentas = () => {
   };
 
   return (
-    <div className="container mt-5">
-      <h2 className="mb-4"style={{marginTop:"70px"}}>Registrar Nueva Venta</h2 >
+    <div style={{ marginTop: "5%", marginLeft: "1%", marginRight: "1%" }}>
+      <h2 className="mb-4"style={{marginTop:"20px"}}>Registrar Nueva Venta</h2 >
       {message && <div className="alert alert-info">{message}</div>}
       {/* Formulario visible para crear o editar venta */}
 
       <form onSubmit={creatSale} className="card p-4 shadow-sm">
-        <div className="row" style={{ marginBottom: "2%" }}>
+      <button type="submit" className="btn btn-success mt-3">Guardar Venta</button>
+        <div className="row" style={{ marginTop: "1%" }}>
           <div className="col-md-4">
             <label className="form-label">Cliente</label>
             <select ref={clienteRef} className="form-select" required>
@@ -188,7 +188,9 @@ const CrearVentas = () => {
             </select>
           </div>
         </div>
-      <div className="mb-3">
+      </form>
+      <div className="card p-4 shadow-sm" style={{ marginTop: "2%" }}>
+      <div className="mb-3" >
         <BuscadorProd
           saleProds={saleProds}
           setSaleProds={setSaleProds}
@@ -200,8 +202,6 @@ const CrearVentas = () => {
         <table
           className="table table-bordered"
           id="ventaTable"
-          style={{ marginTop: "2%" }}
-          onSubmit={creatSale}
         >
           <thead className="table-dark">
             <tr>
@@ -213,7 +213,8 @@ const CrearVentas = () => {
             </tr>
           </thead>
           <tbody>
-            {saleProds.map((prod) => (
+            {saleProds.length !== 0 ? (
+              saleProds.map((prod) => (
               <tr
                 key={prod.idProduct}
                 onClick={() => setSelectedProductId(prod.idProduct)}
@@ -239,15 +240,19 @@ const CrearVentas = () => {
                     }
                   />
                 </td>
-                <td>${prod.price.toFixed(2)}</td>
-                <td>${(prod.price * prod.amount).toFixed(2)}</td>
+                <td>${prod.price}</td>
+                <td>${(prod.price * prod.amount)}</td>
               </tr>
-            ))}
+              ))):(
+              <tr>
+                <td colSpan={5} className="text-center">No hay productos seleccionados</td>
+              </tr>
+                )}
           </tbody>
         </table>
       </div>
-      <button type="submit" className="btn btn-primary mt-3">Guardar Venta</button>
-      </form>
+      </div>
+      
     </div>
   );
 };

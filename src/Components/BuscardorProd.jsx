@@ -1,20 +1,15 @@
 import { useState } from "react";
 import Modal from "react-modal";
 
-const BuscadorProd = ({ saleProds, setSaleProds ,productos, setProductos}) => {
-  // const [productos, setProductos] = useState([]);
+const BuscadorProd = ({ setSaleProds ,productos, }) => {
   const [filteredProductos, setFilteredProductos] = useState([]);
   const [isOpen, setIsOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
+
   const [selectedProducts, setSelectedProducts] = useState([]);
 
 
-  //mostrar los productos en el modal
-  //al seleccionar un producto se agrega selectedProducts
-  //al cerrar el modal se agrega selectedProducts a saleProds
-
   const handleSearch = (e) => {
-    setSearchTerm(e.target.value);
     setFilteredProductos(
       productos.filter((product) =>
         product.description.toLowerCase().includes(searchTerm.toLowerCase())
@@ -70,9 +65,16 @@ const BuscadorProd = ({ saleProds, setSaleProds ,productos, setProductos}) => {
           type="text"
           placeholder="Buscar productos..."
           value={searchTerm}
-          onChange={handleSearch}
+          onChange={(e) => {
+            setSearchTerm(e.target.value);
+          }}
+          onKeyDown={(e) => {
+            if (e.key === "Enter") {
+              console.log(searchTerm);
+              handleSearch(e);
+            }
+          }}
         />
-        {filteredProductos.map((product) => (
           <table className="table table-bordered" style={{ marginTop: "20px" }}>
             <thead className="table">
               <tr>
@@ -84,6 +86,7 @@ const BuscadorProd = ({ saleProds, setSaleProds ,productos, setProductos}) => {
               </tr>
             </thead>
             <tbody>
+        {filteredProductos.map((product) => (
               <tr key={product.id}>
                 <td>
                   <input
@@ -99,9 +102,9 @@ const BuscadorProd = ({ saleProds, setSaleProds ,productos, setProductos}) => {
                 <td>{product.price}</td>
                 <td>{product.stock}</td>
               </tr>
+          ))}
             </tbody>
           </table>
-        ))}
         <button
           onClick={() => {
             setIsOpen(false);

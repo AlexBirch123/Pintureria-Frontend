@@ -53,51 +53,52 @@ const Login = () => {
   };
 
   return (
-    <div className="container" style={{ maxWidth: "20%", marginTop: "50px" }}> 
-      <form onSubmit={handleLogin}>
-      <h2 className="text-center">Inicio de sesión</h2>
-        <div className="mb-3">
-          <label htmlFor="username" className="form-label">
-            Nombre de Usuario:
-          </label>
-          <input
-            type="text"
-            id="username"
-            className="form-control"
-            value={username}
-            onChange={(e) => setUsername(e.target.value)}
-          />
-        </div>
-        <div className="mb-3">
-          <label htmlFor="password" className="form-label">
-            Contraseña:
-          </label>
-          <input
-            type="password"
-            id="password"
-            className="form-control"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-          />
-        </div>
-        <button type="submit" className="btn btn-primary w-100">
-          Iniciar Sesión
-        </button>
-      <div className="text-center mt-3">
-        <Link className="link" to="/recover">
-          ¿Olvidó su contraseña?
-        </Link>
-        <p>¿No tienes una cuenta?</p>
-        <button onClick={handleRegisterClick} className="btn btn-secondary">
-          Registrarse
-        </button>
+    <div className="container d-flex justify-content-center align-items-center min-vh-100">
+      <div className="w-100 p-4" style={{ maxWidth: "400px" }}> 
+        <form onSubmit={handleLogin} className="card p-4 shadow">
+          <h2 className="text-center mb-4">Inicio de sesión</h2>
+          <div className="mb-3">
+            <label htmlFor="username" className="form-label">
+              Nombre de Usuario:
+            </label>
+            <input
+              type="text"
+              id="username"
+              className="form-control"
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
+            />
+          </div>
+          <div className="mb-3">
+            <label htmlFor="password" className="form-label">
+              Contraseña:
+            </label>
+            <input
+              type="password"
+              id="password"
+              className="form-control"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+            />
+          </div>
+          <button type="submit" className="btn btn-primary w-100">
+            Iniciar Sesión
+          </button>
+          <div className="text-center mt-3">
+            <Link className="link" to="/recover">
+              ¿Olvidó su contraseña?
+            </Link>
+            <p className="mt-2">¿No tienes una cuenta?</p>
+            <button onClick={handleRegisterClick} className="btn btn-secondary w-100">
+              Registrarse
+            </button>
+          </div>
+          {message && <p className="text-danger text-center mt-2">{message}</p>}
+        </form>
       </div>
-      {message && <p className="text-danger text-center">{message}</p>}
-      </form>
-      {/* Botón de Registro */}
-
     </div>
   );
 };
+
 
 export default Login;
