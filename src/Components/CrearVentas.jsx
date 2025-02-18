@@ -205,7 +205,7 @@ const CrearVentas = () => {
           <thead className="table-dark">
             <tr>
               <th>ID</th>
-              <th>Descripcion</th>
+              <th>Titulo</th>
               <th style={{ width: "10%" }}>Cantidad</th>
               <th>Precio</th>
               <th>Stock</th>

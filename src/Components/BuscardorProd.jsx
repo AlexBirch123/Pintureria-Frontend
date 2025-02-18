@@ -80,7 +80,7 @@ const BuscadorProd = ({ setSaleProds ,productos, }) => {
               <tr>
                 <th></th>
                 <th>ID</th>
-                <th>Descripcion</th>
+                <th>Titulo</th>
                 <th>Precio</th>
                 <th>Stock</th>
               </tr>
