@@ -119,7 +119,7 @@ function Home() {
           gap: isMobile ? "5px" : "10px",
         }}
       >
-        {categorias.length === 0 && (
+        {categorias.length !== 0 && (
           categorias.map((category, index) => (
             <div key={index} style={{ margin: isMobile ? "5px" : "10px", cursor: "pointer" }}>
               <CategoryCard category={category} />
