@@ -163,15 +163,15 @@ const NavBar = ({ cartChange }) => {
           </li>
           {role === 1 && isAuthenticated && (
             <>
-              <li className="nav-item"><Link className="nav-link" to="/Sucursales">Sucursales</Link></li>
-              <li className="nav-item"><Link className="nav-link" to="/Empleados">Empleados</Link></li>
+              <li className="nav-item"><Link className="nav-link" to="/sucursales">Sucursales</Link></li>
+              <li className="nav-item"><Link className="nav-link" to="/empleados">Empleados</Link></li>
               <li className="nav-item"><Link className="nav-link" to="/usuarios">Usuarios</Link></li>
             </>
           )}
           {(role === 1 || role === 2) && isAuthenticated && (
             <>
-              <li className="nav-item"><Link className="nav-link" to="/Sucursales">Clientes</Link></li>
-              <li className="nav-item"><Link className="nav-link" to="/Empleados">Proveedores</Link></li>
+              <li className="nav-item"><Link className="nav-link" to="/clientes">Clientes</Link></li>
+              <li className="nav-item"><Link className="nav-link" to="/proveedores">Proveedores</Link></li>
               <li className="nav-item dropdown">
                <button className="nav-link dropdown-toggle" id="ventasDropdown" data-bs-toggle="dropdown">
                  Ventas

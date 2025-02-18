@@ -217,7 +217,7 @@ const Empleados = () => {
       >
         <input
           type="text"
-          placeholder="Buscar cliente..."
+          placeholder="Buscar empleado..."
           className="form-control w-25"
           onChange={(e) => {
             setSearch(e.target.value);
@@ -235,7 +235,7 @@ const Empleados = () => {
           type="button"
           className="btn btn-primary"
         >
-          {formVisible ? "Cancelar" : "Crear Cliente"}
+          {formVisible ? "Cancelar" : "Crear Empleado"}
         </button>
       </div>
 
