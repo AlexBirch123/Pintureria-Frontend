@@ -130,7 +130,7 @@ const ViewProducts = () => {
         <main className="col-md-9">
           <div className="card p-3 shadow-sm">
             <h2 className="text-center">Productos</h2>
-            {cat && <p className="text-muted">Mostrando productos para la categoría: {cat}</p>}
+            {searchCat(cat) && <p className="text-muted">Mostrando productos para la categoría: {cat}</p>}
             {description && <p className="text-muted">Mostrando productos para su búsqueda: {description}</p>}
             <div className="row g-3 mt-3">
               {filteredProds.length > 0 ? (

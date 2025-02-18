@@ -36,7 +36,7 @@ const BuscadorProd = ({ setSaleProds ,productos, }) => {
           {
             idSale: 0,
             idProduct: product.id,
-            description: product.description,
+            title: product.title,
             price: product.price,
             quantity: 1,
             stock: product.stock,
@@ -98,7 +98,7 @@ const BuscadorProd = ({ setSaleProds ,productos, }) => {
                   />
                 </td>
                 <td>{product.id}</td>
-                <td>{product.description}</td>
+                <td>{product.title}</td>
                 <td>{product.price}</td>
                 <td>{product.stock}</td>
               </tr>
