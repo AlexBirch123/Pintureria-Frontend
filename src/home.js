@@ -19,15 +19,15 @@ function Home() {
     const fetchCat = async () => {
       const local = getLocalStorage("category");
       try {
-        const res = await fetch(process.env.REACT_APP_API_URL + "/category", { credentials: "include" })
-        const data = res.json()   
-          if (data && res.ok) {
-            setCategorias(data);
-            setLocalStorage(data, "category");
-            return;
+        await fetch(process.env.REACT_APP_API_URL + "/category", { credentials: "include" })
+        .then((res) => res.json())
+        .then((data) => {
+          if (!data) {
+            if (local) return setCategorias(local.datos);
           }
-          if (local) return setCategorias(local.datos);
-          
+          setCategorias(data);
+          setLocalStorage(data, "category");
+        });
       } catch (error) {
         console.log(error);
       }
@@ -119,7 +119,7 @@ function Home() {
           gap: isMobile ? "5px" : "10px",
         }}
       >
-        {categorias.length !== 0 && (
+        {categorias.length > 0 && (
           categorias.map((category, index) => (
             <div key={index} style={{ margin: isMobile ? "5px" : "10px", cursor: "pointer" }}>
               <CategoryCard category={category} />
