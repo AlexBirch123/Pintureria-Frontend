@@ -35,29 +35,25 @@ function App() {
 
       <Routes>
         {/* Rutas protegidas, solo accesibles si el usuario está autenticado */}
-        <Route path="/sucursales" element={isAuthenticated && role === 1 ? (<Sucursales />) : (<Navigate to="/notAuth" />)}/>
-        <Route path="/clientes" element={isAuthenticated && (role === 1 || role === 2) ? (<Clientes />) : (<Navigate to="/notAuth" />)}/>
-        <Route path="/empleados"element={isAuthenticated && role === 1 ? (<Empleados />) : (<Navigate to="/notAuth" />)}/>
-        <Route path="/proveedores"element={isAuthenticated && (role === 1 || role === 2) ? (<Proveedores />) : (<Navigate to="/notAuth" />)}/>
-        <Route path="/ventas"element={isAuthenticated && (role === 1 || role === 2) ? (<VerVentas />) : (<Navigate to="/notAuth" />)}/>
-        <Route path="/crear_ventas" element={<CrearVentas />} />
-        <Route path="/products" element={<ViewProducts  />} />
+        <Route path="/sucursales" element={isAuthenticated && role === 1 ? (<Sucursales />) : (<Navigate to="/home" />)}/>
+        <Route path="/clientes" element={isAuthenticated && (role === 1 || role === 2) ? (<Clientes />) : (<Navigate to="/home" />)}/>
+        <Route path="/empleados"element={isAuthenticated && role === 1 ? (<Empleados />) : (<Navigate to="/home" />)}/>
+        <Route path="/proveedores"element={isAuthenticated && (role === 1 || role === 2) ? (<Proveedores />) : (<Navigate to="/home" />)}/>
+        <Route path="/ventas"element={isAuthenticated && (role === 1 || role === 2) ? (<VerVentas />) : (<Navigate to="/home" />)}/>
+        <Route path="/crear_ventas" element={isAuthenticated && (role === 1 || role === 2) ? (<CrearVentas />) : (<Navigate to="/home" />)} />
+        <Route path="/cartShop" element={isAuthenticated && <Cart setCartChange={setCartChange} cartChange={cartChange}/>} />
+        <Route path="/usuarios" element={isAuthenticated && role === 1  ? (<Usuarios />) : (<Navigate to="/home" />)} />
+        <Route path="/userSales" element={isAuthenticated  ? (<UserSales />) : (<Navigate to="/home" />)} />
+        <Route path="/payment" element={isAuthenticated && <Cart setCartChange={setCartChange} cartChange={cartChange}/>} />
+        <Route path="/productos" element={isAuthenticated && (role === 1 || role === 2) ? (<Productos />) : (<Navigate to="/home" />)} />
+
+        {/* Rutas para el usuarios */}
         <Route path="/productPage" element={<ProductPage  setCartChange={setCartChange} cartChange={cartChange}/>} />
-        <Route path="/cartShop" element={<Cart setCartChange={setCartChange} cartChange={cartChange}/>} />
-        <Route path="/usuarios" element={<Usuarios/>} />
-        <Route path="/userSales" element={<UserSales/>} />
-        <Route path="/payment" element={<Cart setCartChange={setCartChange} cartChange={cartChange}/>} />
-
-        <Route path="/buscador" element={<BuscadorProd />} />
-
-        <Route path="/productos" element={<Productos role={role} />} />
-        <Route path="/home" element={<Home role={role} />} />
-
-        {/* Ruta para el Login */}
-        <Route path="/login" element={isAuthenticated ? <Navigate to="/dashboard" /> : <Login />}
-        />
-        <Route path="/register" element={<RegistroCliente />} />
-        <Route path="/recover" element={isAuthenticated ? <Navigate to="/dashboard" /> : <Recover />}/>
+        <Route path="/home" element={<Home />} />
+        <Route path="/products" element={<ViewProducts  />} />
+        <Route path="/login" element={isAuthenticated ? <Navigate to="/home" /> : <Login />}/>
+        <Route path="/register" element={isAuthenticated ? <Navigate to="/home" /> : <RegistroCliente />} />
+        <Route path="/recover" element={isAuthenticated ? <Navigate to="/home" /> : <Recover />}/>
 
         {/* Redirigir al login por defecto */}
         <Route path="/" element={<Navigate to="/home" />} />
