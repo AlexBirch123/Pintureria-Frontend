@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
 import {setLocalStorage,getLocalStorage} from "../utils/localStorage"
 import { searchDesc } from "../utils/search";
+import { useNavigate } from "react-router";
 
 const Productos = () => {
   const [formVisible, setFormVisible] = useState(false);
@@ -19,6 +20,7 @@ const Productos = () => {
   const idCatRef = useRef(null);
   const stockRef = useRef(null);
   const precioRef = useRef(null);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchProd = async () => {
@@ -247,7 +249,7 @@ const Productos = () => {
                 setFilteredProductos(filtered);
               }
             }}>
-            <option value="">Todos</option>
+            <option value="">Proveedores</option>
             {proveedores.map((prov) => (
               <option key={prov.id} value={prov.id}>
                 {prov.name}
@@ -266,7 +268,7 @@ const Productos = () => {
                 setFilteredProductos(filtered);
               }
             }}>
-            <option value="">Todos</option>
+            <option value="">Categorias</option>
             {categorias.map((cat) => (
               <option key={cat.id} value={cat.id}>
                 {cat.description}
@@ -284,7 +286,7 @@ const Productos = () => {
             {formVisible ? "Cancelar" : "Crear Producto"}
           </button>
           <button
-            onClick={() => (window.location.href = "/products")}
+            onClick={() => navigate("/products")}
             type="button"
             className="btn btn-primary"
           >
@@ -293,6 +295,7 @@ const Productos = () => {
         </div>
       </div>
       <div>
+      {message && <div className="alert alert-info mt-3">{message}</div>}
         {formVisible && (
           <form
             onSubmit={createProducto}

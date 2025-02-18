@@ -18,19 +18,18 @@ const CategoryCard = ({ category }) => {
         margin: "10px",
         textAlign: "center",
         cursor: "pointer",
+        overflow: "hidden",
       }}
       onClick={handleClick}
     >
       <img
-        src={category.urlImg || latex}
+        src={category.urlImg || "https://upload.wikimedia.org/wikipedia/commons/a/a3/Image-not-found.png"}
         className="card-img-top"
         alt={category.description}
         style={{
-          width: "200px",
+          width: "100%",
           height: "150px",
           objectFit: "cover",
-          margin: "auto",
-          display: "block",
         }}
       />
       <div className="card-body">

@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import { useAuth } from "./AuthContext.jsx";
 
 const Recover = () => {
   const location = useLocation();
@@ -8,13 +7,9 @@ const Recover = () => {
   const queryToken = queryParams.get('token');
   const [email, setEmail] = useState("");
   const [token, setToken] = useState(null);
-  const [passChanged,setPassChanged] = useState(false);
-  // const [username, setUsername] = useState("");
   const [pass, setPass] = useState("");
   const [pass2, setPass2] = useState("");
-  // // const [role, setLocalRole] = useState("");
   const [message, setMessage] = useState("");
-  // const {setIsAuthenticated,setRole } = useAuth()
   const navigate = useNavigate();
 
 

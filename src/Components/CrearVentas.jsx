@@ -15,7 +15,6 @@ const CrearVentas = () => {
   const clienteRef = useRef(null);
   const empleadoRef = useRef(null);
   const sucursalRef = useRef(null);
-  const tableRef = useRef(null);
 
   useEffect(() => {
     const fetchProd = async () => {

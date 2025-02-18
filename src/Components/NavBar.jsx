@@ -61,6 +61,7 @@ const NavBar = ({ cartChange }) => {
           className="navbar-toggler"
           type="button"
           onClick={() => setIsMenuOpen(!isMenuOpen)}
+          onBlur={() => setIsMenuOpen(false)}
           style={{ marginRight: "3%" }}
         >
           <span className="navbar-toggler-icon"></span>

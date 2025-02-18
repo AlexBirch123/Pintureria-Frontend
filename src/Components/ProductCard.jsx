@@ -15,7 +15,7 @@ const ProductCard = ({ product }) => {
       style={{ width: "18rem", cursor: "pointer" }}
       onClick={handleClick}
     >
-      <Card.Img variant="top" src={product.imgUrl || latex} />
+      <Card.Img variant="top" src={product.imgUrl || "https://upload.wikimedia.org/wikipedia/commons/a/a3/Image-not-found.png"} />
       <Card.Body>
         <Card.Title>{product.title}</Card.Title>
         <Card.Text>{product.description}</Card.Text>
