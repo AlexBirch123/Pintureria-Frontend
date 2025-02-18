@@ -1,4 +1,4 @@
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Navigate, HashRouter } from 'react-router-dom';
 import Login from './Components/Login';
 import NavBar from './Components/NavBar';
 import Sucursales from './Components/Sucursales';
@@ -29,7 +29,7 @@ function App() {
 
 
   return (
-    <Router>
+    <HashRouter>
       {/* Mostrar NavBar solo si el usuario está autenticado */}
       <NavBar cartChange={cartChange}/>
 
@@ -55,11 +55,11 @@ function App() {
         <Route path="/register" element={isAuthenticated ? <Navigate to="/home" /> : <RegistroCliente />} />
         <Route path="/recover" element={isAuthenticated ? <Navigate to="/home" /> : <Recover />}/>
 
-        {/* Redirigir al login por defecto */}
+        { /*Redirigir al login por defecto */}
         <Route path="/" element={<Navigate to="/home" />} />
       </Routes>
       <Footer/>
-    </Router>
+    </HashRouter>
   );
 }
 
