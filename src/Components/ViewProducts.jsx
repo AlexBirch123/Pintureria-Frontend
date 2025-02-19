@@ -85,11 +85,11 @@ const ViewProducts = () => {
     setMin(Math.min(...prods.map(p => p.price)));
   };
 
-  const searchCat = () => {
-    if (!cat) return false;
-    const categoria = categorias.find((p) => p.id === cat);
-    return categoria.description;
-  };
+  // const searchCat = () => {
+  //   if (!cat) return false;
+  //   const categoria = categorias.find((p) => p.id === cat);
+  //   return categoria.description;
+  // };
 
   const [showFilters, setShowFilters] = useState(window.innerWidth > 768);
 
@@ -154,7 +154,7 @@ const ViewProducts = () => {
         <main className={showFilters ? "col-md-9" : "col-md-12"}>
           <div className="card p-3 shadow-sm h-100">
             <h2 className="text-center">Productos</h2>
-            {searchCat(cat) && <p className="text-muted">Mostrando productos para la categoría: {cat}</p>}
+            {cat && <p className="text-muted">Mostrando productos para la categoría: {cat}</p>}
             {description && <p className="text-muted">Mostrando productos para su búsqueda: {description}</p>}
             <div className="row g-3 mt-3">
               {filteredProds.length > 0 ? (

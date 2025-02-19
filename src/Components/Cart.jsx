@@ -125,8 +125,9 @@ const Cart = ({setCartChange, cartChange}) => {
                       marginRight: "10px",
                     }}
                   />
-                  <h5>{item.description}</h5>
+                  <h5>{item.title}</h5>
                   <p>Precio: ${item.price}</p>
+                  <p>Precio: ${item.description}</p>
                   <p>Catidad: {item.quantity}</p>
                 </div>
               </li>
