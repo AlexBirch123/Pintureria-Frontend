@@ -150,6 +150,11 @@ const CrearVentas = () => {
     );
   };
 
+  const showTotal = (prod) => {
+    const total = prod.price * prod.quantity;
+    return total;
+  }
+
   return (
     <div style={{ marginTop: "5%", marginLeft: "1%", marginRight: "1%" }}>
       <h2 className="mb-4"style={{marginTop:"20px"}}>Registrar Nueva Venta</h2 >
@@ -224,7 +229,7 @@ const CrearVentas = () => {
                 }}
               >
                 <td>{prod.idProduct}</td>
-                <td>{prod.description}</td>
+                <td>{prod.title}</td>
                 <td>
                   <input
                     type="number"
@@ -240,7 +245,7 @@ const CrearVentas = () => {
                   />
                 </td>
                 <td>${prod.price}</td>
-                <td>${(prod.price * prod.amount)}</td>
+                <td>{showTotal(prod)}</td>
               </tr>
               ))):(
               <tr>
