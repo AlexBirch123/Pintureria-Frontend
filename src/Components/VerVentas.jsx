@@ -72,6 +72,7 @@ const VerVentas = () => {
       if(data.length === 0) return console.log("No hay productos en esta venta");
       setRowsSale(data);
       console.log(data);
+      console.log(rowsSale);
     } catch (error) {
       console.log("error al cargar productos de venta");
     }
@@ -85,6 +86,7 @@ const VerVentas = () => {
     if (confirmDelete) {
       await fetch(process.env.REACT_APP_API_URL + `/Sales/${id}`, {
         method: "DELETE",
+        credentials: "include",
       });
       const updatedVentas = ventas.filter((v) => v.id !== id);
       cargaFilasVenta(id);
@@ -125,7 +127,7 @@ const VerVentas = () => {
   }
 
   const handleDate = (date) => { 
-    const fecha = new Date("2025-02-04T23:56:55.000Z");
+    const fecha = new Date(date);
     const opciones = { day: '2-digit', month: '2-digit', year: 'numeric' }
     return (fecha.toLocaleString('es-ES', opciones));
   }
@@ -306,14 +308,19 @@ const VerVentas = () => {
                           </tr>
                         </thead>
                         <tbody>
-                          {rowsSale.map((row) => (
+                          {rowsSale.length > 0 ?(
+                          rowsSale.map((row) => (
                             <tr key={row.id}>
-                              <td>{row.description}</td>
+                              <td>{row.title}</td>
                               <td>{row.price}</td>
                               <td>{row.quantity}</td>
                               <td>{row.total}</td>
                             </tr>
-                          ))}
+                          ))):(
+                            <tr>
+                              <td colSpan={4} className="text-center">Error al obtener los productos de la venta</td>
+                            </tr>
+                          )}
                         </tbody>
                       </table>
                     </div>

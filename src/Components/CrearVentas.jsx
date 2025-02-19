@@ -128,11 +128,12 @@ const CrearVentas = () => {
         });
         if(res.ok){
           setMessage("Venta creada con éxito");}
+          setTimeout(setMessage(null), 3000);
       } catch (error) {
-        console.log(" error al crear la venta", error);
+        setMessage("Error al crear la venta");
+        setTimeout(setMessage(null), 3000);
       }
       setSaleProds([]);
-      setTimeout(setMessage(null), 3000);
     }
     resetForm();
   };

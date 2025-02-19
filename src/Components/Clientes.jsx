@@ -63,6 +63,7 @@ const Clientes = () => {
         try {
           const res = await fetch(process.env.REACT_APP_API_URL + "/Clients", {
             method: "POST",
+            credentials: "include",
             headers: {
               "Content-Type": "application/json",
             },
@@ -109,6 +110,7 @@ const Clientes = () => {
       try {
         await fetch(process.env.REACT_APP_API_URL + `/Clients/${id}`, {
           method: "DELETE",
+          credentials: "include",
         });
         const updatedClients = clientes.filter((client) => client.id !== id);
         setClientes(updatedClients);
@@ -146,6 +148,7 @@ const Clientes = () => {
     try {
       await fetch(process.env.REACT_APP_API_URL + `/Clients/${id}`, {
         method: "PATCH",
+        credentials: "include",
         headers: {
           "Content-Type": "application/json",
         },

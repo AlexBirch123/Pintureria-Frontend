@@ -55,13 +55,12 @@ const NavBar = ({ cartChange }) => {
 
   return isMobile ? (
     // NavBar para móviles
-    <nav className="navbar navbar-dark bg-dark fixed-top">
+    <nav className="navbar navbar-dark bg-dark fixed-top"  style={{marginBottom: "5%"}}>
       <div className="container-fluid">
       <button
           className="navbar-toggler"
           type="button"
           onClick={() => setIsMenuOpen(!isMenuOpen)}
-          onBlur={() => setIsMenuOpen(false)}
           style={{ marginRight: "3%" }}
         >
           <span className="navbar-toggler-icon"></span>
@@ -69,7 +68,15 @@ const NavBar = ({ cartChange }) => {
         <div className={`collapse navbar-collapse ${isMenuOpen ? "show" : ""}`}>
         <ul className="navbar-nav ms-auto text-start">
 
-           <li className="nav-item">
+          <li className="nav-item" style={{ marginTop: "1%" }}>
+          <form className="d-flex" onSubmit={(e)=>{
+            setIsMenuOpen(false)
+            handleSearch(e)
+          }}>
+          <input type="text" className="form-control me-2" placeholder="Buscar..." value={search} onChange={(e) => setSearch(e.target.value)} />
+        </form>
+          </li>
+           <li className="nav-item" onClick={() => setIsMenuOpen(false)}>
                <Link
                 className="nav-link"
                 to={(role === 1 || role === 2) && isAuthenticated ? "/productos" : "/products"}
@@ -79,17 +86,17 @@ const NavBar = ({ cartChange }) => {
             </li>
             {role === 1 && isAuthenticated && (
               <>
-                <li className="nav-item">
+                <li className="nav-item" onClick={() => setIsMenuOpen(false)}>
                   <Link className="nav-link" to="/Sucursales">
                     Sucursales
                   </Link>
                 </li>
-                <li className="nav-item">
+                <li className="nav-item" onClick={() => setIsMenuOpen(false)}>
                   <Link className="nav-link" to="/Empleados">
                     Empleados
                   </Link>
                 </li>
-                <li className="nav-item">
+                <li className="nav-item" onClick={() => setIsMenuOpen(false)}>
                   <Link className="nav-link" to="/usuarios">
                     Usuarios
                   </Link>
@@ -98,27 +105,27 @@ const NavBar = ({ cartChange }) => {
             )}
             {(role === 2 || role === 1) && isAuthenticated && (
               <>
-                <li className="nav-item">
+                <li className="nav-item"  onClick={() => setIsMenuOpen(false)}>
                   <Link className="nav-link" to="/Clientes">
                     Clientes
                   </Link>
                 </li>
-                <li className="nav-item">
+                <li className="nav-item"  onClick={() => setIsMenuOpen(false)}>
                   <Link className="nav-link" to="/Proveedores">
                     Proveedores
                   </Link>
                 </li>
-                <li className="nav-item dropdown">
+                <li className="nav-item dropdown" onClick={() => setIsMenuOpen(false)}>
                   <button className="nav-link dropdown-toggle" id="ventasDropdown" data-bs-toggle="dropdown">
                     Ventas
                   </button>
                   <ul className="dropdown-menu">
-                    <li>
+                    <li onClick={() => setIsMenuOpen(false)}>
                       <Link className="dropdown-item" to="/crear_ventas">
                         Crear Venta
                       </Link>
                     </li>
-                    <li>
+                    <li onClick={() => setIsMenuOpen(false)}>
                       <Link className="dropdown-item" to="/ventas">
                         Consultar Ventas
                       </Link>
@@ -128,14 +135,17 @@ const NavBar = ({ cartChange }) => {
               </>
             )}
             {isAuthenticated && (
-            <li className="nav-item me-2">
+            <li className="nav-item me-2" onClick={() => setIsMenuOpen(false)}>
               <Link className="nav-link" to="/userSales">
                 Compras
               </Link>
             </li>
             )}
             <li className="nav-item">
-           <button className="nav-link" onClick={handleSession}>
+           <button className="nav-link" 
+           onClick={() => {
+            setIsMenuOpen(false)
+            handleSession()}}>
               {isAuthenticated ? "Cerrar Sesión" : "Iniciar Sesión"}
              </button>
            </li>

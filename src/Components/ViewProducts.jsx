@@ -85,57 +85,81 @@ const ViewProducts = () => {
     setMin(Math.min(...prods.map(p => p.price)));
   };
 
-  const searchCat = (id) => {
-    const cat = categorias.find((p) => p.id === id);
-    return cat.description;
+  const searchCat = () => {
+    if (!cat) return false;
+    const categoria = categorias.find((p) => p.id === cat);
+    return categoria.description;
   };
 
+  const [showFilters, setShowFilters] = useState(window.innerWidth > 768);
+
+  useEffect(() => {
+    const handleResize = () => {
+      if (window.innerWidth > 768) {
+        setShowFilters(true);
+      } else {
+        setShowFilters(false);
+      }
+    };
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
   return (
-    <div className="container mt-5" >
+    <div className="container mt-5">
       <div className="row" style={{ marginTop: "5%" }}>
-        <aside className="col-md-3">
-          <div className="card p-3 shadow-sm">
-            <h4 className="text-center">Filtrar Productos</h4>
-            <div className="mb-3">
-              <label className="form-label">Categoría:</label>
-              <select className="form-select" onChange={(e) => setCat(e.target.value)} value={cat || ""}>
-                <option value="">Todas</option>
-                {categorias.map((c) => (
-                  <option key={c.id} value={c.id}>{c.description}</option>
-                ))}
-              </select>
+      <button
+        className="btn btn-primary mt-3"
+        onClick={() => setShowFilters(!showFilters)}
+        style={{ display: window.innerWidth <= 768 ? 'block' : 'none'} }
+      >
+        {showFilters ? 'Ocultar Filtros' : 'Filtros'}
+      </button>
+        {showFilters && (
+          <aside className="col-md-3" style={{marginBottom: "1%"}}>
+            <div className="card p-3 shadow-sm">
+              <h4 className="text-center">Filtrar Productos</h4>
+              <div className="mb-3">
+                <label className="form-label">Categoría:</label>
+                <select className="form-select" onChange={(e) => setCat(e.target.value)} value={cat || ""}>
+                  <option value="">Todas</option>
+                  {categorias.map((c) => (
+                    <option key={c.id} value={c.id}>{c.description}</option>
+                  ))}
+                </select>
+              </div>
+              <div className="mb-3">
+                <label className="form-label">Precio</label>
+                <p>Min: {min}</p>
+                <input
+                  type="range"
+                  className="form-range"
+                  min={min}
+                  max={max}
+                  step={0.1}
+                  onChange={(e) => {
+                    const maxPrice = e.target.value;
+                    setFilteredProds(
+                      productos.filter(
+                        (p) => p.price <= maxPrice && (!cat || p.idCat === Number(cat))
+                      )
+                    );
+                  }}
+                />
+                <p>Max: {max}</p>
+              </div>
             </div>
-            <div className="mb-3">
-              <label className="form-label">Precio</label>
-              <p>Min: {min}</p>
-              <input
-                type="range"
-                className="form-range"
-                min={min}
-                max={max}
-                step={0.1}
-                onChange={(e) => {
-                  const maxPrice = e.target.value;
-                  setFilteredProds(
-                    productos.filter(
-                      (p) => p.price <= maxPrice && (!cat || p.idCat === Number(cat))
-                    )
-                  );
-                }}
-              />
-              <p>Max: {max}</p>
-            </div>
-          </div>
-        </aside>
-        <main className="col-md-9">
-          <div className="card p-3 shadow-sm">
+          </aside>
+        )}
+        <main className={showFilters ? "col-md-9" : "col-md-12"}>
+          <div className="card p-3 shadow-sm h-100">
             <h2 className="text-center">Productos</h2>
             {searchCat(cat) && <p className="text-muted">Mostrando productos para la categoría: {cat}</p>}
             {description && <p className="text-muted">Mostrando productos para su búsqueda: {description}</p>}
             <div className="row g-3 mt-3">
               {filteredProds.length > 0 ? (
                 filteredProds.map((p) => (
-                  <div key={p.id} className="col-md-4">
+                  <div key={p.id} className="col-16">
                     <ProductCard product={p} />
                   </div>
                 ))
@@ -146,6 +170,7 @@ const ViewProducts = () => {
           </div>
         </main>
       </div>
+      
     </div>
   );
 };

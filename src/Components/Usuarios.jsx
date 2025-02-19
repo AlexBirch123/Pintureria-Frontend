@@ -111,6 +111,7 @@ const Usuarios = () => {
     if (confirmDelete) {
       try {
         await fetch(process.env.REACT_APP_API_URL + `/users/${id}`, {
+          credentials: "include",
           method: "DELETE",
         });
         const updatedSucursales = usuarios.filter(

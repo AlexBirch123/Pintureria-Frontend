@@ -110,6 +110,7 @@ const Empleados = () => {
     );
     if (confirmDelete) {
       await fetch(process.env.REACT_APP_API_URL + `/Employees/${id}`, {
+        credentials: "include",
         method: "DELETE",
       });
       const updatedEmp = empleados.filter((e) => e.id !== id);
@@ -142,6 +143,7 @@ const Empleados = () => {
     try {
       await fetch(process.env.REACT_APP_API_URL + `/Employees/${id}`, {
         method: "PATCH",
+        credentials: "include",
         headers: {
           "Content-Type": "application/json",
         },

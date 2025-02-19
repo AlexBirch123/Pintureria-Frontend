@@ -56,6 +56,7 @@ const Sucursales = () => {
         try {
           const res = await fetch(process.env.REACT_APP_API_URL + "/Branches", {
             method: "POST",
+            credentials: "include",
             headers: {
               "Content-Type": "application/json",
             },
@@ -100,6 +101,7 @@ const Sucursales = () => {
     if (confirmDelete) {
       try {
         await fetch(process.env.REACT_APP_API_URL + `/Branches/${id}`, {
+          credentials: "include",
           method: "DELETE",
         });
         const updatedSucursales = sucursales.filter(

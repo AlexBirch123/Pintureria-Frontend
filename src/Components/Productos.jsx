@@ -104,6 +104,7 @@ const Productos = () => {
       try {
         const res = await fetch(process.env.REACT_APP_API_URL + "/Products", {
           method: "POST",
+          credentials: "include",
           headers: {
             "Content-Type": "application/json",
           },
@@ -129,7 +130,7 @@ const Productos = () => {
     );
     if (confirmDelete) {
       await fetch(process.env.REACT_APP_API_URL + `/Products/${id}`, {
-        credentials: true,
+        credentials: "include",
         method: "DELETE",
       });
       const updatedProd = productos.filter((p) => p.id !== id);
