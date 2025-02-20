@@ -17,64 +17,24 @@ const CrearVentas = () => {
   const sucursalRef = useRef(null);
 
   useEffect(() => {
-    const fetchProd = async () => {
-      const local = getLocalStorage("products");
+    const fetchData = async (url, localStorageKey, setState) => {
+      const local = getLocalStorage(localStorageKey);
       try {
-        await fetch(process.env.REACT_APP_API_URL + "/Products", { credentials: "include" })
-          .then((res) => res.json())
-          .then((data) => {
-            if (!data) return setProductos(local.datos);
-            setProductos(data);
-            setLocalStorage(data, "products");
-          });
+      const res = await fetch(process.env.REACT_APP_API_URL + url, { credentials: "include" });
+      if (!res.ok) return setState(local.datos);
+      const data = await res.json();
+      setState(data);
+      setLocalStorage(data, localStorageKey);
       } catch (error) {
-        console.log(error);
-      }
-    };
-    const fetchEmp = async () => {
-      const local = getLocalStorage("employees");
-      try {
-        await fetch(process.env.REACT_APP_API_URL + "/Employees", { credentials: "include" })
-          .then((res) => res.json())
-          .then((data) => {
-            if (!data) return setEmpleados(local.datos);
-            setLocalStorage(data, "employees");
-            setEmpleados(data);
-          });
-      } catch (error) {
-        setEmpleados(local.datos);
+      console.log(error);
+      setState(local.datos);
       }
     };
 
-    const fetchClient = async () => {
-      const local = getLocalStorage("clients");
-      try {
-        await fetch(process.env.REACT_APP_API_URL + "/Clients", { credentials: "include" })
-          .then((res) => res.json())
-          .then((data) => {
-            if (!data) return setEmpleados(local.datos);
-            setClientes(data);
-            setLocalStorage(data, "clients");
-          });
-      } catch (error) {
-        console.log(error);
-      }
-    };
-
-    const fetchSuc = async () => {
-      const local = getLocalStorage("branches");
-      try {
-        await fetch(process.env.REACT_APP_API_URL + "/Branches", { credentials: "include" })
-          .then((res) => res.json())
-          .then((data) => {
-            if (!data) return setSucursales(local.datos);
-            setSucursales(data);
-            setLocalStorage(data, "branches");
-          });
-      } catch (error) {
-        console.log(error);
-      }
-    };
+    const fetchProd = () => fetchData("/Products", "products", setProductos);
+    const fetchEmp = () => fetchData("/Employees", "employees", setEmpleados);
+    const fetchClient = () => fetchData("/Clients", "clients", setClientes);
+    const fetchSuc = () => fetchData("/Branches", "branches", setSucursales);
 
     fetchProd();
     fetchSuc();

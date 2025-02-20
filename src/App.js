@@ -22,6 +22,7 @@ import Footer from './Components/Footer.jsx';
 import UserSales from './Components/UserSales.jsx';
 import NotFound from './Components/NotFound.jsx';
 import NotAuth from './Components/NotAuth.jsx';
+import XLSXReader from './Components/XLSX.jsx';
 
 function App() {
 
@@ -45,6 +46,7 @@ function App() {
         <Route path="/usuarios" element={isAuthenticated && role === 1  ? (<Usuarios />) : (<NotAuth/>)} />
         <Route path="/userSales" element={isAuthenticated  ? (<UserSales />) : (<NotAuth/>)} />
         <Route path="/productos" element={isAuthenticated && (role === 1 || role === 2) ? (<Productos />) : (<NotAuth/>)} />
+        <Route path="/import" element={<XLSXReader/>} />
 
         {/* Rutas para el carrito */}
         <Route path="/payment" element={isAuthenticated ? <Cart setCartChange={setCartChange} cartChange={cartChange}/>:<Navigate to="/login" />} />
