@@ -46,7 +46,7 @@ function App() {
         <Route path="/usuarios" element={isAuthenticated && role === 1  ? (<Usuarios />) : (<NotAuth/>)} />
         <Route path="/userSales" element={isAuthenticated  ? (<UserSales />) : (<NotAuth/>)} />
         <Route path="/productos" element={isAuthenticated && (role === 1 || role === 2) ? (<Productos />) : (<NotAuth/>)} />
-        <Route path="/import" element={<XLSXReader/>} />
+        <Route path="/import" element={isAuthenticated && (role === 1 || role === 2) ? (<XLSXReader/>) : (<NotAuth/>)}/>
 
         {/* Rutas para el carrito */}
         <Route path="/payment" element={isAuthenticated ? <Cart setCartChange={setCartChange} cartChange={cartChange}/>:<Navigate to="/login" />} />

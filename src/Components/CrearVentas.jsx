@@ -31,15 +31,10 @@ const CrearVentas = () => {
       }
     };
 
-    const fetchProd = () => fetchData("/Products", "products", setProductos);
-    const fetchEmp = () => fetchData("/Employees", "employees", setEmpleados);
-    const fetchClient = () => fetchData("/Clients", "clients", setClientes);
-    const fetchSuc = () => fetchData("/Branches", "branches", setSucursales);
-
-    fetchProd();
-    fetchSuc();
-    fetchClient();
-    fetchEmp();
+    fetchData("/Products", "products", setProductos);
+    fetchData("/Employees", "employees", setEmpleados);
+    fetchData("/Clients", "clients", setClientes);
+    fetchData("/Branches", "branches", setSucursales);
   }, []);
 
   useEffect(() => {

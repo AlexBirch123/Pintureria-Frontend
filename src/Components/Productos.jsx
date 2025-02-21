@@ -24,52 +24,26 @@ const Productos = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const fetchProd = async () => {
-      const local = getLocalStorage("products");
+    
+    const fetchData = async (url, localStorageKey, setState) => {
+      const local = getLocalStorage(localStorageKey);
       try {
-        await fetch(process.env.REACT_APP_API_URL + "/Products", { credentials: "include" })
-          .then((res) => res.json())
-          .then((data) => {
-            if (!data) return setProductos(local.datos);
-            setProductos(data);
-            setFilteredProductos(data);
-            setLocalStorage(data, "products");
-          });
+        const res = await fetch(process.env.REACT_APP_API_URL + url, {
+          credentials: "include",
+        });
+        if (!res.ok) return setState(local.datos);
+        const data = await res.json();
+        setState(data);
+        setLocalStorage(data, localStorageKey);
       } catch (error) {
         console.log(error);
+        setState(local.datos);
       }
     };
-    const fetchcat = async () => {
-      const local = getLocalStorage("category");
-      try {
-        await fetch(process.env.REACT_APP_API_URL + "/category", { credentials: "include" })
-          .then((res) => res.json())
-          .then((data) => {
-            if (!data) return setcategorias(local.datos);
-            setcategorias(data);
-            setLocalStorage(data, "category");
-          });
-      } catch (error) {
-        console.log(error);
-      }
-    };
-    const fetchSupp = async () => {
-      const local = getLocalStorage("suppliers");
-      try {
-        await fetch(process.env.REACT_APP_API_URL + "/Suppliers", { credentials: "include" })
-          .then((res) => res.json())
-          .then((data) => {
-            if (!data) return setProveedores(local.datos);
-            setProveedores(data);
-            setLocalStorage(data, "suppliers");
-          });
-      } catch (error) {
-        console.log(error);
-      }
-    };
-    fetchcat();
-    fetchProd();
-    fetchSupp();
+
+    fetchData("/Products", "products", setProductos);
+    fetchData("/category", "category", setcategorias);
+    fetchData("/Suppliers", "suppliers", setProveedores);
   }, []);
 
   const toggleFormVisibility = () => {
@@ -234,6 +208,7 @@ const Productos = () => {
             type="text"
             placeholder="Buscar producto..."
             className="form-control w-100"
+            hidden={!formVisible}
             onChange={(e) => {
               setSearch(e.target.value);
             }}
@@ -246,6 +221,7 @@ const Productos = () => {
           />
           <select name="idProv" id="idProv" 
             className="form-select mt-2"
+            hidden={!formVisible}
             onChange={(e) => {
               if (e.target.value === "") {
                 setFilteredProductos(productos);
@@ -256,15 +232,16 @@ const Productos = () => {
                 setFilteredProductos(filtered);
               }
             }}>
-            <option value="">Proveedores</option>
+            <option value="" hidden={!formVisible}>Proveedores</option>
             {proveedores.map((prov) => (
               <option key={prov.id} value={prov.id}>
                 {prov.name}
-              </option>
+            </option>
             ))}
           </select>
           <select name="idCat" id="idCat" 
             className="form-select mt-2"
+            hidden={!formVisible}
             onChange={(e) => {
               if (e.target.value === "") {
                 setFilteredProductos(productos);
@@ -289,12 +266,24 @@ const Productos = () => {
             onClick={toggleFormVisibility}
             type="button"
             className="btn btn-primary mb-2"
+            
           >
             {formVisible ? "Cancelar" : "Crear Producto"}
+          </button>
+          <div className="d-flex flex-column align-items-end">
+          <button
+            id="b_create"
+            onClick={navigate("/import")}
+            type="button"
+            hidden={!formVisible}
+            className="btn btn-primary mb-2"
+          >
+            Crear en lote
           </button>
           <button
             onClick={() => navigate("/products")}
             type="button"
+            hidden={!formVisible}
             className="btn btn-primary"
           >
             Vista de tienda
@@ -462,6 +451,7 @@ const Productos = () => {
         </table>
       </div>
     </div>
+  </div>
   );
 };
 
