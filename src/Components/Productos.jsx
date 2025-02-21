@@ -20,6 +20,7 @@ const Productos = () => {
   const idCatRef = useRef(null);
   const stockRef = useRef(null);
   const precioRef = useRef(null);
+  const skuRef = useRef(null);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -82,6 +83,7 @@ const Productos = () => {
     if (precioRef.current) precioRef.current.value = "";
     if (idProvRef.current) idProvRef.current.value = "";
     if (titleRef.current) titleRef.current.value = "";
+    if (skuRef.current)skuRef.current.value = "";
   };
 
   const createProducto = async (event) => {
@@ -92,8 +94,10 @@ const Productos = () => {
     const idProv = Number(idProvRef.current?.value);
     const idCat = Number(idCatRef.current?.value);
     const title = titleRef.current?.value
+    const sku = skuRef.current?.value
     if (title && price && idProv && idCat && stock) {
       const newProd = {
+        sku:sku,
         title: title,
         description: description,
         price: price,
@@ -196,9 +200,11 @@ const Productos = () => {
   const handleSearch = (e) => {
     e.preventDefault();
     if(search.trim() === "")return setFilteredProductos(productos);
-    filteredProductos(
-      filteredProductos.filter(
-        (c) =>c.title.toLowerCase().includes(search.toLowerCase().trim()))
+    setFilteredProductos(
+      filteredProductos.filter((c) =>
+        c.title.toLowerCase().includes(search.toLowerCase().trim()) ||
+        c.sku.toLowerCase().includes(search.toLowerCase().trim())
+      )
     );
   }
 
@@ -322,6 +328,15 @@ const Productos = () => {
                 />
               </div>
               <div className="col-md-6">
+                <label className="form-label">SKU:</label>
+                <input
+                  placeholder="Codigo interno"
+                  type="text"
+                  className="form-control"
+                  ref={skuRef}
+                />
+              </div>
+              <div className="col-md-6">
                 <label className="form-label">Precio:</label>
                 <input
                   type="number"
@@ -332,7 +347,7 @@ const Productos = () => {
               </div>
               <div className="col-md-6">
                 <label className="form-label">Stock:</label>
-                <input type="number" className="form-control" ref={stockRef} />
+                <input type="number" className="form-control" ref={stockRef} required />
               </div>
               <div className="col-md-6">
                 <label className="form-label">Proveedor:</label>
@@ -383,6 +398,10 @@ const Productos = () => {
                   setSortedOrder(!sortedOrder);
                   sortList("id");}}
                 style={{ cursor: "pointer" }}>ID</th>
+                <th onClick={() => {
+                  setSortedOrder(!sortedOrder);
+                  sortList("sku");}}
+                style={{ cursor: "pointer" }}>SKU</th>
               <th onClick={() => {
                   setSortedOrder(!sortedOrder);
                   sortList("title");}}
@@ -411,19 +430,14 @@ const Productos = () => {
               filteredProductos.map((producto) => (
                 <tr key={producto.id}>
                   <td>{producto.id}</td>
+                  <td>{producto.sku}</td>
                   <td className="text-truncate">
                     {input(producto, "title", producto.title)}
                   </td>
                   <td>{input(producto, "price", producto.price)}</td>
                   <td>{input(producto, "stock", producto.stock)}</td>
-                  <td>
-                    {
-                      searchDesc(proveedores,producto.idProv,"name")
-                    }
-                  </td>
-                  <td>
-                    {searchDesc(categorias, producto.idCat, "description")}
-                  </td>
+                  <td>{searchDesc(proveedores,producto.idProv,"name")}</td>
+                  <td>{searchDesc(categorias, producto.idCat, "description")}</td>
                   <td>
                     <>
                       <button
@@ -439,7 +453,7 @@ const Productos = () => {
               ))
             ) : (
               <tr>
-                <td colSpan={7} className="text-center text-muted">
+                <td colSpan={8} className="text-center text-muted">
                   No hay productos registrados
                 </td>
               </tr>
