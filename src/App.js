@@ -58,7 +58,7 @@ function App() {
         <Route path="/products" element={<ViewProducts  />} />
         <Route path="/login" element={isAuthenticated ? <Navigate to="/home" /> : <Login />}/>
         <Route path="/register" element={isAuthenticated ? <Navigate to="/home" /> : <RegistroCliente />} />
-        <Route path="/recover" element={isAuthenticated ? <Navigate to="/home" /> : <Recover />}/>
+        <Route path="/recover" element={<Recover />}/>
 
         {/* Redirigir al login por defecto */}
         <Route path="/" element={<Navigate to="/home" />} />

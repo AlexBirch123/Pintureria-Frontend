@@ -17,41 +17,24 @@ const ViewProducts = () => {
   const [categorias, setcategorias] = useState([]);
 
   useEffect(() => {
-    const fetchProd = async () => {
-      const local = getLocalStorage("products");
-      try {
-        await fetch(process.env.REACT_APP_API_URL + "/Products", { credentials: "include" })
-          .then((res) => res.json())
-          .then((data) => {
-            if (!data || data.length === 0) {
-              if (local) setProductos(local.datos);
-            } else {
-              setProductos(data);
-              setFilteredProds(data);
-              setLocalStorage(data, "products");
-            }
-          });
-      } catch (error) {
-        console.log(error);
-        if (local) setProductos(local.datos);
-      }
-    };
-    const fetchcat = async () => {
-      const local = getLocalStorage("category");
-      try {
-        await fetch(process.env.REACT_APP_API_URL + "/category", { credentials: "include" })
-          .then((res) => res.json())
-          .then((data) => {
-            if (!data) return setcategorias(local.datos);
-            setcategorias(data);
-            setLocalStorage(data, "category");
-          });
-      } catch (error) {
-        console.log(error);
-      }
-    };
-    fetchProd();
-    fetchcat();
+    const fetchData = async (url, localStorageKey, setState) => {
+          const local = getLocalStorage(localStorageKey);
+          try {
+            const res = await fetch(process.env.REACT_APP_API_URL + url, {
+              credentials: "include",
+            });
+            if (!res.ok) return setState(local.datos);
+            const data = await res.json();
+            setState(data);
+            setLocalStorage(data, localStorageKey);
+          } catch (error) {
+            console.log(error);
+            setState(local.datos);
+          }
+        };
+
+    fetchData("/Products", "products", setProductos);
+    fetchData("/category", "category", setcategorias);
   }, []);
 
   useEffect(() => {
@@ -59,6 +42,9 @@ const ViewProducts = () => {
   }, [cat, productos, description]);
 
   const handleFilteredProds = () => {
+    console.log(productos)
+    if(!productos) return setFilteredProds([])
+      else{
     if (cat) {
       const prods = productos.filter((p) => p.idCat === Number(cat));
       setFilteredProds(prods);
@@ -73,6 +59,7 @@ const ViewProducts = () => {
     }
     setFilteredProds(productos);
     setMaxMin(productos);
+      }
   };
 
   const setMaxMin = (prods) => {
