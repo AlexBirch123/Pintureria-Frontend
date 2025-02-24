@@ -1,6 +1,8 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "bootstrap/dist/css/bootstrap.min.css";
+import validatePassword from "../utils/validationPass";
+import { Eye, EyeOff } from "lucide-react";
 
 const RegistroCliente = () => {
   const [formData, setFormData] = useState({
@@ -9,6 +11,9 @@ const RegistroCliente = () => {
     pswHash: "",
   });
   const [submitted, setSubmitted] = useState(false);
+  const [focusPass, setFocusPass] = useState(false);
+  const [valid, setValid] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
   const [message, setMessage] = useState("");
   const navigate = useNavigate();
 
@@ -21,8 +26,16 @@ const RegistroCliente = () => {
   };
 
   const postUser = async () => {
-    try {
-      const res = await fetch(process.env.REACT_APP_API_URL + `/users`, {
+    const validPass = validatePassword(formData.pswHash)
+    console.log(validPass)
+    if(!validPass) {
+      setMessage("Contraseña invalida")
+      setTimeout(()=> setMessage(null),3000)
+      return null
+    }
+      
+      try {
+      const res = await fetch(process.env.REACT_APP_API_URL + `/register`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -40,14 +53,22 @@ const RegistroCliente = () => {
   const validateData = async () => {
     try {
       const res = await fetch(process.env.REACT_APP_API_URL + `/users/email/${formData.email}`);
-      const email = await res.json();
-      if (email) return setMessage("Email existente");
-      
+      console.log(res)
+      if (res.status === 200) {
+        setMessage("Email existente");
+        setTimeout(()=> setMessage(null),3000)
+        return true
+      }
       const response = await fetch(process.env.REACT_APP_API_URL + `/users/name/${formData.userName}`);
-      const name = await response.json();
-      if (name) return setMessage("Nombre de usuario existente");
+      console.log(response)
 
-      return true;
+      if (response.status === 200){
+        setMessage("Nombre de usuario existente");
+        setTimeout(()=> setMessage(null),3000)
+        return true
+      }
+
+      return false;
 
     } catch (error) {
       console.log(error);
@@ -57,13 +78,16 @@ const RegistroCliente = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     const valido = await validateData();
+    console.log(valido)
     if (!valido) {
-      const data = postUser();
-      if (data) {
-        // Mostrar mensaje de éxito y redirigir al login después de unos segundos
-        setSubmitted(true);
-        setTimeout(() => {navigate("/login");}, 4000); 
+      postUser().then(data =>{
+        console.log(data)
+        if (data) {
+          setSubmitted(true);
+          setTimeout(() => {navigate("/login");}, 4000); 
+        }
       }
+    );
     }
   };
 
@@ -107,16 +131,34 @@ const RegistroCliente = () => {
               <label htmlFor="password" className="form-label">
                 Contraseña:
               </label>
+              <div className="input-group">
               <input
-                type="password"
+                type={showPassword ? "text" : "password"}
                 id="password"
                 name="pswHash"
                 className="form-control"
                 placeholder="Cree su contraseña"
                 value={formData.pswHash}
-                onChange={handleChange}
+                onChange={ (e)=>{
+                  handleChange(e)
+                  if(validatePassword(e.target.value))setValid(true)
+                } }
+                onFocus={()=>setFocusPass(true)}
+                onBlur={()=>setFocusPass(false)}
                 required
               />
+              <button
+                type="button"
+                className="btn btn-outline-secondary"
+                onClick={() => {
+                  setShowPassword(!showPassword)
+                  setFocusPass(true)
+                  }
+                }
+              >
+                {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+              </button>
+              </div>
             </div>
             <button type="submit" className="btn btn-primary w-100">
               Registrar
@@ -125,7 +167,21 @@ const RegistroCliente = () => {
           {submitted && (
             <div className="alert alert-success mt-3" role="alert">
               ¡Cliente registrado con éxito! Redirigiendo al inicio de sesión...
+            </div>       
+          )
+          }
+          {focusPass && (
+            valid ? (
+              <div className="alert alert-success mt-3" role="alert">
+            Contraseña valida 
+           </div>
+            ):(
+            
+              <div className="alert alert-danger mt-3" role="alert">
+            -Minimo 6 digitos <br /> -Minimo una mayuscula <br /> -Minimo una minuscula <br /> -Minimo un número 
             </div>
+            )
+            
           )
           }
           {message && <p className="text-danger text-center">{message}</p>}

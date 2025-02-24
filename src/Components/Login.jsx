@@ -1,10 +1,12 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "./AuthContext";
+import { Eye, EyeOff } from "lucide-react";
 
 const Login = () => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
   const [message, setMessage] = useState("");
   const { setIsAuthenticated, setRole } = useAuth();
   const navigate = useNavigate();
@@ -54,7 +56,7 @@ const Login = () => {
 
   return (
     <div className="container d-flex justify-content-center align-items-center min-vh-100">
-      <div className="w-100 p-4" style={{ maxWidth: "400px" }}> 
+      <div className="w-100 p-4" style={{ maxWidth: "450px" }}> 
         <form onSubmit={handleLogin} className="card p-4 shadow">
           <h2 className="text-center mb-4">Inicio de sesión</h2>
           <div className="mb-3">
@@ -73,13 +75,22 @@ const Login = () => {
             <label htmlFor="password" className="form-label">
               Contraseña:
             </label>
-            <input
-              type="password"
-              id="password"
-              className="form-control"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-            />
+            <div className="input-group">
+              <input
+                type={showPassword ? "text" : "password"}
+                id="password"
+                className="form-control"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+              />
+              <button
+                type="button"
+                className="btn btn-outline-secondary"
+                onClick={() => setShowPassword(!showPassword)}
+              >
+                {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+              </button>
+            </div>
           </div>
           <button type="submit" className="btn btn-primary w-100">
             Iniciar Sesión

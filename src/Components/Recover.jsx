@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
+import { Eye, EyeOff } from "lucide-react";
+import validatePassword from "../utils/validationPass";
 
 const Recover = () => {
   const location = useLocation();
@@ -7,6 +9,7 @@ const Recover = () => {
   const queryToken = queryParams.get('token');
   const [email, setEmail] = useState("");
   const [token, setToken] = useState(null);
+  const [showPassword, setShowPassword] = useState(false);
   const [pass, setPass] = useState("");
   const [pass2, setPass2] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
@@ -28,6 +31,7 @@ const Recover = () => {
           console.log(timeToken)
           if (timeToken < 900000) setEmail(data.email);
           else {
+            setToken(null)
             setErrorMessage("Token Invalido")
             setTimeout(()=> setErrorMessage(null),5000)
           }
@@ -119,44 +123,68 @@ const Recover = () => {
           setTimeout(()=>setErrorMessage(null),5000)
         }
     } catch (error) {
-      setErrorMessage(`Error al enviar correo de recuperacion a ${email}`)
-      setTimeout(()=>setErrorMessage(null),3000)
+      setSuccessMessage(`Error al enviar correo de recuperacion a ${email}`)
+      setTimeout(()=>setSuccessMessage(null),3000)
     }
   };
 
   return (
-    <div>
+    <div className="container d-flex justify-content-center align-items-center " style={{marginTop:"5%"}}>
     {token && email ? (
-      <div className="container" style={{ maxWidth: "400px", marginTop: "200px" }}>
-      <h2 className="text-center">Recuperacion de contraseña</h2>
-      <form onSubmit={changePass}>
+      <div className="w-100 p-4" style={{ maxWidth: "450px" }}>
+      <h2 className="text-center mb-4">Recuperacion de contraseña</h2>
+      <form onSubmit={changePass} className="card p-4 shadow">
         <div className="mb-3">
           <label htmlFor="username" className="form-label">
             Nueva contraseña:
           </label>
+          <div className="input-group">
           <input
-            type="password"
+            type={showPassword ?"text":"password"}
             id="pass"
             className="form-control"
             value={pass}
-            onChange={(e) => setPass(e.target.value)}
-          />
+            onChange={(e) => {
+              setPass(e.target.value)
+              validatePassword(e.target.value)
+            }}
+            onFocus={()=>setSuccessMessage("-6 digitos como minimo /br -Minimo 1 mayuscula /br -Minimo 1 minuscula /br -Minimo un número ")}
+            />
+          <button
+                type="button"
+                className="btn btn-outline-secondary"
+                onClick={() => setShowPassword(!showPassword)}
+              >
+                {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+              </button>
+
+          </div>
           <label htmlFor="username" className="form-label">
             Repita contraseña:
           </label>
+          <div className="input-group">
+
           <input
-            type="password"
+            type={showPassword ?"text":"password"}
             id="pass2"
             className="form-control"
             value={pass2}
             onChange={(e) => setPass2(e.target.value)}
           />
+          <button
+                type="button"
+                className="btn btn-outline-secondary"
+                onClick={() => setShowPassword(!showPassword)}
+              >
+                {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+              </button>
+          </div>
         </div>
         <button type="submit" className="btn btn-primary w-100">
           Enviar
         </button>
       </form>
-      {successMessage && <p className="text-danger text-center">{successMessage}</p>}
+      {successMessage && <p className="text-success text-center">{successMessage}</p>}
       {errorMessage && <p className="text-danger text-center">{errorMessage}</p>}
     </div>
     ):(
@@ -180,7 +208,7 @@ const Recover = () => {
         </button>
       </form>
       {errorMessage && <p className="text-danger text-center">{errorMessage}</p>}
-      {successMessage && <p className="text-danger text-center">{successMessage}</p>}
+      {successMessage && <p className="text-success text-center">{successMessage}</p>}
     </div>)}
     </div>
 );
