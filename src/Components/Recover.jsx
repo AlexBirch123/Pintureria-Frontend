@@ -9,7 +9,8 @@ const Recover = () => {
   const [token, setToken] = useState(null);
   const [pass, setPass] = useState("");
   const [pass2, setPass2] = useState("");
-  const [message, setMessage] = useState("");
+  const [errorMessage, setErrorMessage] = useState("");
+  const [successMessage, setSuccessMessage] = useState("");
   const navigate = useNavigate();
 
 
@@ -27,8 +28,8 @@ const Recover = () => {
           console.log(timeToken)
           if (timeToken < 900000) setEmail(data.email);
           else {
-            setMessage("Token Invalido")
-            setTimeout(()=> setMessage(null),5000)
+            setErrorMessage("Token Invalido")
+            setTimeout(()=> setErrorMessage(null),5000)
           }
         }
 
@@ -67,8 +68,8 @@ const Recover = () => {
   const changePass = async (e) => {
     e.preventDefault();
     if (!(pass === pass2)) {  
-      setMessage("Las contraseñas no coinciden")
-      return setTimeout(() => {setMessage(null)}, 3000);
+      setErrorMessage("Las contraseñas no coinciden")
+      return setTimeout(() => {setErrorMessage(null)}, 3000);
     };
     const data = {
       pswHash: pass,
@@ -84,7 +85,7 @@ const Recover = () => {
         body: JSON.stringify(data),
       });
       if (res.ok) {
-        setMessage("Contraseña modificada con exito, redirigiendo al login");
+        setSuccessMessage("Contraseña modificada con exito, redirigiendo al login");
         setTimeout(() => navigate("/login"), 3000);
         await fetch(process.env.REACT_APP_API_URL + `/recover/${queryToken}`, {
           method: "DELETE",
@@ -92,7 +93,7 @@ const Recover = () => {
         });
       }
     } catch (error) {
-      setMessage("Error en la solicitud");
+      setErrorMessage("Error en la solicitud");
     }
   };
 
@@ -111,15 +112,15 @@ const Recover = () => {
           body: JSON.stringify(data),
         })
         if(res.ok) {
-          setMessage(`Se envio un correo de recuperacion a ${email}`)
+          setSuccessMessage(`Se envio un correo de recuperacion a ${email}`)
           setEmail(null)
         }else{
-          setMessage("El correo electronico ingresado no esta ligado a un usuario existente")
-          setTimeout(()=>setMessage(null),5000)
+          setErrorMessage("El correo electronico ingresado no esta ligado a un usuario existente")
+          setTimeout(()=>setErrorMessage(null),5000)
         }
     } catch (error) {
-      setMessage(`Error al enviar correo de recuperacion a ${email}`)
-      setTimeout(()=>setMessage(null),3000)
+      setErrorMessage(`Error al enviar correo de recuperacion a ${email}`)
+      setTimeout(()=>setErrorMessage(null),3000)
     }
   };
 
@@ -155,7 +156,8 @@ const Recover = () => {
           Enviar
         </button>
       </form>
-      {message && <p className="text-danger text-center">{message}</p>}
+      {successMessage && <p className="text-danger text-center">{successMessage}</p>}
+      {errorMessage && <p className="text-danger text-center">{errorMessage}</p>}
     </div>
     ):(
     <div className="container" style={{ maxWidth: "400px", marginTop: "200px" }}>
@@ -177,7 +179,8 @@ const Recover = () => {
           Enviar
         </button>
       </form>
-      {message && <p className="text-danger text-center">{message}</p>}
+      {errorMessage && <p className="text-danger text-center">{errorMessage}</p>}
+      {successMessage && <p className="text-danger text-center">{successMessage}</p>}
     </div>)}
     </div>
 );
