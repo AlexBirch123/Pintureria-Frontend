@@ -2,8 +2,10 @@ import React, { useState, useEffect } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { getLocalStorage, setLocalStorage } from "../utils/localStorage";
 import { searchDesc } from "../utils/search";
+import { useNavigate } from "react-router";
 
 const VerVentas = () => {
+  const navigate = useNavigate() 
   const [ventas, setVentas] = useState([]);
   const [filteredVentas, setFilteredVentas] = useState([]);
   const [search, setSearch] = useState("");
@@ -152,6 +154,7 @@ const VerVentas = () => {
               }
             }}
           />
+          
         </div>
         <div className="d-flex flex-column align-items-end mb-3">
           <input
@@ -174,6 +177,15 @@ const VerVentas = () => {
           >
             Reset
           </button>
+          <button
+            id="b_create"
+            onClick={()=>navigate("/crear_ventas")}
+            style={{marginTop:"1%"}}
+            type="button"
+            className="btn btn-primary mb-2"
+          >
+            Crear venta
+          </button>
         </div>
       </div>
       <h2 className="text-center mb-4">Listado de Ventas</h2>
@@ -186,63 +198,49 @@ const VerVentas = () => {
                   setSortedOrder(!sortedOrder);
                   sortList("id");
                 }}
-                style={{ cursor: "pointer" }}
-              >
-                ID
+                style={{ cursor: "pointer" }}>ID
               </th>
               <th
                 onClick={() => {
                   setSortedOrder(!sortedOrder);
                   sortList("idClient");
                 }}
-                style={{ cursor: "pointer" }}
-              >
-                Cliente
+                style={{ cursor: "pointer" }}>Cliente
               </th>
               <th
                 onClick={() => {
                   setSortedOrder(!sortedOrder);
                   sortList("idUser");
                 }}
-                style={{ cursor: "pointer" }}
-              >
-                Usuario
+                style={{ cursor: "pointer" }}>Usuario
               </th>
               <th
                 onClick={() => {
                   setSortedOrder(!sortedOrder);
                   sortList("idEmp");
                 }}
-                style={{ cursor: "pointer" }}
-              >
-                Empleado
+                style={{ cursor: "pointer" }}>Empleado
               </th>
               <th
                 onClick={() => {
                   setSortedOrder(!sortedOrder);
                   sortList("idBranch");
                 }}
-                style={{ cursor: "pointer" }}
-              >
-                Sucursal
+                style={{ cursor: "pointer" }}>Sucursal
               </th>
               <th
                 onClick={() => {
                   setSortedOrder(!sortedOrder);
                   sortList("createdAt");
                 }}
-                style={{ cursor: "pointer" }}
-              >
-                Fecha
+                style={{ cursor: "pointer" }}>Fecha
               </th>
               <th
                 onClick={() => {
                   setSortedOrder(!sortedOrder);
                   sortList("total");
                 }}
-                style={{ cursor: "pointer" }}
-              >
-                Total
+                style={{ cursor: "pointer" }}>Total
               </th>
               <th>Acciones</th>
             </tr>

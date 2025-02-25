@@ -2,6 +2,8 @@ import { Link, useNavigate } from "react-router-dom";
 import "bootstrap/dist/css/bootstrap.min.css";
 import rioColor from "../rio_color.png";
 import cart from "../utils/icons/cart.svg";
+// import location from "../utils/icons/location.svg"
+import location from "../utils/icons/location2.svg"
 import { useAuth } from "./AuthContext";
 import { getLocalStorage, setLocalStorage } from "../utils/localStorage";
 import "../App.css";
@@ -13,6 +15,7 @@ const NavBar = ({ cartChange }) => {
   const { role, setIsAuthenticated, isAuthenticated } = useAuth();
   const navigate = useNavigate();
   const [cartProds, setCartProds] = useState([]);
+  const [categorias, setCategorias] = useState([]);
   const [search, setSearch] = useState("");
   const isMobile = useMediaQuery({ maxWidth: 768 });
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -24,6 +27,23 @@ const NavBar = ({ cartChange }) => {
     };
     updateCart();
   }, [cartChange]);
+
+  useEffect(() => {
+    const fetchData = async (url, localStorageKey, setState) => {
+          const local = getLocalStorage(localStorageKey);
+          try {
+          const res = await fetch(process.env.REACT_APP_API_URL + url, { credentials: "include" });
+          if (!res.ok) return setState(local.datos);
+          const data = await res.json();
+          setState(data);
+          setLocalStorage(data, localStorageKey);
+          } catch (error) {
+          console.log(error);
+          setState(local.datos);
+          }
+        };
+        fetchData("/category", "category", setCategorias);
+  }, []);
 
   const handleSession = async () => {
     if (!isAuthenticated) {
@@ -74,16 +94,31 @@ const NavBar = ({ cartChange }) => {
             handleSearch(e)
           }}>
           <input type="text" className="form-control me-2" placeholder="Buscar..." value={search} onChange={(e) => setSearch(e.target.value)} />
-        </form>
+          </form>
+          </li>
+          <li>
+            <Link to="/sucursales" className="nav-item">
+              <img src={location} className="nav-link" alt="Sucursales" style={{ width: "20px", marginRight: "5px" }} /> Sucursales
+            </Link>
           </li>
            <li className="nav-item" onClick={() => setIsMenuOpen(false)}>
-               <Link
-                className="nav-link"
-                to={(role === 1 || role === 2) && isAuthenticated ? "/productos" : "/products"}
-              >
+               <Link className="nav-link" to={(role === 1 || role === 2) && isAuthenticated ? "/productos" : "/products"}>
                 Productos
               </Link>
             </li>
+            <li className="nav-item dropdown">
+               <button className="nav-link dropdown-toggle" id="ventasDropdown" data-bs-toggle="dropdown">
+                 Categorias
+               </button>
+                {categorias.length > 0 &&(
+                  <ul className="dropdown-menu">
+                     {categorias.map((cat)=>{
+                      return(
+                     <li key={cat.id}><Link className="dropdown-item" onClick={()=>{navigate(`/products?category=${cat.id}`)}}>
+                        {cat.description}
+                      </Link></li>)})}
+               </ul>)}      
+             </li>
             {role === 1 && isAuthenticated && (
               <>
                 <li className="nav-item" onClick={() => setIsMenuOpen(false)}>
@@ -161,47 +196,59 @@ const NavBar = ({ cartChange }) => {
     // NavBar para PC
     <nav className="navbar navbar-expand-md bg-dark navbar-dark fixed-top">
       <div className="container-fluid">
-        <Link to="/home">
-          <img src={rioColor} alt="Logo" style={{ width: "80px", height: "auto", marginRight: "10px" }} className="rounded-pill" />
-        </Link>
-        <form className="d-flex" onSubmit={handleSearch}>
-          <input type="text" className="form-control me-2" placeholder="Buscar..." value={search} onChange={(e) => setSearch(e.target.value)} />
-          <button className="btn btn-outline-light" type="submit">Buscar</button>
-        </form>
-        <ul className="navbar-nav ms-auto">
-          <li className="nav-item">
-            <Link className="nav-link" to={(role === 1 || role === 2) && isAuthenticated ? "/productos" : "/products"}>Productos</Link>
-          </li>
+      <Link to="/home">
+        <img src={rioColor} alt="Logo" style={{ width: "80px", height: "auto", marginRight: "10px" }} className="rounded-pill" />
+      </Link>
+      <form className="d-flex" onSubmit={handleSearch}>
+        <input type="text" className="form-control me-2" placeholder="Buscar..." value={search} onChange={(e) => setSearch(e.target.value)} />
+        <button className="btn btn-outline-light" type="submit">Buscar</button>
+      </form>
+      <ul className="navbar-nav ms-auto">
+        <li className="nav-item">
+          <Link to="/contacto" className="nav-link">
+            <img src={location} alt="Sucursales" style={{ width: "20px", marginRight: "5px" }} /> Sucursales
+          </Link>
+        </li>
+        <li className="nav-item">
+          <Link className="nav-link" to={(role === 1 || role === 2) && isAuthenticated ? "/productos" : "/products"}>Productos</Link>
+        </li>
+        <li className="nav-item dropdown">
+           <button className="nav-link dropdown-toggle" id="catDropdown" data-bs-toggle="dropdown">
+           Categorias
+           </button>
+          {categorias.length > 0 &&(
+            <ul className="dropdown-menu">
+             {categorias.map((cat) => {
+                      return(
+                         <li key={cat.id}>
+                           <Link className="dropdown-item" to={`/products?category=${cat.id}`}>
+                             {cat.description}
+                           </Link>
+                         </li>)})}
+                  </ul>)}
+        </li>
+        
+
+        {(role === 1 || role === 2) && isAuthenticated &&(
+          <li className="nav-item dropdown">
+               <button className="nav-link dropdown-toggle" id="menuDropdown" data-bs-toggle="dropdown">
+                 {role === 1 ? "Administrador": "Vendedor"}
+               </button>
+        <ul className="dropdown-menu">
           {role === 1 && isAuthenticated && (
             <>
-              <li className="nav-item"><Link className="nav-link" to="/sucursales">Sucursales</Link></li>
-              <li className="nav-item"><Link className="nav-link" to="/empleados">Empleados</Link></li>
-              <li className="nav-item"><Link className="nav-link" to="/usuarios">Usuarios</Link></li>
+              <li className="nav-item"><Link className="dropdown-item" to="/sucursales">Sucursales</Link></li>
+              <li className="nav-item"><Link className="dropdown-item" to="/empleados">Empleados</Link></li>
+              <li className="nav-item"><Link className="dropdown-item" to="/usuarios">Usuarios</Link></li>
             </>
           )}
-          {(role === 1 || role === 2) && isAuthenticated && (
-            <>
-              <li className="nav-item"><Link className="nav-link" to="/clientes">Clientes</Link></li>
-              <li className="nav-item"><Link className="nav-link" to="/proveedores">Proveedores</Link></li>
-              <li className="nav-item dropdown">
-               <button className="nav-link dropdown-toggle" id="ventasDropdown" data-bs-toggle="dropdown">
-                 Ventas
-               </button>
-               <ul className="dropdown-menu">
-                 <li>
-                   <Link className="dropdown-item" to="/crear_ventas">
-                     Crear Venta
-                   </Link>
-                 </li>
-                 <li>
-                   <Link className="dropdown-item" to="/ventas">
-                     Consultar Ventas
-                   </Link>
-                 </li>
-               </ul>
-             </li>
-            </>
-          )}
+              <li className="nav-item"><Link className="dropdown-item" to="/clientes">Clientes</Link></li>
+              <li className="nav-item"><Link className="dropdown-item" to="/proveedores">Proveedores</Link></li>
+              <li className="nav-item"><Link className="dropdown-item" to="/ventas">Ventas</Link></li>
+          </ul>
+        </li>)}      
+
+
           {isAuthenticated && (
             <li className="nav-item me-2">
               <Link className="nav-link" to="/userSales">Compras</Link>
