@@ -59,21 +59,18 @@ useEffect(() => {
   };
 
   const handleConfirm = async() => {
-    setData(
-      data.map((d)=>{
+     const newList = data.map((d)=>{
         return {
           sku:d.SKU,
           title:d.Titulo,
           description:d.Descripcion,
           price:d.Precio,
-          stocke:d.Stock,
-          idProv:selectedProv,
-          idCat:0
+          stock:d.Stock,
+          idProv:Number(selectedProv),
+          idCat:Number(d.idCat)
         }
       })
-    )
-    const productsArray = {productsArray:data}
-    console.log("Productos confirmados:", productsArray);
+    const productsArray = {productsArray:newList}
     try {
       const res = await fetch(process.env.REACT_APP_API_URL + "/products",{
         credentials:"include",
@@ -87,7 +84,7 @@ useEffect(() => {
       setMessage("productos ingresados con exitos, redirigiendo a productos")
       setTimeout(()=>{
         setMessage(null)
-        navigate("/products")
+        navigate("/productos")
       },3000)
     } catch (error) {
       console.log("error al ingresar los productos", error)
@@ -151,7 +148,7 @@ useEffect(() => {
                 <tr key={row.SKU}>
                   <td>{row.SKU}</td>
                   <td>{row.Titulo}</td>
-                  <td>{row.descripcion}</td>
+                  <td>{row.Descripcion}</td>
                   <td>{row.Precio}</td>
                   <td>{row.Stock}</td>
                   <td>
@@ -162,14 +159,14 @@ useEffect(() => {
                         className="form-select mt-2"
                         onChange={(e) => setData(
                           data.map((d)=>
-                          d.id === row.id ? {...d,idCat:e.target.value}: d
+                          d.id === row.id ? {...d,idCat:Number(e.target.value)}: d
                         ))}
                         required
                       >
                         <option value="">Categoria</option>
                         {categorias.map((cat) => (
                           <option key={cat.id} value={cat.id}>
-                            {cat.name}
+                            {cat.description}
                           </option>
                         ))}
                       </select>
@@ -189,6 +186,7 @@ useEffect(() => {
         <button onClick={handleConfirm} className="btn btn-success btn-sm mx-1">
           Confirmar
         </button>
+        {message && <div className="alert alert-info mt-3">{message}</div>}
       </div>
     </div>
   );

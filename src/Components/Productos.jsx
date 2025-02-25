@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useRef } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
 import {setLocalStorage,getLocalStorage} from "../utils/localStorage"
-import { searchDesc } from "../utils/search";
 import { useNavigate } from "react-router";
+import { ImgProducto } from "./ImgProducto";
 
 const Productos = () => {
   const [formVisible, setFormVisible] = useState(false);
@@ -21,6 +21,7 @@ const Productos = () => {
   const stockRef = useRef(null);
   const precioRef = useRef(null);
   const skuRef = useRef(null);
+
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -44,7 +45,13 @@ const Productos = () => {
     fetchData("/Products", "products", setProductos);
     fetchData("/category", "category", setcategorias);
     fetchData("/Suppliers", "suppliers", setProveedores);
+    
+    
   }, []);
+
+  useEffect(()=>{
+    if(productos) setFilteredProductos(productos)
+  },[productos])
 
   const toggleFormVisibility = () => {
     setFormVisible(!formVisible);
@@ -90,7 +97,6 @@ const Productos = () => {
         });
         if (res.ok) {
           const completeProd = await res.json();
-          setProductos([...productos, completeProd]);
           setFilteredProductos([...productos, completeProd]);
           resetForm();
         }
@@ -112,12 +118,12 @@ const Productos = () => {
         method: "DELETE",
       });
       const updatedProd = productos.filter((p) => p.id !== id);
-      setProductos(updatedProd);
       setFilteredProductos(updatedProd);
       setLocalStorage(updatedProd);
     }
   };
-    const handleDoubleClick = (id, field, value) => {
+
+    const handleDoubleClick = (id, field) => {
       setEditingField({ id, field });
     };
   
@@ -125,7 +131,6 @@ const Productos = () => {
       const newList = productos.map((prod) =>
         prod.id === id ? { ...prod, [field]: value } : prod
       )
-      setProductos(newList);
       setFilteredProductos(newList);
     };
   
@@ -200,6 +205,12 @@ const Productos = () => {
       };
   }
 
+  const handleSorted = (field)=>{
+    setSortedOrder(!sortedOrder);
+    sortList(field);
+  }
+
+
   return (
     <div style={{ marginLeft: "1%", marginRight: "1%", marginTop: "5%" }}>
       <div className="d-flex justify-content-between align-items-center mb-2">
@@ -208,7 +219,7 @@ const Productos = () => {
             type="text"
             placeholder="Buscar producto..."
             className="form-control w-100"
-            hidden={!formVisible}
+            hidden={formVisible}
             onChange={(e) => {
               setSearch(e.target.value);
             }}
@@ -221,7 +232,7 @@ const Productos = () => {
           />
           <select name="idProv" id="idProv" 
             className="form-select mt-2"
-            hidden={!formVisible}
+            hidden={formVisible}
             onChange={(e) => {
               if (e.target.value === "") {
                 setFilteredProductos(productos);
@@ -232,7 +243,7 @@ const Productos = () => {
                 setFilteredProductos(filtered);
               }
             }}>
-            <option value="" hidden={!formVisible}>Proveedores</option>
+            <option value="" hidden={formVisible}>Proveedores</option>
             {proveedores.map((prov) => (
               <option key={prov.id} value={prov.id}>
                 {prov.name}
@@ -241,7 +252,7 @@ const Productos = () => {
           </select>
           <select name="idCat" id="idCat" 
             className="form-select mt-2"
-            hidden={!formVisible}
+            hidden={formVisible}
             onChange={(e) => {
               if (e.target.value === "") {
                 setFilteredProductos(productos);
@@ -266,16 +277,14 @@ const Productos = () => {
             onClick={toggleFormVisibility}
             type="button"
             className="btn btn-primary mb-2"
-            
           >
             {formVisible ? "Cancelar" : "Crear Producto"}
           </button>
-          <div className="d-flex flex-column align-items-end">
           <button
-            id="b_create"
-            onClick={navigate("/import")}
+            id="b_create_bulk"
+            onClick={() => navigate("/import")}
             type="button"
-            hidden={!formVisible}
+            hidden={formVisible}
             className="btn btn-primary mb-2"
           >
             Crear en lote
@@ -283,7 +292,7 @@ const Productos = () => {
           <button
             onClick={() => navigate("/products")}
             type="button"
-            hidden={!formVisible}
+            hidden={formVisible}
             className="btn btn-primary"
           >
             Vista de tienda
@@ -291,7 +300,7 @@ const Productos = () => {
         </div>
       </div>
       <div>
-      {message && <div className="alert alert-info mt-3">{message}</div>}
+        {message && <div className="alert alert-info mt-3">{message}</div>}
         {formVisible && (
           <form
             onSubmit={createProducto}
@@ -299,7 +308,7 @@ const Productos = () => {
             className="mt-3 p-3 border rounded bg-light "
           >
             <div className="row g-2">
-            <div className="col-md-6">
+              <div className="col-md-6">
                 <label className="form-label">Titulo:</label>
                 <input
                   type="text"
@@ -376,41 +385,19 @@ const Productos = () => {
           </form>
         )}
       </div>
-
-      {/* Tabla de productos */}
       <div className="table-responsive mt-4" style={{ marginTop: "5%" }}>
         <h2 className="fs-4">Listado de Productos</h2>
         <table className="table table-sm table-bordered table-hover text-center">
           <thead className="table-dark">
             <tr>
-              <th onClick={() => {
-                  setSortedOrder(!sortedOrder);
-                  sortList("id");}}
-                style={{ cursor: "pointer" }}>ID</th>
-                <th onClick={() => {
-                  setSortedOrder(!sortedOrder);
-                  sortList("sku");}}
-                style={{ cursor: "pointer" }}>SKU</th>
-              <th onClick={() => {
-                  setSortedOrder(!sortedOrder);
-                  sortList("title");}}
-                style={{ cursor: "pointer" }}>Titulo</th>
-              <th onClick={() => {
-                  setSortedOrder(!sortedOrder);
-                  sortList("price");}}
-                style={{ cursor: "pointer" }}>Precio</th>
-              <th onClick={() => {
-                  setSortedOrder(!sortedOrder);
-                  sortList("stock");}}
-                style={{ cursor: "pointer" }}>Stock</th>
-              <th onClick={() => {
-                  setSortedOrder(!sortedOrder);
-                  sortList("idProv");}}
-                style={{ cursor: "pointer" }}>Proveedor</th>
-              <th onClick={() => {
-                  setSortedOrder(!sortedOrder);
-                  sortList("idCat");}}
-                style={{ cursor: "pointer" }}>Categoría</th>
+              <th onClick={() => handleSorted("id")}style={{ cursor: "pointer" }}>ID</th>
+              <th onClick={() => handleSorted("sku")}style={{ cursor: "pointer" }}>SKU</th>
+              <th>Foto</th>
+              <th onClick={() => handleSorted("title")}style={{ cursor: "pointer" }}>Titulo</th>
+              <th onClick={() => handleSorted("price")}style={{ cursor: "pointer" }}>Precio</th>
+              <th onClick={() => handleSorted("stock")}style={{ cursor: "pointer" }}>Stock</th>
+              <th onClick={() => handleSorted("idProv")}style={{ cursor: "pointer" }}>Proveedor</th>
+              <th onClick={() => handleSorted("idCat")}style={{ cursor: "pointer" }}>Categoría</th>
               <th>Acciones</th>
             </tr>
           </thead>
@@ -420,29 +407,56 @@ const Productos = () => {
                 <tr key={producto.id}>
                   <td>{producto.id}</td>
                   <td>{producto.sku}</td>
-                  <td className="text-truncate">
-                    {input(producto, "title", producto.title)}
-                  </td>
+                  <ImgProducto key={producto.id} producto={producto} />             
+                  <td className="text-truncate">{input(producto, "title", producto.title)}</td>
                   <td>{input(producto, "price", producto.price)}</td>
                   <td>{input(producto, "stock", producto.stock)}</td>
-                  <td>{searchDesc(proveedores,producto.idProv,"name")}</td>
-                  <td>{searchDesc(categorias, producto.idCat, "description")}</td>
                   <td>
-                    <>
-                      <button
-                        className="btn btn-danger btn-sm mx-1"
-                        onClick={() => handleDelete(producto.id)}
-                        style={{ marginLeft: "10px" }}
-                      >
-                        Eliminar
-                      </button>
-                    </>
+                    <select className="form-select" 
+                    required 
+                    value={producto.idProv}
+                    onChange={(e)=>{
+                      handleFieldChange(producto.id, "idProv", e.target.value)
+                      handleBlur(producto.id, "idProv", e.target.value)} }
+                    >
+                    <option value="">Elegir proveedor</option>
+                    {proveedores.map((p) => (
+                     <option key={p.id} value={p.id}>
+                      {p.name}
+                    </option>
+                  ))}
+                </select>
+                </td>
+                <td>
+                    <select className="form-select" 
+                    required 
+                    value={producto.idCat}
+                    onChange={(e)=>{
+                      handleFieldChange(producto.id,"idCat",e.target.value)
+                      handleBlur(producto.id, "idCat", e.target.value)} }
+                    >
+                    <option value="">Elegir categoría</option>
+                    {categorias.map((cat) => (
+                     <option key={cat.id} value={cat.id}>
+                      {cat.description}
+                    </option>
+                  ))}
+                </select>
+                </td>
+                  <td>
+                    <button
+                      className="btn btn-danger btn-sm mx-1"
+                      onClick={() => handleDelete(producto.id)}
+                      style={{ marginLeft: "10px" }}
+                    >
+                      Eliminar
+                    </button>
                   </td>
                 </tr>
               ))
             ) : (
               <tr>
-                <td colSpan={8} className="text-center text-muted">
+                <td colSpan={9} className="text-center text-muted">
                   No hay productos registrados
                 </td>
               </tr>
@@ -451,7 +465,6 @@ const Productos = () => {
         </table>
       </div>
     </div>
-  </div>
   );
 };
 
