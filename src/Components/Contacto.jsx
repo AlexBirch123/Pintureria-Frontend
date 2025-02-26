@@ -1,9 +1,11 @@
 import { useState } from "react";
 import sucursal1 from "../utils/images/sucursal1.png"
 import sucursal2 from "../utils/images/sucursal2.png"
+import { useMediaQuery } from "react-responsive";
 
 const Contacto = () => {
   const [formData, setFormData] = useState({ nombre: "", apellido: "", email: "", mensaje: "" });
+  const isMobile = useMediaQuery({ maxWidth: 768 });
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -31,7 +33,43 @@ const Contacto = () => {
     },
   ];
 
-return (
+return isMobile?(
+  <div className="container mx-auto p-4 max-w-md md:max-w-2xl lg:max-w-4xl">
+  <div className="flex flex-col md:flex-row justify-between mt-8">
+    <div className="w-full md:w-2/3">
+      <h2 className="text-xl font-bold text-white mb-4">Nuestras Sucursales</h2>
+      {sucursales.map((sucursal, index) => (
+        <div key={index} className="mb-4">
+          <h4 className="font-bold text-white">Sucursal {sucursal.nombre}</h4>
+          <div className="bg-gray-800 p-4 rounded-lg shadow-lg text-white flex flex-col md:flex-row items-start">
+            <div className="w-full md:w-1/2">
+              <p><strong>Dirección:</strong> <br /> {sucursal.direccion}</p>
+              <p><strong>Horarios:</strong> <br /> {sucursal.horarios}</p>
+              <p><strong>Teléfono:</strong> <br /> {sucursal.telefono}</p>
+            </div>
+            <div className="w-full md:w-1/2 flex justify-center mt-4 md:mt-0" style={{width:"50%"}}>
+              <img className="w-full max-w-xs md:max-w-sm rounded-lg" src={sucursal.imagen} alt={`Sucursal ${sucursal.nombre}`} style={{width:"100%"}} />
+            </div>
+          </div>
+        </div>
+      ))}
+    </div>
+    <div className="w-full md:w-1/3 mt-8 md:mt-0 text-white">
+      <h2 className="text-2xl font-bold text-center">Contáctanos</h2>
+      <h3 className="text-xl font-bold text-center">Formulario de Contacto</h3>
+      <form onSubmit={handleSubmit} className="bg-gray-700 p-4 rounded-lg mt-4">
+        <div className="flex flex-col gap-4" style={{marginBottom:"5%"}}>
+          <input name="nombre" style={{marginBottom:"1%"}} value={formData.nombre} onChange={handleChange} placeholder="Nombre" className="form-control w-full p-2 rounded" required />
+          <input name="apellido" style={{marginBottom:"1%"}}value={formData.apellido} onChange={handleChange} placeholder="Apellido" className="form-control w-full p-2 rounded" required />
+          <input name="email" type="email" style={{marginBottom:"1%"}}value={formData.email} onChange={handleChange} placeholder="Email" className="form-control w-full p-2 rounded" required />
+          <textarea name="mensaje"style={{marginBottom:"1%"}} value={formData.mensaje} onChange={handleChange} placeholder="Mensaje" className="form-control w-full p-2 rounded h-32" required />
+          <button type="submit" className="btn btn-primary w-full">Enviar</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+  ):(
     <div className="container mx-auto p-6">
       <div className="d-flex justify-content-between mb-1" style={{marginTop:"5%"}}>
         <div className=" align-items-center ">
@@ -53,7 +91,7 @@ return (
             </div>
           ))}
         </div>
-        <div className="d-flex flex-column align-items-end mb-3" style={{marginLeft:"6%", color:"white"}}>
+        <div className="d-flex flex-column align-items-end mb-3" style={{marginLeft:"6%", color:"white", marginRight:"5%"}}>
           <h2 className="text-3xl font-bold text-center">Contactanos</h2>
           <h3 className="text-xl font-bold">Formulario de Contacto</h3>
           <form onSubmit={handleSubmit} style={{width:"600px"}}>

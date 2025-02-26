@@ -4,8 +4,10 @@ import { getLocalStorage, setLocalStorage } from "../utils/localStorage";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { useLocation, useNavigate } from "react-router";
 import { useAuth } from "./AuthContext";
+import { useMediaQuery } from "react-responsive";
 
 const ProductPage = ({ setCartChange, cartChange }) => {
+  const isMobile = useMediaQuery({ maxWidth: 768 });
   const { isAuthenticated } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
@@ -13,12 +15,25 @@ const ProductPage = ({ setCartChange, cartChange }) => {
   let idProd = queryParams.get("idProd");
   const [product, setProduct] = useState(null);
   const [message, setMessage] = useState(null);
+  const imgNotFound =  "https://upload.wikimedia.org/wikipedia/commons/a/a3/Image-not-found.png"
 
   useEffect(() => {
-    const storedProducts = getLocalStorage("products");
-    const productos = storedProducts ? storedProducts.datos : [];
-    setProduct(productos.find((p) => p.id === Number(idProd)));
-  }, [idProd]);
+    const fetchProd = async (url, setState) => {
+      try {
+        const res = await fetch(process.env.REACT_APP_API_URL + url, {
+          credentials: "include",
+        });
+        if (!res.ok) return 
+        const data = await res.json();
+        setState(data);
+      } catch (error) {
+        console.log(error);
+      }
+    };
+    if(idProd){
+      fetchProd(`/Products/${idProd}`,setProduct)
+    }
+  }, []);
 
   const addToCart = () => {
     if (!isAuthenticated) return navigate("/login");
@@ -29,6 +44,7 @@ const ProductPage = ({ setCartChange, cartChange }) => {
       price: product.price,
       quantity: 1,
       total: product.price,
+      imgUrl:product.imgUrl,
     };
     if (local) {
       const cartProds = local.datos;
@@ -51,25 +67,34 @@ const ProductPage = ({ setCartChange, cartChange }) => {
 
         <div className="col-lg-6">
           <Carousel className="shadow-sm rounded">
-            <Carousel.Item>
-              <img
+                <Carousel.Item style={{ height: "50%", objectFit: "cover", marginTop:"5%", marginBottom:"5%" }}>
+              {product?(
+                <img
                 className="d-block w-100 rounded border"
-                src={product?.image || "https://upload.wikimedia.org/wikipedia/commons/a/a3/Image-not-found.png"}
+                src={product.imgUrl? 
+                  process.env.REACT_APP_API_URL+ "/uploads/"+ product.imgUrl : imgNotFound}
+                alt="Producto"
+                style={{ height: "500px", objectFit: "cover" }}
+              />):(
+                <img
+                className="d-block w-100 rounded border"
+                src= {imgNotFound}
                 alt="Producto"
                 style={{ height: "500px", objectFit: "cover" }}
               />
+              )}
             </Carousel.Item>
           </Carousel>
         </div>
 
  
-        <div className="col-lg-5">
+        <div className="col-lg-5" style={{marginTop:"2.5%" }}>
           {product ? (
             <div className="card shadow-lg p-4">
-              <h1 className="display-5 fw-bold">{product.description}</h1>
-              <p className="lead text-muted">{product.longDescription}</p>
+              <h1 className="display-5 fw-bold">{product.title}</h1>
               <h2 className="text-success fw-bold">$ {product.price}</h2>
               <p className="text-muted">Unidades en stock: {product.stock}</p>
+              <p className="lead text-muted">{product.description}</p>
               <button className="btn btn-success btn-lg w-100" onClick={addToCart}>
                 🛒 Agregar al carrito
               </button>

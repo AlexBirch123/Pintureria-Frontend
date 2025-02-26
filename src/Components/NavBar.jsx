@@ -2,7 +2,6 @@ import { Link, useNavigate } from "react-router-dom";
 import "bootstrap/dist/css/bootstrap.min.css";
 import rioColor from "../rio_color.png";
 import cart from "../utils/icons/cart.svg";
-// import location from "../utils/icons/location.svg"
 import location from "../utils/icons/location2.svg"
 import { useAuth } from "./AuthContext";
 import { getLocalStorage, setLocalStorage } from "../utils/localStorage";
@@ -97,8 +96,8 @@ const NavBar = ({ cartChange }) => {
           </form>
           </li>
           <li>
-            <Link to="/sucursales" className="nav-item">
-              <img src={location} className="nav-link" alt="Sucursales" style={{ width: "20px", marginRight: "5px" }} /> Sucursales
+            <Link to="/contacto" className="nav-link" onClick={() => setIsMenuOpen(false)}>
+               Sucursales
             </Link>
           </li>
            <li className="nav-item" onClick={() => setIsMenuOpen(false)}>
@@ -189,7 +188,7 @@ const NavBar = ({ cartChange }) => {
         <Link to="/home">
           <img src={rioColor} alt="Logo" style={{ width: "80px", height: "auto" }} className="rounded-pill" hidden={isMenuOpen} />
         </Link>
-        <img src={cart} alt="Cart" style={{ width: "30px", height: "30px" }} onClick={() => navigate("/cartShop")} hidden={isMenuOpen}/>
+        <img src={cart} alt="Cart" style={{ width: "30px", height: "30px", cursor:"pointer"}} onClick={() => navigate("/cartShop")} hidden={isMenuOpen}/>
       </div>
     </nav>
   ) : (
@@ -257,7 +256,7 @@ const NavBar = ({ cartChange }) => {
         </ul>
         <div className="d-flex align-items-center">
           {isAuthenticated && (
-            <img src={cart} alt="Cart" style={{ width: "30px", height: "30px" }} onClick={() => navigate("/cartShop")} />
+            <img src={cart} alt="Cart" style={{ width: "30px", height: "30px", cursor:"pointer"}} onClick={() => navigate("/cartShop")} />
           )}
           <button className="btn btn-outline-light ms-2" style={{fontSize:"10px"}} onClick={handleSession}>{isAuthenticated ? "Cerrar Sesión" : "Iniciar Sesión"}</button>
         </div>

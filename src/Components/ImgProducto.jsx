@@ -6,45 +6,75 @@ export const ImgProducto = ({ producto }) => {
   const [hoverItem, setHoveredItem] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
   const [message, setMessage] = useState(false);
+  const [image, setImage] = useState(false);
   const input = document.getElementById("fileInput")
+  const imgUrl = process.env.REACT_APP_API_URL + `/uploads/` + producto.imgUrl
 
-  const handleImg = async(prod) => {
+  const handleImageChange = (event) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => setImage(String(reader.result));
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const handleUploadImg = async(prod) => {
+    if (!image) {
+      setMessage("No hay imagen cargada")
+      setTimeout(()=>setMessage(null),3000)
+      return
+    }
     const formData = new FormData();
     formData.append("imagen", input.files[0]); 
 
     try {
-        const response = await fetch(process.env.REACT_APP_API_URL + "/upload", {
+        const res = await fetch(process.env.REACT_APP_API_URL + "/upload", {
             method: "POST",
             credentials:"include",
-            headers: {
-                "Content-Type": "application/json",
-              },
             body: formData, 
         });
-        const result = await response.json();
-        console.log("Respuesta del servidor:", result);
-
-        if (response.ok) {
-            setMessage("Imagen subida con éxito");
-            console.log("Imagen subida con éxito");
-        } else {
-            setMessage("Error al subir imagen: " + result.message);
-            console.log("Error al subir imagen: " + result.message);
+        const result = await res.json();
+        if(!result.file){
+          setMessage("Error a subir la imagen");
+          setTimeout(()=> setMessage(null),200)
+          return
         }
+        const imgUrl = {imgUrl:result.file}
+        const response = await fetch(process.env.REACT_APP_API_URL + `/Products/${producto.id}`, {
+          method: "PATCH",
+          credentials:"include",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(imgUrl), 
+      });
+      if(!response.ok){
+          setMessage("error al actualizar imagen")
+          setTimeout(()=> setMessage(null),200)  
+          return
+        } 
+      setMessage("Imagen cargada con exito")
+      setTimeout(()=> {
+        setMessage(null)
+        setIsOpen(false)
+        setImage(false)
+      },200)
     } catch (error) {
         setMessage("Error al subir imagen:", error);
-        console.log("Error al subir imagen:", error);
+        setTimeout(()=> setMessage(null),200)
     }
   };
 
   return (
     <td
-      onDoubleClick={()=>{
-        setIsOpen(true)
-        setHoveredItem(false)
-    }}
+      onDoubleClick={() => {
+        setIsOpen(true);
+        setHoveredItem(false);
+        setMessage(null)
+      }}
       onMouseEnter={() => {
-        if (producto.imgUrl) setHoveredItem(producto.imgUrl);
+        if (producto.imgUrl) return setHoveredItem(imgUrl);
         setHoveredItem(imgNotFound);
       }}
       onMouseLeave={() => setHoveredItem(null)}
@@ -74,25 +104,47 @@ export const ImgProducto = ({ producto }) => {
             width: "50%",
             height: "50%",
             margin: "auto",
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
           },
         }}
       >
-        <input type="file" id="fileInput" />
-        {producto.imgUrl ? 
-        (
-        <div>
-            <img src={producto.imgUrl} alt="imagen" />
-            <button onClick={()=>handleImg(producto)}>Guardar</button>
+        <div style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
+          <input type="file" id="fileInput" name="imagen" accept="image/*" onChange={handleImageChange} className="border p-2 w-32 h-32 "/>
+          {image || producto.imgUrl ? (
+            <>
+              <img src={imgUrl? imgUrl: image} 
+              alt="imagen" 
+              style={{ width: "50%", marginTop:"2%" }} 
+              />
+            </>):
+            (<div style={{ margin: "20%", justifyContent: "center" }}>No hay imagen cargada</div>)}
+        
+          {message && <p className="text-danger text-center mt-2">{message}</p>}
+          <div style={{ display: "flex",justifyContent:"space-between", marginTop:"1%" }}>
+           <div>
+             <button className="btn btn-success btn-sm mx-1" onClick={() => handleUploadImg(producto)}>Guardar</button>
+           </div>
+           <div >
+             <button
+               className="btn btn-danger btn-sm"
+               style={{ marginTop: "1%", width: "100%" }}
+               onClick={() => {
+                 setIsOpen(false);
+                 setImage(null);
+               }}
+               onBlur={() => {
+                setIsOpen(false);
+                setImage(null);
+              }}
+             >
+               Cerrar
+             </button>
+           </div>
+          </div>
+          
         </div>
-        ) 
-        : (<div>No hay imagenen cargada</div>)}
-        <button
-          onClick={() => {
-            setIsOpen(false);
-          }}
-          >
-          Cerrar
-        </button>
       </Modal>
     </td>
   );

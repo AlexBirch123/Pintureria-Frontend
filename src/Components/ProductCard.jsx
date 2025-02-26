@@ -1,6 +1,5 @@
 import React from "react";
 import { Card} from "react-bootstrap";
-import latex from "../utils/images/latex.jpg";
 import { useNavigate } from "react-router";
 
 const ProductCard = ({ product }) => {
@@ -17,7 +16,10 @@ const ProductCard = ({ product }) => {
     >
       <Card.Img 
         variant="top" 
-        src={product.imgUrl || "https://upload.wikimedia.org/wikipedia/commons/a/a3/Image-not-found.png"} 
+        src={
+          product.imgUrl? process.env.REACT_APP_API_URL+ "/uploads/"+ product.imgUrl :
+          "https://upload.wikimedia.org/wikipedia/commons/a/a3/Image-not-found.png"
+          } 
         style={{ width: "50%" }}
       />
       <Card.Body style={{ width: "100%" }}>

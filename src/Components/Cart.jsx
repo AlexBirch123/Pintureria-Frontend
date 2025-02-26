@@ -14,6 +14,7 @@ const Cart = ({setCartChange, cartChange}) => {
   const [message,setMessage] = useState("")
   const [paymentId,setPaymentId] = useState("")
   const {id} = useAuth();
+  const imgNotFound = "https://upload.wikimedia.org/wikipedia/commons/a/a3/Image-not-found.png"
 
   useEffect(()=>{
       const local = getLocalStorage("cart")
@@ -114,9 +115,8 @@ const Cart = ({setCartChange, cartChange}) => {
               >
                 <div>
                   <img
-                    src={
-                      item.imgUrl ||
-                      "https://upload.wikimedia.org/wikipedia/commons/a/a3/Image-not-found.png"
+                    src={ item.imgUrl?
+                      process.env.REACT_APP_API_URL+ "/uploads/"+ item.imgUrl : imgNotFound
                     }
                     alt={item.title}
                     style={{
@@ -156,11 +156,13 @@ const Cart = ({setCartChange, cartChange}) => {
                   >
                     <div>
                       <img
-                        src={item.imgUrl ||"https://upload.wikimedia.org/wikipedia/commons/a/a3/Image-not-found.png"}
+                        src={ item.imgUrl?
+                          process.env.REACT_APP_API_URL+ "/uploads/"+ item.imgUrl : imgNotFound
+                        }
                         alt={item.title}
                         style={{
-                          width: "100px",
-                          height: "100px",
+                          width: "100%",
+                          height: "150px",
                           cursor:"pointer",
                         }}
                         onClick={()=> navigate(`/productPage?idProd=${item.idProduct}`)}
