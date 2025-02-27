@@ -19,7 +19,7 @@ export const ImgProducto = ({ producto }) => {
     }
   };
 
-  const handleUploadImg = async(prod) => {
+  const handleUploadImg = async() => {
     if (!image) {
       setMessage("No hay imagen cargada")
       setTimeout(()=>setMessage(null),3000)
@@ -101,8 +101,8 @@ export const ImgProducto = ({ producto }) => {
         onRequestClose={() => setIsOpen(false)}
         style={{
           content: {
-            width: "50%",
-            height: "50%",
+            width: "45%",
+            height: "65%",
             margin: "auto",
             display: "flex",
             justifyContent: "center",
@@ -111,10 +111,11 @@ export const ImgProducto = ({ producto }) => {
         }}
       >
         <div style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
+          <h2>Modificar imagen</h2>
           <input type="file" id="fileInput" name="imagen" accept="image/*" onChange={handleImageChange} className="border p-2 w-32 h-32 "/>
           {image || producto.imgUrl ? (
             <>
-              <img src={imgUrl? imgUrl: image} 
+              <img src={image||imgUrl } 
               alt="imagen" 
               style={{ width: "50%", marginTop:"2%" }} 
               />

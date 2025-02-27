@@ -33,7 +33,7 @@ const CategoryCard = ({ category }) => {
         }}
       />
       <div className="card-body">
-        <h5 className="card-title">{category.description}</h5>
+        <h5 className="card-title" style={{ fontSize: "calc(10px + 0.5vw)" }}>{category.description}</h5>
       </div>
     </div>
   );
