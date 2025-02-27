@@ -4,10 +4,8 @@ import { getLocalStorage, setLocalStorage } from "../utils/localStorage";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { useLocation, useNavigate } from "react-router";
 import { useAuth } from "./AuthContext";
-import { useMediaQuery } from "react-responsive";
 
 const ProductPage = ({ setCartChange, cartChange }) => {
-  const isMobile = useMediaQuery({ maxWidth: 768 });
   const { isAuthenticated } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();

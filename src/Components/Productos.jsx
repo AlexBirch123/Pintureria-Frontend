@@ -1,8 +1,9 @@
 import React, { useState, useEffect, useRef } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
-import {setLocalStorage,getLocalStorage} from "../utils/localStorage"
+import {getLocalStorage, setLocalStorage} from "../utils/localStorage"
 import { useNavigate } from "react-router";
 import { ImgProducto } from "./ImgProducto";
+import { CreatCategory } from "./CreatCategory";
 
 const Productos = () => {
   const [formVisible, setFormVisible] = useState(false);
@@ -25,28 +26,22 @@ const Productos = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    
     const fetchData = async (url, localStorageKey, setState) => {
-      const local = getLocalStorage(localStorageKey);
-      try {
-        const res = await fetch(process.env.REACT_APP_API_URL + url, {
-          credentials: "include",
-        });
-        if (!res.ok) return setState(local.datos);
-        const data = await res.json();
-        setState(data);
-        setLocalStorage(data, localStorageKey);
-      } catch (error) {
-        console.log(error);
-        setState(local.datos);
-      }
-    };
-
+          const local = getLocalStorage(localStorageKey);
+          try {
+          const res = await fetch(process.env.REACT_APP_API_URL + url, { credentials: "include" });
+          if (!res.ok) return setState(local.datos);
+          const data = await res.json();
+          setState(data);
+          setLocalStorage(data, localStorageKey);
+          } catch (error) {
+          console.log(error);
+          setState(local.datos);
+          }
+        };
     fetchData("/Products", "products", setProductos);
     fetchData("/category", "category", setcategorias);
-    fetchData("/Suppliers", "suppliers", setProveedores);
-    
-    
+    fetchData("/Suppliers", "suppliers", setProveedores); 
   }, []);
 
   useEffect(()=>{
@@ -297,6 +292,7 @@ const Productos = () => {
           >
             Vista de tienda
           </button>
+          <CreatCategory categorias={categorias} setcategorias={setcategorias}></CreatCategory>
         </div>
       </div>
       <div>

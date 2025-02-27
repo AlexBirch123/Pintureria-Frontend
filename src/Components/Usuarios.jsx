@@ -66,6 +66,7 @@ const Usuarios = () => {
         try {
           const res = await fetch(process.env.REACT_APP_API_URL + "/users", {
             method: "POST",
+            credentials:"include",
             headers: {
               "Content-Type": "application/json",
             },
