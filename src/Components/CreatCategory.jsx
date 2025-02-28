@@ -9,14 +9,24 @@ export const CreatCategory = ({ categorias, setcategorias }) => {
   const [desc, setDesc] = useState(null);
   const input = document.getElementById("fileInput")
   const [selectedCat, setSelectedCat] = useState(null);
+  const [selectedIdCat, setSelectedIdCat] = useState(null);
   const catRef = useRef();
 
-  useEffect(()=>{
-    if(selectedCat){
-    const url = selectedCat.imgUrl ? process.env.REACT_APP_API_URL +  "/uploads/" + selectedCat.imgUrl : null
-    setImage(url)
-  }
-  },[selectedCat])
+  useEffect(() => {
+    const handleSelect = () => {
+      const selectedCategory = categorias.find(cat => cat.id === Number(selectedIdCat));
+      if (selectedCategory) {
+        const url = selectedCategory.imgUrl ? process.env.REACT_APP_API_URL + "/uploads/" + selectedCategory.imgUrl : null;
+        setImage(url);
+        setDesc(selectedCategory.description);
+        setSelectedCat(selectedCategory);
+        console.log("paso")
+      }
+    };
+    if (selectedIdCat) {
+      handleSelect();
+    }
+  }, [selectedIdCat]);
 
   const handleImageChange = (event) => {
     const file = event.target.files?.[0];
@@ -105,12 +115,11 @@ export const CreatCategory = ({ categorias, setcategorias }) => {
         credentials:"include",
         body: formData, 
       });
-      if(!response.ok) return setMessage("error al subir la imagen")
       const data = await response.json()
       const updatedCat = {}
-      if(image !== selectedCat.imgUrl) updatedCat.imgUrl = data.file
+      if(data.file && image !== selectedCat.imgUrl) updatedCat.imgUrl = data.file
       if(desc !== selectedCat.description) updatedCat.description = desc
-      const res = await fetch(process.env.REACT_APP_API_URL + "/category", {
+      const res = await fetch(process.env.REACT_APP_API_URL + `/category/${selectedIdCat}`, {
         method: "PATCH",
         credentials: "include",
         headers: {
@@ -143,8 +152,11 @@ export const CreatCategory = ({ categorias, setcategorias }) => {
     setChange(true)
     setImage(null)
     setSelectedCat(null)
+    setSelectedIdCat(null)
     setMessage(null)
   }
+
+  
 
   return (
     <div style={{ marginTop: "7px" }}>
@@ -229,7 +241,10 @@ export const CreatCategory = ({ categorias, setcategorias }) => {
               <select
                 name="cat"
                 id="cat"
-                onChange={(e) => setSelectedCat(e.target.value)}
+                onChange={(e) => {
+                  setSelectedIdCat(e.target.value)
+                  // setSelectedCat(categorias.find((cat) => cat.id === selectedIdCat));
+                }}
               >
                 <option value="">Categorias</option>
                 {categorias.map((cat) => 
