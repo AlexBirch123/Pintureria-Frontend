@@ -1,16 +1,22 @@
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import Modal from "react-modal";
 
 export const CreatCategory = ({ categorias, setcategorias }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [change, setChange] = useState(true);
-  const [message, setMessage] = useState(false);
-  const [categories, setCategories] = useState(categorias);
+  const [message, setMessage] = useState(null);
   const [image, setImage] = useState(null);
+  const [desc, setDesc] = useState(null);
   const input = document.getElementById("fileInput")
-
   const [selectedCat, setSelectedCat] = useState(null);
   const catRef = useRef();
+
+  useEffect(()=>{
+    if(selectedCat){
+    const url = selectedCat.imgUrl ? process.env.REACT_APP_API_URL +  "/uploads/" + selectedCat.imgUrl : null
+    setImage(url)
+  }
+  },[selectedCat])
 
   const handleImageChange = (event) => {
     const file = event.target.files?.[0];
@@ -24,8 +30,8 @@ export const CreatCategory = ({ categorias, setcategorias }) => {
   const addCategory = async () => {
 
     //Busca si la categoria ya existe
-    const desc = catRef.current.value;
-    const existingCat = categorias.find((cat) => cat.description === desc);
+    const description = catRef.current.value;
+    const existingCat = categorias.find((cat) => cat.description === description);
     if (existingCat) {
       catRef.current.value = "";
       setMessage("La categoria ya existe");
@@ -34,7 +40,7 @@ export const CreatCategory = ({ categorias, setcategorias }) => {
     }
     //agrega la imagen a un formData
     const formData = new FormData();
-    formData.append("imagen", input.files[0]); 
+    formData.append("imagen", input.files[0]);
 
     //sube la imagen a la carpeta uploads
     try {
@@ -64,7 +70,6 @@ export const CreatCategory = ({ categorias, setcategorias }) => {
         setMessage("Categoria creada con exito");
         setTimeout(() => {
           setMessage(null);
-
           setIsOpen(false);
         }, 3000);
       } else {
@@ -78,8 +83,67 @@ export const CreatCategory = ({ categorias, setcategorias }) => {
     }
   };
 
-  const updateCategory ={
-    
+  const updateCategory = async ()=>{
+    if(!(image !== selectedCat.imgUrl || desc !== selectedCat.description)) return
+
+    //Busca si la categoria ya existe
+    const existingCat = categorias.find((cat) => cat.description === desc);
+    if (existingCat && existingCat.id !== selectedCat.id) {
+      setDesc(null);
+      setMessage("La categoria ya existe");
+      setTimeout(() => setMessage(null), 3000);
+      return;
+    }
+
+    //agrega la imagen a un formData
+    const formData = new FormData();
+    formData.append("imagen", input.files[0]);
+
+    try {
+      const response = await fetch(process.env.REACT_APP_API_URL + "/upload", {
+        method: "POST",
+        credentials:"include",
+        body: formData, 
+      });
+      if(!response.ok) return setMessage("error al subir la imagen")
+      const data = await response.json()
+      const updatedCat = {}
+      if(image !== selectedCat.imgUrl) updatedCat.imgUrl = data.file
+      if(desc !== selectedCat.description) updatedCat.description = desc
+      const res = await fetch(process.env.REACT_APP_API_URL + "/category", {
+        method: "PATCH",
+        credentials: "include",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(updatedCat),
+      });
+      if (res.ok) {
+        const data = await res.json();
+        setcategorias([...categorias, data]);
+        setMessage("Categoria creada con exito");
+        setTimeout(() => {
+          setMessage(null);
+          setIsOpen(false);
+        }, 3000);
+      } else {
+        setMessage("error al crear la categoria");
+        setTimeout(() => setMessage(null), 3000);
+      }
+    } catch (error) {
+      console.log(error);
+      setMessage("error al crear la categoria");
+      setTimeout(() => setMessage(null), 3000);
+    }
+  }
+
+  
+  const resetModal = ()=>{
+    setIsOpen(false)
+    setChange(true)
+    setImage(null)
+    setSelectedCat(null)
+    setMessage(null)
   }
 
   return (
@@ -94,11 +158,12 @@ export const CreatCategory = ({ categorias, setcategorias }) => {
       </button>
       <Modal
         isOpen={isOpen}
+        onBlur={resetModal}
         onRequestClose={() => setIsOpen(false)}
         style={{
           content: {
-            width: "30%",
-            height: "30%",
+            width: "40%",
+            height: "70%",
             margin: "auto",
             display: "flex",
             flexDirection: "column",
@@ -138,20 +203,12 @@ export const CreatCategory = ({ categorias, setcategorias }) => {
               />
               {image ? (
                 <>
-                  <img
-                    src={image}
-                    alt="imagen"
-                    style={{ width: "50%", marginTop: "2%" }}
-                  />
+                  <img src={image}alt="imagen"style={{ width: "50%", marginTop: "2%" }}/>
                 </>
               ) : (
-                <div style={{ margin: "20%", justifyContent: "center" }}>
-                  No hay imagen cargada
-                </div>
+                <div style={{ margin: "20%", justifyContent: "center" }}>No hay imagen cargada</div>
               )}
-              <button onClick={addCategory} className="btn btn-success">
-                Guardar
-              </button>
+              <button onClick={addCategory} className="btn btn-success">Guardar</button>
               <button
                 onClick={() => {
                   setIsOpen(false);
@@ -175,10 +232,31 @@ export const CreatCategory = ({ categorias, setcategorias }) => {
                 onChange={(e) => setSelectedCat(e.target.value)}
               >
                 <option value="">Categorias</option>
-                {categories.map((cat) => {
-                  return <option value={cat.id}> {cat.description} </option>;
-                })}
+                {categorias.map((cat) => 
+                   <option key={cat.id} value={cat.id}> {cat.description} </option>
+                )}
               </select>
+              {image ? (
+                <>
+                  <img
+                    src={image}
+                    alt="imagen"
+                    style={{ width: "50%", marginTop: "2%" }}
+                  />
+                </>
+              ) : (
+                <div style={{ margin: "20%", justifyContent: "center" }}>
+                  No hay imagen cargada
+                </div>
+              )}
+              <input
+                type="text"
+                placeholder="Nombre de la categoria"
+                value={desc}
+                onChange={(e)=>setDesc(e.target.value)}
+                className="form-control"
+                style={{ width: "100%" }}
+              />
               <input
                 type="file"
                 id="fileInput"
@@ -193,10 +271,7 @@ export const CreatCategory = ({ categorias, setcategorias }) => {
                 Guardar
               </button>
               <button
-                onClick={() => {
-                  setIsOpen(false);
-                  setMessage(null);
-                }}
+                onClick={resetModal}
                 className="btn btn-secondary"
                 style={{ marginLeft: "10px" }}
               >
