@@ -1,7 +1,6 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
 import "bootstrap/dist/css/bootstrap.min.css";
-import latex from "../utils/images/latex.jpg";
 
 const CategoryCard = ({ category }) => {
   const navigate = useNavigate();
@@ -23,7 +22,7 @@ const CategoryCard = ({ category }) => {
       onClick={handleClick}
     >
       <img
-        src={category.urlImg || "https://upload.wikimedia.org/wikipedia/commons/a/a3/Image-not-found.png"}
+        src={process.env.REACT_APP_API_URL + "/uploads/" +  category.urlImg || "https://upload.wikimedia.org/wikipedia/commons/a/a3/Image-not-found.png"}
         className="card-img-top"
         alt={category.description}
         style={{
