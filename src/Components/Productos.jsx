@@ -14,6 +14,7 @@ const Productos = () => {
   const [editingField, setEditingField] = useState({ id: null, field: null });
   const [message, setMessage] = useState(null);
   const [search, setSearch] = useState("");
+  const [typeMessage, setTypeMessage] = useState(true);
   const [sortedOrder, setSortedOrder] = useState("");
   const descripcionRef = useRef(null);
   const titleRef = useRef(null);
@@ -93,13 +94,20 @@ const Productos = () => {
         if (res.ok) {
           const completeProd = await res.json();
           setFilteredProductos([...productos, completeProd]);
+          setMessage("Productos creado con exito")
+          setTypeMessage(true)
           resetForm();
         }
       } catch (error) {
         console.log(error);
+        setMessage("Error al crear producto")
+        setTypeMessage(false)
       }
-    } else console.log("error al crear o actualizar producto");
-
+    } else  {
+      setMessage("Error al crear producto")
+      setTypeMessage(false)
+    } 
+    setTimeout(()=> setMessage(null),3000)
     setFormVisible(false);
   };
 
@@ -296,7 +304,7 @@ const Productos = () => {
         </div>
       </div>
       <div>
-        {message && <div className="alert alert-info mt-3">{message}</div>}
+        {message && <div className= {typeMessage ? "alert alert-success mt-3" :"alert alert-danger mt-3"} >{message}</div>}
         {formVisible && (
           <form
             onSubmit={createProducto}
