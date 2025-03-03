@@ -130,7 +130,7 @@ export const CreatCategory = ({ categorias, setcategorias }) => {
       if (res.ok) {
         const data = await res.json();
         setcategorias([...categorias, data]);
-        setMessage("Categoria creada con exito");
+        setMessage("Categoria actualizada con exito");
         setTimeout(() => {
           setMessage(null);
           setIsOpen(false);

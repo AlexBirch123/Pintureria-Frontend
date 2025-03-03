@@ -22,7 +22,7 @@ const CategoryCard = ({ category }) => {
       onClick={handleClick}
     >
       <img
-        src={process.env.REACT_APP_API_URL + "/uploads/" +  category.urlImg || "https://upload.wikimedia.org/wikipedia/commons/a/a3/Image-not-found.png"}
+        src={ category.imgUrl ? process.env.REACT_APP_API_URL + "/uploads/" +  category.imgUrl : "https://upload.wikimedia.org/wikipedia/commons/a/a3/Image-not-found.png"}
         className="card-img-top"
         alt={category.description}
         style={{
