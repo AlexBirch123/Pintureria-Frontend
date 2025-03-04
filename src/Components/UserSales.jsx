@@ -34,6 +34,12 @@ const UserSales = () => {
         fetchAllItems();
     }, [id]);
 
+    const handleDate = (date) => { 
+      const fecha = new Date(date);
+      const opciones = { day: '2-digit', month: '2-digit', year: 'numeric' }
+      return (fecha.toLocaleString('es-ES', opciones));
+    }
+
     return (
         <div className="container mt-5" >
       <h2 className="text-center mb-4" style={{ marginTop: "7%" }}>🛒 Tus Compras</h2>
@@ -58,11 +64,9 @@ const UserSales = () => {
                     <div className="card-body">
                       <h5 className="card-title">{item.title}</h5>
                       <p className="card-text">Cantidad: <strong>{item.quantity}</strong></p>
-                      <p className="card-text">Precio unitario: <span className="text-success">${item.price}</span></p>
-                      <p className="card-text">Total: <span className="fw-bold text-primary">${item.total}</span></p>
-                      <p className="card-text text-muted">
-                        Fecha: {new Date(item.createdAt).toLocaleDateString()}
-                      </p>
+                      <p className="card-text">Precio unitario:${item.price}</p>
+                      <p className="card-text">Total:${item.total}</p>
+                      <p className="card-text text-muted">Fecha: {handleDate(item.createdAt)}</p>
                     </div>
                   </div>
                 </div>
