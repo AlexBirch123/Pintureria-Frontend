@@ -37,11 +37,11 @@ const ProductPage = ({ setCartChange, cartChange }) => {
     if (!isAuthenticated) return navigate("/login");
     const local = getLocalStorage("cart");
     const newCartProd = {
-      idProduct: product.id,
+      idProduct: Number(product.id),
       description: product.description,
-      price: product.price,
+      price: Number(product.price),
       quantity: 1,
-      total: product.price,
+      total: Number(product.price),
       imgUrl:product.imgUrl,
     };
     if (local) {

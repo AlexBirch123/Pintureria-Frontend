@@ -169,7 +169,7 @@ const CrearVentas = () => {
               <th>Titulo</th>
               <th style={{ width: "10%" }}>Cantidad</th>
               <th>Precio</th>
-              <th>Stock</th>
+              <th>Total</th>
             </tr>
           </thead>
           <tbody>

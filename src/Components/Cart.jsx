@@ -33,7 +33,7 @@ const Cart = ({setCartChange, cartChange}) => {
   
   const handleQuantityChange = (id, quantity) => {
     const updateQuantity = cartProds.map((item) =>
-      item.idProduct === id ? { ...item, quantity: quantity , total:item.price * quantity} : item
+      item.idProduct === id ? { ...item, quantity: Number(quantity) , total:item.price * quantity} : item
     );
     setCartProds(updateQuantity);
     setLocalStorage(updateQuantity, "cart");
