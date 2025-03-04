@@ -89,7 +89,7 @@ const Cart = ({setCartChange, cartChange}) => {
         },
         body: JSON.stringify(newSale),
       });
-      if(!res.ok) return console.log("error al crear la venta")
+      if(!res.ok) return console.log("error al crear la venta",res)
       setSaleCreated(true)
       setCartChange(!cartChange)
       setLocalStorage([],"cart")
