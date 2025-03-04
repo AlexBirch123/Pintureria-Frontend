@@ -38,7 +38,7 @@ const ProductPage = ({ setCartChange, cartChange }) => {
     const local = getLocalStorage("cart");
     const newCartProd = {
       idProduct: Number(product.id),
-      description: product.description,
+      title: product.title,
       price: Number(product.price),
       quantity: 1,
       total: Number(product.price),

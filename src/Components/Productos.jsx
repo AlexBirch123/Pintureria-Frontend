@@ -411,7 +411,7 @@ const Productos = () => {
                 <tr key={producto.id}>
                   <td>{producto.id}</td>
                   <td>{producto.sku}</td>
-                  <ImgProducto key={producto.id} producto={producto} />             
+                  <ImgProducto key={producto.id} producto={producto} setProductos={setProductos} productos={productos} />             
                   <td className="text-truncate">{input(producto, "title", producto.title)}</td>
                   <td>{input(producto, "price", producto.price)}</td>
                   <td>{input(producto, "stock", producto.stock)}</td>

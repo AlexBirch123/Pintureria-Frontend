@@ -1,11 +1,13 @@
 import React, { useEffect, useRef, useState } from "react";
 import Modal from "react-modal";
+import { Loading } from "./Loading";
 
 export const CreatCategory = ({ categorias, setcategorias }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [change, setChange] = useState(true);
   const [message, setMessage] = useState(null);
   const [image, setImage] = useState(null);
+  const [loading, setLoading] = useState(false);
   const [desc, setDesc] = useState(null);
   const input = document.getElementById("fileInput")
   const [selectedCat, setSelectedCat] = useState(null);
@@ -94,6 +96,7 @@ export const CreatCategory = ({ categorias, setcategorias }) => {
   };
 
   const updateCategory = async ()=>{
+    setLoading(true)
     if(!(image !== selectedCat.imgUrl || desc !== selectedCat.description)) return
 
     //Busca si la categoria ya existe
@@ -102,6 +105,7 @@ export const CreatCategory = ({ categorias, setcategorias }) => {
       setDesc(null);
       setMessage("La categoria ya existe");
       setTimeout(() => setMessage(null), 3000);
+      setLoading(false)
       return;
     }
 
@@ -130,17 +134,20 @@ export const CreatCategory = ({ categorias, setcategorias }) => {
       if (res.ok) {
         const data = await res.json();
         setcategorias([...categorias, data]);
+        setLoading(false)
         setMessage("Categoria actualizada con exito");
         setTimeout(() => {
           setMessage(null);
           setIsOpen(false);
         }, 3000);
       } else {
+        setLoading(false)
         setMessage("error al crear la categoria");
         setTimeout(() => setMessage(null), 3000);
       }
     } catch (error) {
       console.log(error);
+      setLoading(false)
       setMessage("error al crear la categoria");
       setTimeout(() => setMessage(null), 3000);
     }
@@ -296,6 +303,7 @@ export const CreatCategory = ({ categorias, setcategorias }) => {
             </div>
           </div>
         )}
+        {loading && <Loading/>}
       </Modal>
     </div>
   );

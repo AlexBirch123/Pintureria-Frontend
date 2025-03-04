@@ -2,11 +2,7 @@ export const Loading = () => {
   return (
     <div>
       <div className="d-flex justify-content-center mt-3">
-        <div
-          className="spinner-border"
-          role="status"
-          style={{ marginTop: "10%" }}
-        ></div>
+        <div  className="spinner-border"role="status"></div>
       </div>
       <div className="d-flex justify-content-center mt-3">
         <div className="ms-2" >

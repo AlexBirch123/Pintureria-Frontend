@@ -1,12 +1,15 @@
 import React, { useState } from "react";
 import Modal from "react-modal";
+import { Loading } from "./Loading";
+import { setLocalStorage } from "../utils/localStorage";
 
-export const ImgProducto = ({ producto }) => {
+export const ImgProducto = ({ producto, productos, setProductos }) => {
   const imgNotFound ="https://upload.wikimedia.org/wikipedia/commons/a/a3/Image-not-found.png";
   const [hoverItem, setHoveredItem] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
   const [message, setMessage] = useState(false);
   const [image, setImage] = useState(false);
+  const [loading, setLoading] = useState(false);
   const input = document.getElementById("fileInput")
   const imgUrl = process.env.REACT_APP_API_URL + `/uploads/` + producto.imgUrl
 
@@ -20,7 +23,9 @@ export const ImgProducto = ({ producto }) => {
   };
 
   const handleUploadImg = async() => {
+    setLoading(true)
     if (!image) {
+      setLoading(false)
       setMessage("No hay imagen cargada")
       setTimeout(()=>setMessage(null),3000)
       return
@@ -38,6 +43,7 @@ export const ImgProducto = ({ producto }) => {
         if(!result.file){
           setMessage("Error a subir la imagen");
           setTimeout(()=> setMessage(null),200)
+          setLoading(false)
           return
         }
         const imgUrl = {imgUrl:result.file}
@@ -52,8 +58,14 @@ export const ImgProducto = ({ producto }) => {
       if(!response.ok){
           setMessage("error al actualizar imagen")
           setTimeout(()=> setMessage(null),200)  
+          setLoading(false)
           return
         } 
+      setLoading(false)
+      producto.imgUrl = result.file
+      const updatedProds = productos.map((p) => p.id === producto.id ? producto : p);
+      setProductos(updatedProds);
+      setLocalStorage(updatedProds,"products")
       setMessage("Imagen cargada con exito")
       setTimeout(()=> {
         setMessage(null)
@@ -61,8 +73,9 @@ export const ImgProducto = ({ producto }) => {
         setImage(false)
       },200)
     } catch (error) {
-        setMessage("Error al subir imagen:", error);
-        setTimeout(()=> setMessage(null),200)
+      setLoading(false)
+      setMessage("Error al subir imagen:", error);
+      setTimeout(()=> setMessage(null),200)
     }
   };
 
@@ -144,7 +157,7 @@ export const ImgProducto = ({ producto }) => {
              </button>
            </div>
           </div>
-          
+          {loading && <Loading/>}
         </div>
       </Modal>
     </td>
