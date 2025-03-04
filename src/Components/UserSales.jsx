@@ -9,7 +9,7 @@ const UserSales = () => {
     useEffect(() => {
         const fetchSales = async () => {
               try {
-                const res = await fetch(process.env.REACT_APP_API_URL + "/Sales", { credentials: "include" })
+                const res = await fetch(process.env.REACT_APP_API_URL + `/Sales/${id}`, { credentials: "include" })
                 const data = await res.json(); 
                 if (!data) return setSales([]);
                 const userSales = data.filter((sale) => sale.idUser === id);
@@ -61,7 +61,8 @@ const UserSales = () => {
                 <div className="row g-0">
                   <div className="col-md-4 d-flex align-items-center">
                     <img
-                      src={item.imgUrl || "https://upload.wikimedia.org/wikipedia/commons/a/a3/Image-not-found.png"}
+                      src={item.imgUrl?
+                        process.env.REACT_APP_API_URL + "/uploads/" + item.imgUrl : "https://upload.wikimedia.org/wikipedia/commons/a/a3/Image-not-found.png"}
                       alt={item.title}
                       className="img-fluid rounded shadow-sm"
                       style={{ maxHeight: "150px", objectFit: "cover", width: "100%" }}

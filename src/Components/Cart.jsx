@@ -128,8 +128,8 @@ const Cart = ({setCartChange, cartChange}) => {
                   />
                   <h5>{item.title}</h5>
                   <p>Precio: ${item.price}</p>
-                  <p>Precio: ${item.description}</p>
                   <p>Catidad: {item.quantity}</p>
+                  <p>Total: ${item.price * item.quantity}</p>
                 </div>
               </li>
             ))}
