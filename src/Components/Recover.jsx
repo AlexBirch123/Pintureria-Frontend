@@ -21,7 +21,7 @@ const Recover = () => {
     const fetchAndDeleteToken = async () => {
       try {
         //buscar si existe el token
-        const res = await fetch(`http://localhost:8080/recover/${queryToken}`, {
+        const res = await fetch(process.env.REACT_APP_API_URL + `/recover/${queryToken}`, {
           credentials: "include",
         });
         const data = await res.json();
