@@ -12,7 +12,7 @@ const Cart = ({setCartChange, cartChange}) => {
   const [cartProds, setCartProds] = useState([])
   const [saleCreated, setSaleCreated] = useState(false);
   const [message,setMessage] = useState("")
-  const [paymentId,setPaymentId] = useState("")
+  const [paymentId,setPaymentId] = useState()
   const {id} = useAuth();
   const imgNotFound = "https://upload.wikimedia.org/wikipedia/commons/a/a3/Image-not-found.png"
 
@@ -21,12 +21,13 @@ const Cart = ({setCartChange, cartChange}) => {
       if (local) setCartProds( local.datos)
     },[])
   useEffect(() => {
-    if (queryId) {
+    if (queryId ) {
       setPaymentId(queryId);
     }
   }, [queryId]);
   useEffect(() => {
     if (paymentId && !saleCreated && cartProds.length > 0) {
+      console.log("paso")
       creatSale();
     }
   }, [paymentId, cartProds]);
@@ -60,7 +61,7 @@ const Cart = ({setCartChange, cartChange}) => {
         throw new Error("Error al conectar con Mercado Pago");
       }
       const data = await res.json();
-      window.open(data.init_point);
+      window.location.href = data.init_point;
     } catch (error) {
       console.error("Error en createOrder:", error);
     }
