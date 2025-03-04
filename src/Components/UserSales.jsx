@@ -10,39 +10,25 @@ const UserSales = () => {
         const fetchSales = async () => {
               try {
                 const res = await fetch(process.env.REACT_APP_API_URL + `/Sales/${id}`, { credentials: "include" })
+                if (!res.ok) return console.log("error al obtener las ventas")
                 const data = await res.json(); 
-                if (!data) return setSales([]);
-                const userSales = data.filter((sale) => sale.idUser === id);
-                setSales(userSales);
+                if(data.length > 0){
+                  for (const sale of data) {
+                    const res = await fetch(`${process.env.REACT_APP_API_URL}/Rows/${sale.id}`, { credentials: "include" })
+                    if (!res.ok) return console.log("error al obtener items");
+                    const data = await res.json(); 
+                    setItems([...items, data]);
+                   }
+                }
               } catch (error) {
                 console.log(error);
               }
             };
         
-        const fetchItems = async (idSale) => {
-            try {
-                const res = await fetch(`${process.env.REACT_APP_API_URL}/Rows/${idSale}`, { credentials: "include" })
-                const data = await res.json(); 
-                if (!data) return setItems([]);
-                setItems([...items, data]);
-            } catch (error) {
-                console.log(error);
-            }    
-        }
-            
         const fetchAllItems = async () => {
-            try {
                 if(id) {
                     await fetchSales();
-                    if (sales.length > 0){
-                        for (const sale of sales) {
-                         await fetchItems(sale.id);
-                        }
-                    }
                 }     
-            } catch (error) {
-                console.log(error);    
-            }
          }
 
         fetchAllItems();
