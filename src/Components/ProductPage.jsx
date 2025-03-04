@@ -43,6 +43,7 @@ const ProductPage = ({ setCartChange, cartChange }) => {
       quantity: 1,
       total: Number(product.price),
       imgUrl:product.imgUrl,
+      stock: Number(product.stock),
     };
     if (local) {
       const cartProds = local.datos;

@@ -170,8 +170,9 @@ const Cart = ({setCartChange, cartChange}) => {
                       />
                     </div>
                     <div>
-                      <h5 className="mb-1" onClick={()=> navigate(`/productPage?idProd=${item.idProduct}`)} style={{cursor:"pointer"}}>{item.description}</h5>
+                      <h5 className="mb-1" onClick={()=> navigate(`/productPage?idProd=${item.idProduct}`)} style={{cursor:"pointer"}}>{item.title}</h5>
                       <p className="text-muted">Precio: ${item.price}</p>
+                      <label>Cantidad</label>
                       <input
                         type="number"
                         className="form-control"
