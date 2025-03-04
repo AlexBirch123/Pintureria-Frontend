@@ -7,6 +7,7 @@ const Login = () => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
+  const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
   const { setIsAuthenticated, setRole } = useAuth();
   const navigate = useNavigate();
@@ -27,7 +28,9 @@ const Login = () => {
           body: JSON.stringify(data),
         });
         if (!res.ok) {
-          return setMessage("Credenciales incorrectas");
+          setMessage("Credenciales incorrectas");
+          setLoading(false)
+          return
         }
         const role = await res.json();
 
@@ -39,9 +42,11 @@ const Login = () => {
         setMessage("Nombre de usuario o contraseña incorrectos");
       }
     }
+    setLoading(false)
   };
 
   const handleLogin = (e) => {
+    setLoading(true)
     e.preventDefault();
 
     if (username === "" || password === "") {
@@ -106,6 +111,12 @@ const Login = () => {
           </div>
           {message && <p className="text-danger text-center mt-2">{message}</p>}
         </form>
+        {loading &&(
+        <div className="d-flex justify-content-center mt-3">
+          <div className="spinner-border" role="status"></div>
+          <div className="ms-2">Cargando...</div>
+        </div>
+        )}
       </div>
     </div>
   );

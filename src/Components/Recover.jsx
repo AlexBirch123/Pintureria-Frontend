@@ -146,9 +146,17 @@ const Recover = () => {
             value={pass}
             onChange={(e) => {
               setPass(e.target.value)
-              validatePassword(e.target.value)
+              validatePassword(e.target.value)? (
+                <div className="alert alert-success mt-3" role="alert">
+              Contraseña valida 
+             </div>
+              ):(
+              
+                <div className="alert alert-danger mt-3" role="alert">
+              -Minimo 6 digitos <br /> -Minimo una mayuscula <br /> -Minimo una minuscula <br /> -Minimo un número 
+              </div>
+              )
             }}
-            onFocus={()=>setSuccessMessage("-6 digitos como minimo /br -Minimo 1 mayuscula /br -Minimo 1 minuscula /br -Minimo un número ")}
             />
           <button
                 type="button"

@@ -60,7 +60,7 @@ const Cart = ({setCartChange, cartChange}) => {
         throw new Error("Error al conectar con Mercado Pago");
       }
       const data = await res.json();
-      window.location.href = data.init_point;
+      window.open(data.init_point);
     } catch (error) {
       console.error("Error en createOrder:", error);
     }

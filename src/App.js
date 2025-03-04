@@ -24,11 +24,14 @@ import NotFound from './Components/NotFound.jsx';
 import NotAuth from './Components/NotAuth.jsx';
 import XLSXReader from './Components/XLSX.jsx';
 import Contacto from './Components/Contacto.jsx';
+import { Loading } from './Components/Loading.jsx';
 
 function App() {
 
   const { isAuthenticated, role } = useAuth();
   const [cartChange,setCartChange] = useState(true)
+  const [loading,setLoading] = useState(true)
+
 
 
   return (
@@ -45,14 +48,14 @@ function App() {
         <Route path="/ventas"element={isAuthenticated && (role === 1 || role === 2) ? (<VerVentas />) : (<NotAuth/>)}/>
         <Route path="/crear_ventas" element={isAuthenticated && (role === 1 || role === 2) ? (<CrearVentas />) : (<NotAuth/>)} />
         <Route path="/usuarios" element={isAuthenticated && role === 1  ? (<Usuarios />) : (<NotAuth/>)} />
-        <Route path="/userSales" element={isAuthenticated  ? (<UserSales />) : (<NotAuth/>)} />
+        <Route path="/userSales" element={isAuthenticated ===  null ? <Loading/> : isAuthenticated ? (<UserSales />) : (<NotAuth/>)} />
         <Route path="/productos" element={isAuthenticated && (role === 1 || role === 2) ? (<Productos />) : (<NotAuth/>)} />
         <Route path="/import" element={isAuthenticated && (role === 1 || role === 2) ? (<XLSXReader/>) : (<NotAuth/>)}/>
         <Route path="/contacto" element={<Contacto/>}/>
 
         {/* Rutas para el carrito */}
         <Route path="/payment" element={isAuthenticated ? <Cart setCartChange={setCartChange} cartChange={cartChange}/>:<Navigate to="/login" />} />
-        <Route path="/cartShop" element={isAuthenticated ? <Cart setCartChange={setCartChange} cartChange={cartChange}/>:<Navigate to="/login" />} />
+        <Route path="/cartShop" element={isAuthenticated ===  null ? <Loading/> : isAuthenticated ? <Cart setCartChange={setCartChange} cartChange={cartChange}/>:<Navigate to="/login" />} />
 
         {/* Rutas para el usuarios */}
         <Route path="/productPage" element={<ProductPage  setCartChange={setCartChange} cartChange={cartChange}/>} />

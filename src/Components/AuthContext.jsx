@@ -8,7 +8,7 @@ export const useAuth = () => useContext(AuthContext);
 
 // Proveedor del contexto que maneja la autenticación
 export const AuthProvider = ({ children }) => {
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [isAuthenticated, setIsAuthenticated] = useState(null);
   const [role, setRole] = useState(null);
   const [id, setId] = useState(null);
   const [userName, setUserName] = useState(null);
