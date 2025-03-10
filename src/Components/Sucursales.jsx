@@ -20,7 +20,7 @@ const Sucursales = () => {
       const local = getLocalStorage("branches");
 
       try {
-        await fetch(process.env.REACT_APP_API_URL + "/Branches",{credentials: "include"})
+        await fetch(process.env.REACT_APP_API_URL + "/branches",{credentials: "include"})
           .then((res) => res.json())
           .then((data) => {
             if (!data) return setSucursales(local.datos);
@@ -54,7 +54,7 @@ const Sucursales = () => {
         };
 
         try {
-          const res = await fetch(process.env.REACT_APP_API_URL + "/Branches", {
+          const res = await fetch(process.env.REACT_APP_API_URL + "/branches", {
             method: "POST",
             credentials: "include",
             headers: {
@@ -100,7 +100,7 @@ const Sucursales = () => {
     );
     if (confirmDelete) {
       try {
-        await fetch(process.env.REACT_APP_API_URL + `/Branches/${id}`, {
+        await fetch(process.env.REACT_APP_API_URL + `/branches/${id}`, {
           credentials: "include",
           method: "DELETE",
         });
@@ -140,7 +140,7 @@ const Sucursales = () => {
       }
     }
     try {
-      await fetch(process.env.REACT_APP_API_URL + `/Branches/${id}`, {
+      await fetch(process.env.REACT_APP_API_URL + `/branches/${id}`, {
         method: "PATCH",
         credentials: "include",
         headers: {

@@ -33,7 +33,7 @@ const ViewProducts = () => {
           }
         };
 
-    fetchData("/Products", "products", setProductos);
+    fetchData("/products", "products", setProductos);
     fetchData("/category", "category", setcategorias);
   }, []);
 

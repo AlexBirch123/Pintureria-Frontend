@@ -20,7 +20,7 @@ const VerVentas = () => {
     const fetchSale = async () => {
       const local = getLocalStorage("sales");
       try {
-        await fetch(process.env.REACT_APP_API_URL + "/Sales", { credentials: "include" })
+        await fetch(process.env.REACT_APP_API_URL + "/sales", { credentials: "include" })
           .then((res) => res.json())
           .then((data) => {
             if (!data) return setVentas(local.datos);
@@ -35,7 +35,7 @@ const VerVentas = () => {
     const fetchEmp = async () => {
       const local = getLocalStorage("employees");
       try {
-        await fetch(process.env.REACT_APP_API_URL + "/Employees", { credentials: "include" })
+        await fetch(process.env.REACT_APP_API_URL + "/employees", { credentials: "include" })
           .then((res) => res.json())
           .then((data) => {
             if (!data) return setEmpleados(local.datos);
@@ -50,7 +50,7 @@ const VerVentas = () => {
     const fetchClient = async () => {
       const local = getLocalStorage("clients");
       try {
-        await fetch(process.env.REACT_APP_API_URL + "/Clients", { credentials: "include" })
+        await fetch(process.env.REACT_APP_API_URL + "/clients", { credentials: "include" })
           .then((res) => res.json())
           .then((data) => {
             if (!data) return setClientes(local.datos);
@@ -69,7 +69,7 @@ const VerVentas = () => {
   
   const cargaFilasVenta = async (id) => {
     try {
-      const res = await fetch(process.env.REACT_APP_API_URL + `/Rows/${id}`, { credentials: "include" });
+      const res = await fetch(process.env.REACT_APP_API_URL + `/rows/${id}`, { credentials: "include" });
       const data = await res.json();
       if(data.length === 0) return console.log("No hay productos en esta venta");
       setRowsSale(data);
@@ -86,7 +86,7 @@ const VerVentas = () => {
       "¿Estás seguro de eliminar esta venta?"
     );
     if (confirmDelete) {
-      await fetch(process.env.REACT_APP_API_URL + `/Sales/${id}`, {
+      await fetch(process.env.REACT_APP_API_URL + `/sales/${id}`, {
         method: "DELETE",
         credentials: "include",
       });

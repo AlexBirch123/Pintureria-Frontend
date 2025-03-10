@@ -40,9 +40,9 @@ const Productos = () => {
           setState(local.datos);
           }
         };
-    fetchData("/Products", "products", setProductos);
+    fetchData("/products", "products", setProductos);
     fetchData("/category", "category", setcategorias);
-    fetchData("/Suppliers", "suppliers", setProveedores); 
+    fetchData("/suppliers", "suppliers", setProveedores); 
   }, []);
 
   useEffect(()=>{
@@ -83,7 +83,7 @@ const Productos = () => {
         idCat: idCat,
       };
       try {
-        const res = await fetch(process.env.REACT_APP_API_URL + "/Products", {
+        const res = await fetch(process.env.REACT_APP_API_URL + "/products", {
           method: "POST",
           credentials: "include",
           headers: {
@@ -116,7 +116,7 @@ const Productos = () => {
       "¿Estás seguro de eliminar este producto?"
     );
     if (confirmDelete) {
-      await fetch(process.env.REACT_APP_API_URL + `/Products/${id}`, {
+      await fetch(process.env.REACT_APP_API_URL + `/products/${id}`, {
         credentials: "include",
         method: "DELETE",
       });
@@ -140,7 +140,7 @@ const Productos = () => {
     const handleBlur = async (id, field, value) => {
       const data = { [field]: value };
       try {
-        await fetch(process.env.REACT_APP_API_URL + `/Products/${id}`, {
+        await fetch(process.env.REACT_APP_API_URL + `/products/${id}`, {
           method: "PATCH",
           credentials: "include",
           headers: {

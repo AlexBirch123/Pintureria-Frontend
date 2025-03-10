@@ -47,7 +47,7 @@ export const ImgProducto = ({ producto, productos, setProductos }) => {
           return
         }
         const imgUrl = {imgUrl:result.file}
-        const response = await fetch(process.env.REACT_APP_API_URL + `/Products/${producto.id}`, {
+        const response = await fetch(process.env.REACT_APP_API_URL + `/products/${producto.id}`, {
           method: "PATCH",
           credentials:"include",
           headers: {

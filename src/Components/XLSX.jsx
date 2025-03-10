@@ -27,7 +27,7 @@ useEffect(() => {
         if(local) setState(local.datos);     
       }
     };
-    fetchData("/Suppliers", "suppliers", setProveedores);
+    fetchData("/suppliers", "suppliers", setProveedores);
     fetchData("/category", "category", setCategorias);
   }, []);
 

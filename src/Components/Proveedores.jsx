@@ -22,7 +22,7 @@ const Proveedores = () => {
       const local = getLocalStorage("branches");
       
         try {
-          await fetch(process.env.REACT_APP_API_URL + "/Suppliers",{credentials: "include"})
+          await fetch(process.env.REACT_APP_API_URL + "/suppliers",{credentials: "include"})
             .then((res) => res.json())
             .then((data) => {
               if (!data) return setProveedores(local.datos);
@@ -61,7 +61,7 @@ const Proveedores = () => {
           cuit: cuit,
         };
         try {
-          const res = await fetch(process.env.REACT_APP_API_URL + "/Suppliers", {
+          const res = await fetch(process.env.REACT_APP_API_URL + "/suppliers", {
             method: "POST",
             credentials: "include",
             headers: {
@@ -106,7 +106,7 @@ const Proveedores = () => {
       "¿Estás seguro de eliminar este cliente?"
     );
     if (confirmDelete) {
-      await fetch(process.env.REACT_APP_API_URL + `/Suppliers/${id}`, {
+      await fetch(process.env.REACT_APP_API_URL + `/suppliers/${id}`, {
         method: "DELETE",
         credentials: "include",
       });
@@ -140,7 +140,7 @@ const Proveedores = () => {
         }
       }
       try {
-        await fetch(process.env.REACT_APP_API_URL + `/Suppliers/${id}`, {
+        await fetch(process.env.REACT_APP_API_URL + `/suppliers/${id}`, {
           method: "PATCH",
           credentials: "include",
           headers: {

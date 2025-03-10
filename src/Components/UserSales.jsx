@@ -9,12 +9,12 @@ const UserSales = () => {
     useEffect(() => {
         const fetchSales = async () => {
               try {
-                const res = await fetch(process.env.REACT_APP_API_URL + `/Sales/${id}`, { credentials: "include" })
+                const res = await fetch(process.env.REACT_APP_API_URL + `/sales/${id}`, { credentials: "include" })
                 if (!res.ok) return console.log("error al obtener las ventas")
                 const data = await res.json(); 
                 if(data.length > 0){
                   for (const sale of data) {
-                    const res = await fetch(`${process.env.REACT_APP_API_URL}/Rows/${sale.id}`, { credentials: "include" })
+                    const res = await fetch(`${process.env.REACT_APP_API_URL}/rows/${sale.id}`, { credentials: "include" })
                     if (!res.ok) return console.log("error al obtener items");
                     const data = await res.json(); 
                     setItems([...items, data]);

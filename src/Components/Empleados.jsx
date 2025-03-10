@@ -21,7 +21,7 @@ const Empleados = () => {
     const fetchEmp = async () => {
       const local = getLocalStorage("employees");
       try {
-        await fetch(process.env.REACT_APP_API_URL + "/Employees", {credentials: "include"})
+        await fetch(process.env.REACT_APP_API_URL + "/employees", {credentials: "include"})
           .then((res) => res.json())
           .then((data) => {
             if (!data) return setEmpleados(local.datos);
@@ -59,7 +59,7 @@ const Empleados = () => {
           dni: dni,
         };
         try {
-          const res = await fetch(process.env.REACT_APP_API_URL + "/Employees", {
+          const res = await fetch(process.env.REACT_APP_API_URL + "/employees", {
             method: "POST",
             credentials: "include",
             headers: {
@@ -109,7 +109,7 @@ const Empleados = () => {
       "¿Estás seguro de eliminar este empleado?"
     );
     if (confirmDelete) {
-      await fetch(process.env.REACT_APP_API_URL + `/Employees/${id}`, {
+      await fetch(process.env.REACT_APP_API_URL + `/employees/${id}`, {
         credentials: "include",
         method: "DELETE",
       });
@@ -141,7 +141,7 @@ const Empleados = () => {
       }
     }
     try {
-      await fetch(process.env.REACT_APP_API_URL + `/Employees/${id}`, {
+      await fetch(process.env.REACT_APP_API_URL + `/employees/${id}`, {
         method: "PATCH",
         credentials: "include",
         headers: {

@@ -82,7 +82,7 @@ const Cart = ({setCartChange, cartChange}) => {
     if (!(total > 0))return setMessage("El total de la venta debe ser mayor a 0");
 
     try {
-      const res = await fetch(process.env.REACT_APP_API_URL + `/Sales`, {
+      const res = await fetch(process.env.REACT_APP_API_URL + `/sales`, {
         method: "POST",
         credentials: "include",
         headers: {

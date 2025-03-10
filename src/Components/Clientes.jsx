@@ -21,7 +21,7 @@ const Clientes = () => {
   const fetchClients = async () => {
     const local = getLocalStorage("clients");
     try {
-      await fetch(process.env.REACT_APP_API_URL + "/Clients",{credentials: "include"})
+      await fetch(process.env.REACT_APP_API_URL + "/clients",{credentials: "include"})
         .then((res) => res.json())
         .then((data) => {
           if (!data) return setClientes(local.datos);;
@@ -61,7 +61,7 @@ const Clientes = () => {
           dni: dni,
         };
         try {
-          const res = await fetch(process.env.REACT_APP_API_URL + "/Clients", {
+          const res = await fetch(process.env.REACT_APP_API_URL + "/clients", {
             method: "POST",
             credentials: "include",
             headers: {
@@ -108,7 +108,7 @@ const Clientes = () => {
     );
     if (confirmDelete) {
       try {
-        await fetch(process.env.REACT_APP_API_URL + `/Clients/${id}`, {
+        await fetch(process.env.REACT_APP_API_URL + `/clients/${id}`, {
           method: "DELETE",
           credentials: "include",
         });
@@ -146,7 +146,7 @@ const Clientes = () => {
       }
     }
     try {
-      await fetch(process.env.REACT_APP_API_URL + `/Clients/${id}`, {
+      await fetch(process.env.REACT_APP_API_URL + `/clients/${id}`, {
         method: "PATCH",
         credentials: "include",
         headers: {

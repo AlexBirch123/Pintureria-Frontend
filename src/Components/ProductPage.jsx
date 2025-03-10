@@ -29,7 +29,7 @@ const ProductPage = ({ setCartChange, cartChange }) => {
       }
     };
     if(idProd){
-      fetchProd(`/Products/${idProd}`,setProduct)
+      fetchProd(`/products/${idProd}`,setProduct)
     }
   }, []);
 

@@ -31,10 +31,10 @@ const CrearVentas = () => {
       }
     };
 
-    fetchData("/Products", "products", setProductos);
-    fetchData("/Employees", "employees", setEmpleados);
-    fetchData("/Clients", "clients", setClientes);
-    fetchData("/Branches", "branches", setSucursales);
+    fetchData("/products", "products", setProductos);
+    fetchData("/employees", "employees", setEmpleados);
+    fetchData("/clients", "clients", setClientes);
+    fetchData("/branches", "branches", setSucursales);
   }, []);
 
   useEffect(() => {
@@ -73,7 +73,7 @@ const CrearVentas = () => {
       };
       if (!(total > 0))return setMessage("El total de la venta debe ser mayor a 0");
       try {
-        const res = await fetch(process.env.REACT_APP_API_URL + `/Sales`, {
+        const res = await fetch(process.env.REACT_APP_API_URL + `/sales`, {
           method: "POST",
           credentials: "include",
           headers: {

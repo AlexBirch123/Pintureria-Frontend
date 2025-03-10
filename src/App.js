@@ -30,9 +30,6 @@ function App() {
 
   const { isAuthenticated, role } = useAuth();
   const [cartChange,setCartChange] = useState(true)
-  const [loading,setLoading] = useState(true)
-
-
 
   return (
     <HashRouter>
