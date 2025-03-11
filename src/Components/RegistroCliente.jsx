@@ -27,7 +27,6 @@ const RegistroCliente = () => {
 
   const postUser = async () => {
     const validPass = validatePassword(formData.pswHash)
-    console.log(validPass)
     if(!validPass) {
       setMessage("Contraseña invalida")
       setTimeout(()=> setMessage(null),3000)
@@ -53,14 +52,14 @@ const RegistroCliente = () => {
   const validateData = async () => {
     try {
       const res = await fetch(process.env.REACT_APP_API_URL + `/users/email/${formData.email}`);
-      console.log(res)
+
       if (res.status === 200) {
         setMessage("Email existente");
         setTimeout(()=> setMessage(null),3000)
         return true
       }
       const response = await fetch(process.env.REACT_APP_API_URL + `/users/name/${formData.userName}`);
-      console.log(response)
+
 
       if (response.status === 200){
         setMessage("Nombre de usuario existente");
@@ -71,17 +70,18 @@ const RegistroCliente = () => {
       return false;
 
     } catch (error) {
-      console.log(error);
+      setMessage("error en la validacion de los datos")
+        setTimeout(() => {
+          setMessage(null);
+        }, 3000);
     }
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     const valido = await validateData();
-    console.log(valido)
     if (!valido) {
       postUser().then(data =>{
-        console.log(data)
         if (data) {
           setSubmitted(true);
           setTimeout(() => {navigate("/login");}, 4000); 

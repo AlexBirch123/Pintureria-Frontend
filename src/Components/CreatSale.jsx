@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { setLocalStorage, getLocalStorage } from "../utils/localStorage";
 import BuscadorProd from "./BuscardorProd";
@@ -6,15 +6,17 @@ import BuscadorProd from "./BuscardorProd";
 
 const CrearVentas = () => {
   const [saleProds, setSaleProds] = useState([]);
-  const [productos, setProductos] = useState([]);
-  const [empleados, setEmpleados] = useState([]);
-  const [clientes, setClientes] = useState([]);
-  const [sucursales, setSucursales] = useState([]);
+  const [products, setProducts] = useState([]);
+  const [employees, setEmployees] = useState([]);
+  const [clients, setClientes] = useState([]);
+  const [branches, setBranches] = useState([]);
   const [message, setMessage] = useState("");
   const [selectedProductId, setSelectedProductId] = useState(null);
-  const clienteRef = useRef(null);
-  const empleadoRef = useRef(null);
-  const sucursalRef = useRef(null);
+  const [formData, setFormData] = useState({
+      idClient: "",
+      idEmp: "",
+      idBranch: ""
+    });
 
   useEffect(() => {
     const fetchData = async (url, localStorageKey, setState) => {
@@ -26,15 +28,14 @@ const CrearVentas = () => {
       setState(data);
       setLocalStorage(data, localStorageKey);
       } catch (error) {
-      console.log(error);
       setState(local.datos);
       }
     };
 
-    fetchData("/products", "products", setProductos);
-    fetchData("/employees", "employees", setEmpleados);
+    fetchData("/products", "products", setProducts);
+    fetchData("/employees", "employees", setEmployees);
     fetchData("/clients", "clients", setClientes);
-    fetchData("/branches", "branches", setSucursales);
+    fetchData("/branches", "branches", setBranches);
   }, []);
 
   useEffect(() => {
@@ -57,10 +58,7 @@ const CrearVentas = () => {
   // Crear venta
   const creatSale = async (e) => {
     e.preventDefault();
-    const idClient = clienteRef.current.value;
-    const idEmp = empleadoRef.current.value;
-    const idBranch = sucursalRef.current.value;
-
+    const {idClient ,idEmp ,idBranch} = formData 
     if (idClient && idEmp && idBranch) {
       let total = 0;
       saleProds.map((prod) => (total = total + (prod.price * prod.quantity)));
@@ -95,9 +93,11 @@ const CrearVentas = () => {
 
   // Limpiar formulario
   const resetForm = () => {
-    if (clienteRef.current) clienteRef.current.value = "";
-    if (empleadoRef.current) empleadoRef.current.value = "";
-    if (sucursalRef.current) sucursalRef.current.value = "";
+    setFormData({
+      idClient: "",
+      idEmp: "",
+      idBranch: ""
+    })
   };
 
   const handleFieldChange = (id, field, value) => {
@@ -111,6 +111,10 @@ const CrearVentas = () => {
     return total;
   }
 
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setFormData({ ...formData, [name]: value });
+  };
   return (
     <div style={{ marginTop: "5%", marginLeft: "1%", marginRight: "1%" }}>
       <h2 className="mb-4"style={{marginTop:"20px"}}>Registrar Nueva Venta</h2 >
@@ -122,28 +126,28 @@ const CrearVentas = () => {
         <div className="row" style={{ marginTop: "1%" }}>
           <div className="col-md-4">
             <label className="form-label">Cliente</label>
-            <select ref={clienteRef} className="form-select" required>
-              <option value="">Seleccione un cliente</option>
-              {clientes.map((cliente) => (
-                <option key={cliente.id} value={cliente.id}>{cliente.name}</option>
+            <select value={formData.idClient} onChange={handleInputChange} className="form-select" required>
+              <option value="">Seleccione un client</option>
+              {clients.map((client) => (
+                <option key={client.id} value={client.id}>{client.name}</option>
               ))}
             </select>
           </div>
           <div className="col-md-4">
             <label className="form-label">Empleado</label>
-            <select ref={empleadoRef} className="form-select" required>
-              <option value="">Seleccione un empleado</option>
-              {empleados.map((empleado) => (
-                <option key={empleado.id} value={empleado.id}>{empleado.name}</option>
+            <select value={formData.idEmp} onChange={handleInputChange} className="form-select" required>
+              <option value="">Seleccione un employee</option>
+              {employees.map((employee) => (
+                <option key={employee.id} value={employee.id}>{employee.name}</option>
               ))}
             </select>
           </div>
           <div className="col-md-4">
             <label className="form-label">Sucursal</label>
-            <select ref={sucursalRef} className="form-select" required>
-              <option value="">Seleccione una sucursal</option>
-              {sucursales.map((sucursal) => (
-                <option key={sucursal.id} value={sucursal.id}>{sucursal.address}</option>
+            <select value={formData.idBranch} onChange={handleInputChange} className="form-select" required>
+              <option value="">Seleccione una branch</option>
+              {branches.map((branch) => (
+                <option key={branch.id} value={branch.id}>{branch.address}</option>
               ))}
             </select>
           </div>
@@ -154,8 +158,8 @@ const CrearVentas = () => {
         <BuscadorProd
           saleProds={saleProds}
           setSaleProds={setSaleProds}
-          productos={productos}
-          setProductos={setProductos}
+          products={products}
+          setProductss={setProducts}
         ></BuscadorProd>
       </div>
       <div className="table-responsive mt-4">
@@ -205,7 +209,7 @@ const CrearVentas = () => {
               </tr>
               ))):(
               <tr>
-                <td colSpan={5} className="text-center">No hay productos seleccionados</td>
+                <td colSpan={5} className="text-center">No hay products seleccionados</td>
               </tr>
                 )}
           </tbody>

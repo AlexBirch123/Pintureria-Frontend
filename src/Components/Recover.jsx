@@ -25,10 +25,8 @@ const Recover = () => {
           credentials: "include",
         });
         const data = await res.json();
-        console.log(data);
         if (data && data.email) {
           const timeToken = Date.now() - new Date(data.createdAt).getTime();
-          console.log(timeToken)
           if (timeToken < 900000) setEmail(data.email);
           else {
             setToken(null)
@@ -60,7 +58,7 @@ const Recover = () => {
         }
 
       } catch (error) {
-        console.log(error);
+        console.log("error al eliminar el token");
       }
     };
     if (queryToken) {

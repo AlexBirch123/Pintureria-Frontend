@@ -6,14 +6,14 @@ import { useNavigate } from "react-router";
 
 const VerVentas = () => {
   const navigate = useNavigate() 
-  const [ventas, setVentas] = useState([]);
-  const [filteredVentas, setFilteredVentas] = useState([]);
+  const [sales, setSales] = useState([]);
+  const [filteredSales, setFilteredVentas] = useState([]);
   const [search, setSearch] = useState("");
   const [sortedOrder, setSortedOrder] = useState("");
   const [showRows, setShowRows] = useState(false);
   const [rowsSale, setRowsSale] = useState([]);
-  const [empleados, setEmpleados] = useState([]);
-  const [clientes, setClientes] = useState([]);
+  const [employees, setEmployees] = useState([]);
+  const [clients, setClients] = useState([]);
 
 
   useEffect(() => {
@@ -23,13 +23,13 @@ const VerVentas = () => {
         await fetch(process.env.REACT_APP_API_URL + "/sales", { credentials: "include" })
           .then((res) => res.json())
           .then((data) => {
-            if (!data) return setVentas(local.datos);
-            setVentas(data);
+            if (!data) return setSales(local.datos);
+            setSales(data);
             setFilteredVentas(data);
             setLocalStorage(data, "sales");
           });
       } catch (error) {
-        console.log(error);
+        console.log("error en la peticion");
       }
     };
     const fetchEmp = async () => {
@@ -38,12 +38,12 @@ const VerVentas = () => {
         await fetch(process.env.REACT_APP_API_URL + "/employees", { credentials: "include" })
           .then((res) => res.json())
           .then((data) => {
-            if (!data) return setEmpleados(local.datos);
-            setEmpleados(data);
+            if (!data) return setEmployees(local.datos);
+            setEmployees(data);
             setLocalStorage(data, "employees");
           });
       } catch (error) {
-        console.log(error);
+        console.log("error en la peticion");
       }
     };
 
@@ -53,12 +53,12 @@ const VerVentas = () => {
         await fetch(process.env.REACT_APP_API_URL + "/clients", { credentials: "include" })
           .then((res) => res.json())
           .then((data) => {
-            if (!data) return setClientes(local.datos);
-            setClientes(data);
+            if (!data) return setClients(local.datos);
+            setClients(data);
             setLocalStorage(data, "clients");
           });
       } catch (error) {
-        console.log(error);
+        console.log("error en la peticion");
       }
     };
     fetchClient();
@@ -71,10 +71,8 @@ const VerVentas = () => {
     try {
       const res = await fetch(process.env.REACT_APP_API_URL + `/rows/${id}`, { credentials: "include" });
       const data = await res.json();
-      if(data.length === 0) return console.log("No hay productos en esta venta");
+      if(data.length === 0) return
       setRowsSale(data);
-      console.log(data);
-      console.log(rowsSale);
     } catch (error) {
       console.log("error al cargar productos de venta");
     }
@@ -90,9 +88,9 @@ const VerVentas = () => {
         method: "DELETE",
         credentials: "include",
       });
-      const updatedVentas = ventas.filter((v) => v.id !== id);
+      const updatedVentas = sales.filter((v) => v.id !== id);
       cargaFilasVenta(id);
-      setVentas(updatedVentas);
+      setSales(updatedVentas);
       setFilteredVentas(updatedVentas);
       setShowRows(false);
     }
@@ -101,7 +99,7 @@ const VerVentas = () => {
   const handleSearch = (e) => {
     e.preventDefault();
     setFilteredVentas(
-      empleados.filter(
+      employees.filter(
         (c) =>
           c.name.toLowerCase().includes(search.toLowerCase().trim()) ||
           c.dni.toString().includes(search.trim()) ||
@@ -112,14 +110,14 @@ const VerVentas = () => {
 
   const sortList = (field) => {
     if(sortedOrder){
-      const sorted = [...filteredVentas].sort((a, b) => {
+      const sorted = [...filteredSales].sort((a, b) => {
           if (a[field] < b[field]) return -1;
           if (a[field] > b[field]) return 1;
           return 0;
         });
         setFilteredVentas(sorted);
     }else{
-      const sorted = [...filteredVentas].sort((a, b) => {
+      const sorted = [...filteredSales].sort((a, b) => {
         if (a[field] > b[field]) return -1;
         if (a[field] < b[field]) return 1;
         return 0;
@@ -149,7 +147,6 @@ const VerVentas = () => {
             }}
             onKeyDown={(e) => {
               if (e.key === "Enter") {
-                console.log(search);
                 handleSearch(e);
               }
             }}
@@ -163,7 +160,7 @@ const VerVentas = () => {
             onChange={(e) => {
               const selectedDate = e.target.value;
               setFilteredVentas(
-                ventas.filter((venta) =>
+                sales.filter((venta) =>
                   venta.createdAt.startsWith(selectedDate)
                 )
               );
@@ -172,7 +169,7 @@ const VerVentas = () => {
           <button
             className="btn btn-secondary ms-2"
             onClick={() => {
-              setFilteredVentas(ventas);
+              setFilteredVentas(sales);
             }}
           >
             Reset
@@ -246,13 +243,13 @@ const VerVentas = () => {
             </tr>
           </thead>
           <tbody>
-            {filteredVentas.length > 0 ? (
-              filteredVentas.map((venta) => (
+            {filteredSales.length > 0 ? (
+              filteredSales.map((venta) => (
                 <tr key={venta.id}>
                   <td>{venta.id}</td>
-                  <td>{searchDesc(clientes, venta.idClient, "name") || "-"}</td>
+                  <td>{searchDesc(clients, venta.idClient, "name") || "-"}</td>
                   <td>{venta.idUser || "-"}</td>
-                  <td>{searchDesc(empleados, venta.idEmp, "name")}</td>
+                  <td>{searchDesc(employees, venta.idEmp, "name")}</td>
                   <td>{venta.idBranch}</td>
                   <td>{handleDate(venta.createdAt)}</td>
                   <td>${venta.total}</td>
@@ -278,7 +275,7 @@ const VerVentas = () => {
             ) : (
               <tr>
                 <td colSpan={8} className="text-center">
-                  No hay ventas registradas
+                  No hay sales registradas
                 </td>
               </tr>
             )}

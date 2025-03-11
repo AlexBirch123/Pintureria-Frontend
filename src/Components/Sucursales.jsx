@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { getLocalStorage, setLocalStorage } from "../utils/localStorage";
 
@@ -11,8 +11,7 @@ const Sucursales = () => {
   const [editingField, setEditingField] = useState({ id: null, field: null });
   const [message, setMessage] = useState(null);
   const [prevValue, setPrevValue] = useState(null);
-  const direccionRef = useRef(null);
-  const telefonoRef = useRef(null);
+  const [formData, setFormData] = useState({ address: "", phone: "" });
 
   // Obtener sucursales al cargar el componente
   useEffect(() => {
@@ -43,14 +42,13 @@ const Sucursales = () => {
   // Crear sucursal
   const createSucursal = async (event) => {
     event.preventDefault();
-    const address = direccionRef.current?.value;
-    const phone = Number(telefonoRef.current?.value);
+    const{ address, phone}= formData
     if (phone && address) {
       const existingBranch = searchBranch(address);
       if (!existingBranch) {
         const newBranch = {
           address: address,
-          phone: phone,
+          phone: Number(phone),
         };
 
         try {
@@ -89,8 +87,7 @@ const Sucursales = () => {
 
   // Limpiar formulario
   const resetForm = () => {
-    if (direccionRef.current) direccionRef.current.value = "";
-    if (telefonoRef.current) telefonoRef.current.value = "";
+    setFormData({ address: "", phone: "" })
   };
 
   // Función para eliminar sucursal
@@ -114,6 +111,14 @@ const Sucursales = () => {
         setMessage("Error al eliminar la sucursal");
       }
     }
+  };
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prevData) => ({
+      ...prevData,
+      [name]: value,
+    }));
   };
 
   const handleDoubleClick = (id, field, value) => {
@@ -225,7 +230,6 @@ const Sucursales = () => {
           }}
           onKeyDown={(e) => {
             if (e.key === "Enter") {
-              console.log(search);
               handleSearch(e);
             }
           }}
@@ -246,11 +250,13 @@ const Sucursales = () => {
         <form onSubmit={createSucursal}>
           <div className="mb-3">
             <label className="form-label">Dirección</label>
-            <input type="text" ref={direccionRef} className="form-control" required />
+            <input type="text" value={formData.address}
+                onChange={handleChange} className="form-control" required />
           </div>
           <div className="mb-3">
             <label className="form-label">Teléfono</label>
-            <input type="text" ref={telefonoRef} className="form-control" required />
+            <input type="text" value={formData.phone}
+                onChange={handleChange} className="form-control" required />
           </div>
           <button type="submit" className="btn btn-success w-100">Guardar</button>
         </form>

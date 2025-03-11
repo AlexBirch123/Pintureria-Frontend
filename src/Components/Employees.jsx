@@ -1,10 +1,10 @@
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { getLocalStorage, setLocalStorage } from "../utils/localStorage";
 
 
 const Empleados = () => {
-  const [empleados, setEmpleados] = useState([]);
+  const [employees, setEmployees] = useState([]);
   const [filteredEmpleados, setFilteredEmpleados] = useState([]);
   const [search, setSearch] = useState("");
   const [formVisible, setFormVisible] = useState(false);
@@ -12,10 +12,7 @@ const Empleados = () => {
   const [message, setMessage] = useState(null);
   const [prevValue, setPrevValue] = useState(null);
   const [editingField, setEditingField] = useState({ id: null, field: "" });
-  const nombreRef = useRef(null);
-  const sueldoRef = useRef(null);
-  const telefonoRef = useRef(null);
-  const dniRef = useRef(null);
+  const [formData, setFormData] = useState({ name: "", salary: "", phone: "", dni: "" });
 
   useEffect(() => {
     const fetchEmp = async () => {
@@ -24,13 +21,13 @@ const Empleados = () => {
         await fetch(process.env.REACT_APP_API_URL + "/employees", {credentials: "include"})
           .then((res) => res.json())
           .then((data) => {
-            if (!data) return setEmpleados(local.datos);
+            if (!data) return setEmployees(local.datos);
             setLocalStorage(data, "employees");
             setFilteredEmpleados(data);
-            setEmpleados(data);
+            setEmployees(data);
           });
       } catch (error) {
-        setEmpleados(local.datos);
+        setEmployees(local.datos);
       }
     };
 
@@ -38,25 +35,22 @@ const Empleados = () => {
   }, []);
 
   const searchEmp = (dni) => {
-    const emp = empleados.find((e) => e.dni === dni);
+    const emp = employees.find((e) => e.dni === dni);
     return emp;
   };
 
   // Crear empleado
   const createEmp = async (event) => {
     event.preventDefault();
-    const name = nombreRef.current?.value;
-    const salary = Number(sueldoRef.current?.value);
-    const phone = Number(telefonoRef.current?.value);
-    const dni = Number(dniRef.current?.value);
+    const {name ,salary,phone,dni } = formData
     if (name && dni && salary) {
       const existingEmp = searchEmp(dni); //verifica que el DNI no exista
       if (!existingEmp) {
         const newEmp = {
           name: name,
-          salary: salary,
-          phone: phone,
-          dni: dni,
+          salary: Number(salary),
+          phone: Number(phone),
+          dni: Number(dni),
         };
         try {
           const res = await fetch(process.env.REACT_APP_API_URL + "/employees", {
@@ -69,9 +63,9 @@ const Empleados = () => {
           });
           if (res.ok) {
             const completeEmp = await res.json();
-            setEmpleados([...empleados, completeEmp]);
+            setEmployees([...employees, completeEmp]);
             setFilteredEmpleados([...filteredEmpleados, completeEmp]);
-            setLocalStorage(empleados, "employees");
+            setLocalStorage(employees, "employees");
             resetForm();
             setMessage("Empleado creado con éxito");
             setTimeout(() => {
@@ -79,7 +73,10 @@ const Empleados = () => {
             }, 3000);
           }
         } catch (error) {
-          console.log(error);
+          setMessage("Error al crear el empleado");
+            setTimeout(() => {
+              setMessage(null);
+            }, 3000);
         }
       } else setMessage("DNI ya registrado");
     } else {
@@ -97,10 +94,11 @@ const Empleados = () => {
 
   // Limpiar formulario
   const resetForm = () => {
-    if (nombreRef.current) nombreRef.current.value = "";
-    if (sueldoRef.current) sueldoRef.current.value = "";
-    if (telefonoRef.current) telefonoRef.current.value = "";
-    if (dniRef.current) dniRef.current.value = "";
+    setFormData({ name: "", salary: "", phone: "", dni: "" })
+  };
+
+  const handleChange = (e) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
   // Función para eliminar empleado
@@ -113,8 +111,8 @@ const Empleados = () => {
         credentials: "include",
         method: "DELETE",
       });
-      const updatedEmp = empleados.filter((e) => e.id !== id);
-      setEmpleados(updatedEmp);
+      const updatedEmp = employees.filter((e) => e.id !== id);
+      setEmployees(updatedEmp);
       setFilteredEmpleados(updatedEmp);
       setLocalStorage(updatedEmp, "employees");
     }
@@ -126,8 +124,8 @@ const Empleados = () => {
   };
 
   const handleFieldChange = (id, field, value) => {
-    const newList = empleados.map((emp) => (emp.id === id ? { ...emp, [field]: value } : emp))
-    setEmpleados(newList);
+    const newList = employees.map((emp) => (emp.id === id ? { ...emp, [field]: value } : emp))
+    setEmployees(newList);
     setFilteredEmpleados(newList);
   }
   const handleBlur = async (id, field, value) => {
@@ -149,10 +147,13 @@ const Empleados = () => {
         },
         body: JSON.stringify(data),
       });
-      setLocalStorage(empleados, "employees");
+      setLocalStorage(employees, "employees");
       setEditingField({ id: null, field: null });
     } catch (error) {
-      console.log(error);
+      setMessage("Error al actualizar el empleado");
+        setTimeout(() => {
+          setMessage(null);
+        }, 3000);
     }
   };
 
@@ -184,7 +185,7 @@ const Empleados = () => {
   const handleSearch = (e) => {
     e.preventDefault();
     setFilteredEmpleados(
-      empleados.filter(
+      employees.filter(
         (c) =>
           c.name.toLowerCase().includes(search.toLowerCase().trim()) ||
           c.dni.toString().includes(search.trim()) ||
@@ -226,7 +227,6 @@ const Empleados = () => {
           }}
           onKeyDown={(e) => {
             if (e.key === "Enter") {
-              console.log(search);
               handleSearch(e);
             }
           }}
@@ -248,19 +248,19 @@ const Empleados = () => {
         <form onSubmit={createEmp}>
           <div className="mb-3">
             <label className="form-label">Nombre:</label>
-            <input type="text" ref={nombreRef} className="form-control" required />
+            <input type="text" value={formData.name} onChange={handleChange} className="form-control" required />
           </div>
           <div className="mb-3">
             <label className="form-label">DNI:</label>
-            <input type="text" ref={dniRef} className="form-control" required />
+            <input type="text" value={formData.dni} onChange={handleChange} className="form-control" required />
           </div>
           <div className="mb-3">
             <label className="form-label">Sueldo:</label>
-            <input type="number" ref={sueldoRef} className="form-control" required />
+            <input type="number" value={formData.salary} onChange={handleChange} className="form-control" required />
           </div>
           <div className="mb-3">
             <label className="form-label">Teléfono:</label>
-            <input type="text" ref={telefonoRef} className="form-control" />
+            <input type="text" value={formData.phone} onChange={handleChange} className="form-control" />
           </div>
           <button type="submit" className="btn btn-success w-100">Guardar</button>
         </form>
@@ -319,7 +319,7 @@ const Empleados = () => {
               ))
             ) : (
               <tr>
-                <td colSpan={6} className="text-center">No hay empleados registrados</td>
+                <td colSpan={6} className="text-center">No hay employees registrados</td>
               </tr>
             )}
           </tbody>

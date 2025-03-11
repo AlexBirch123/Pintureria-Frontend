@@ -38,9 +38,54 @@ export const AuthProvider = ({ children }) => {
     checkAuth();
   });
 
+  const login = async (username, password) => {
+    try {
+      const res = await fetch(process.env.REACT_APP_API_URL + "/login", {
+        method: "POST",
+        credentials: "include",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ username, password }),
+      });
+
+      if (res.ok) {
+        const data = await res.json();
+        setIsAuthenticated(true);
+        setRole(data.role);
+        setId(data.id);
+        setUserName(data.userName);
+        return { success: true };
+      } else {
+        return { success: false, message: "Credenciales incorrectas" };
+      }
+    } catch (error) {
+      return { success: false, message: "Error de conexión" };
+    }
+  };
+
+  // Función para cerrar sesión
+  const logout = async () => {
+    try {
+      const res = await fetch(process.env.REACT_APP_API_URL + "/logout", {
+        method: "POST",
+        credentials: "include",
+      });
+      
+      if(!res.ok) return{ success: false, message: "Credenciales incorrectas" };
+      setIsAuthenticated(false);
+      setRole(null);
+      setId(null);
+      setUserName(null);
+      return {success: true}
+    } catch (error) {
+      return { success: false, message: "Error de conexión" };
+    }
+  };
+
   return (
     <AuthContext.Provider
-      value={{ isAuthenticated, setIsAuthenticated, role, setRole ,id, setId, userName,setUserName}}
+      value={{ isAuthenticated, role ,id, userName , login, logout}}
     >
       {children}
     </AuthContext.Provider>

@@ -1,10 +1,10 @@
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { getLocalStorage, setLocalStorage } from "../utils/localStorage";
 import { motion } from "framer-motion";
 
 const Proveedores = () => {
-  const [proveedores, setProveedores] = useState([]);
+  const [suppliers, setSuppliers] = useState([]);
   const [filteredProveedores, setFilteredProveedores] = useState([]);
   const [formVisible, setFormVisible] = useState(false);
   const [editingField, setEditingField] = useState({ id: null, field: null });
@@ -12,11 +12,8 @@ const Proveedores = () => {
   const [prevValue, setPrevValue] = useState(null);
   const [search, setSearch] = useState("");
   const [sortedOrder, setSortedOrder] = useState(false);
-  const nombreRef = useRef(null);
-  const direccionRef = useRef(null);
-  const telefonoRef = useRef(null);
-  const cuitRef = useRef(null);
-
+  const [formData, setFormData] = useState({ name: "", address: "", phone: "", cuit: "" });
+  
   useEffect(() => {
     const fetchSupp = async () => {
       const local = getLocalStorage("branches");
@@ -25,13 +22,13 @@ const Proveedores = () => {
           await fetch(process.env.REACT_APP_API_URL + "/suppliers",{credentials: "include"})
             .then((res) => res.json())
             .then((data) => {
-              if (!data) return setProveedores(local.datos);
-              setProveedores(data);
+              if (!data) return setSuppliers(local.datos);
+              setSuppliers(data);
               setFilteredProveedores(data);
               setLocalStorage(data, "suppliers");
             });
         } catch (error) {
-          setProveedores(local.datos);
+          setSuppliers(local.datos);
         }
       };
 
@@ -39,27 +36,20 @@ const Proveedores = () => {
   }, []);
 
   const searchSupp = (cuit) => {
-    const client = proveedores.find((p) => p.cuit === cuit);
-    return client;
+    const supp = suppliers.find((p) => p.cuit === cuit);
+    return supp;
   };
 
   // Crear proveedor
   const createUpdateSupp = async (event) => {
     event.preventDefault();
-    const name = nombreRef.current?.value;
-    const address = direccionRef.current?.value;
-    const phone = Number(telefonoRef.current?.value);
-    const cuit = Number(cuitRef.current?.value);
+    const { name, address, phone, cuit } = formData;
     
     if (name && cuit) {
       const existingSupp = searchSupp(cuit); //verifica que el CUIT no exista
       if (!existingSupp) {
-        const newSupp = {
-          name: name,
-          address: address,
-          phone: phone,
-          cuit: cuit,
-        };
+        const newSupp = { name, address, phone: Number(phone), cuit: Number(cuit) };
+
         try {
           const res = await fetch(process.env.REACT_APP_API_URL + "/suppliers", {
             method: "POST",
@@ -71,19 +61,21 @@ const Proveedores = () => {
           });
           if (res.ok) {
             const completeSupp = await res.json();
-            setProveedores([...proveedores, completeSupp]);
-            setLocalStorage([...proveedores, completeSupp], "suppliers");
-            setFilteredProveedores([...proveedores, completeSupp]);
+            setSuppliers([...suppliers, completeSupp]);
+            setLocalStorage([...suppliers, completeSupp], "suppliers");
+            setFilteredProveedores([...suppliers, completeSupp]);
             resetForm();
             setMessage("Sucursal creada correctamente");
             setTimeout(() => setMessage(null), 3000);
           }
         } catch (error) {
-          console.log(error);
+          setMessage("Error al crear el proveedor");
         }
-      } else console.log("CUIT/CUIL ya registrado");
-    } else console.log("error al crear o actualizar proveedores");
-
+      } else setMessage("CUIT/CUIL ya registrado");
+    } else setMessage("error al crear o proveedor");
+    setTimeout(() => {
+      setMessage(null);
+    }, 3000);
     setFormVisible(false);
   };
 
@@ -94,10 +86,7 @@ const Proveedores = () => {
 
   // Limpiar formulario
   const resetForm = () => {
-    if (nombreRef.current) nombreRef.current.value = "";
-    if (direccionRef.current) direccionRef.current.value = "";
-    if (telefonoRef.current) telefonoRef.current.value = "";
-    if (cuitRef.current) cuitRef.current.value = "";
+    setFormData({ name: "", address: "", phone: "", cuit: "" })
   };
 
   // Función para eliminar proveedor
@@ -110,8 +99,8 @@ const Proveedores = () => {
         method: "DELETE",
         credentials: "include",
       });
-      const updatedSupp = proveedores.filter((p) => p.id !== id);
-      setProveedores(updatedSupp);
+      const updatedSupp = suppliers.filter((p) => p.id !== id);
+      setSuppliers(updatedSupp);
       setFilteredProveedores(updatedSupp);
     }
   };
@@ -122,10 +111,10 @@ const Proveedores = () => {
     };
   
     const handleFieldChange = (id, field, value) => {
-      const newList = proveedores.map((prov) =>
+      const newList = suppliers.map((prov) =>
         prov.id === id ? { ...prov, [field]: value } : prov
       )
-      setProveedores(newList);
+      setSuppliers(newList);
       setFilteredProveedores(newList);
     };
   
@@ -148,7 +137,7 @@ const Proveedores = () => {
           },
           body: JSON.stringify(data),
         });
-        setLocalStorage(proveedores, "suppliers");
+        setLocalStorage(suppliers, "suppliers");
         setEditingField({ id: null, field: null });
       } catch (error) {
         setMessage("Error en la solicitud");
@@ -183,7 +172,7 @@ const Proveedores = () => {
     const handleSearch = (e) => {
       e.preventDefault();
       setFilteredProveedores(
-        proveedores.filter(
+        suppliers.filter(
           (c) =>
             c.name.toLowerCase().includes(search.toLowerCase().trim()) ||
             c.cuit.toString().includes(search.trim()) ||
@@ -226,7 +215,6 @@ const Proveedores = () => {
           }}
           onKeyDown={(e) => {
             if (e.key === "Enter") {
-              console.log(search);
               handleSearch(e);
             }
           }}
@@ -256,19 +244,19 @@ const Proveedores = () => {
         <form onSubmit={createUpdateSupp} className="card p-3 shadow-sm">
         <div className="mb-3">
           <label className="form-label">Nombre:</label>
-          <input type="text" ref={nombreRef} className="form-control" required />
+          <input type="text" value={formData.name} onChange={(e) => setFormData({ ...formData, name: e.target.value })} className="form-control" required />
         </div>
         <div className="mb-3">
           <label className="form-label">CUIT/CUIL:</label>
-          <input type="text" ref={cuitRef} className="form-control" required />
+          <input type="text" value={formData.cuit} onChange={(e) => setFormData({ ...formData, cuit: e.target.value })} className="form-control" required />
         </div>
         <div className="mb-3">
           <label className="form-label">Dirección:</label>
-          <input type="text" ref={direccionRef} className="form-control" />
+          <input type="text" value={formData.address} onChange={(e) => setFormData({ ...formData, address: e.target.value })} className="form-control" />
         </div>
         <div className="mb-3">
           <label className="form-label">Teléfono:</label>
-          <input type="text" ref={telefonoRef} className="form-control" />
+          <input type="text" value={formData.phone} onChange={(e) => setFormData({ ...formData, phone: e.target.value })} className="form-control" />
         </div>
         <button type="submit" className="btn btn-success">Guardar</button>
       </form>
@@ -326,7 +314,7 @@ const Proveedores = () => {
               ))
             ) : (
               <tr>
-                <td colSpan={6}>No hay proveedores registrados</td>
+                <td colSpan={6}>No hay suppliers registrados</td>
               </tr>
             )}
           </tbody>

@@ -11,13 +11,13 @@ import { useEffect, useState } from "react";
 import { useMediaQuery } from "react-responsive";
 
 const NavBar = ({ cartChange }) => {
-  const { role, setIsAuthenticated, isAuthenticated } = useAuth();
-  const navigate = useNavigate();
   const [cartProds, setCartProds] = useState([]);
   const [categorias, setCategorias] = useState([]);
   const [search, setSearch] = useState("");
-  const isMobile = useMediaQuery({ maxWidth: 768 });
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const isMobile = useMediaQuery({ maxWidth: 768 });
+  const { role, isAuthenticated, logout } = useAuth();
+  const navigate = useNavigate();
 
   useEffect(() => {
     const updateCart = () => {
@@ -37,7 +37,6 @@ const NavBar = ({ cartChange }) => {
           setState(data);
           setLocalStorage(data, localStorageKey);
           } catch (error) {
-          console.log(error);
           setState(local.datos);
           }
         };
@@ -49,20 +48,12 @@ const NavBar = ({ cartChange }) => {
       navigate("/login");
       return;
     }
-    try {
-      await fetch(process.env.REACT_APP_API_URL + "/logout", {
-        method: "POST",
-        credentials: "include",
-      }).then((res) => {
-        if (res.ok) {
-          setIsAuthenticated(false);
-          navigate("/home");
-          setLocalStorage([], "cart");
-        }
-      });
-    } catch (error) {
-      console.log(error);
+    const res = await logout
+    if(res.success){
+      setLocalStorage([],"cart")
+      navigate("/home")
     }
+
   };
 
   const handleSearch = (e) => {

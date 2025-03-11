@@ -27,7 +27,6 @@ const Cart = ({setCartChange, cartChange}) => {
   }, [queryId]);
   useEffect(() => {
     if (paymentId && !saleCreated && cartProds.length > 0) {
-      console.log("paso")
       creatSale();
     }
   }, [paymentId, cartProds]);
@@ -90,12 +89,12 @@ const Cart = ({setCartChange, cartChange}) => {
         },
         body: JSON.stringify(newSale),
       });
-      if(!res.ok) return console.log("error al crear la venta",res)
+      if(!res.ok) return setMessage("error al crear la venta")
       setSaleCreated(true)
       setCartChange(!cartChange)
       setLocalStorage([],"cart")
     } catch (error) {
-      console.log(" error al crear la venta", error);
+      setMessage(" error al crear la venta");
     }
   };
 

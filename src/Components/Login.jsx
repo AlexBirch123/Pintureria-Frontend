@@ -9,43 +9,10 @@ const Login = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
-  const { setIsAuthenticated, setRole } = useAuth();
+  const { login } = useAuth();
   const navigate = useNavigate();
 
-  const validacion = async () => {
-    if (username && password) {
-      const data = {
-        userName: username,
-        pswHash: password,
-      };
-      try {
-        const res = await fetch(process.env.REACT_APP_API_URL + "/login", {
-          method: "POST",
-          credentials: "include",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(data),
-        });
-        if (!res.ok) {
-          setMessage("Credenciales incorrectas");
-          setLoading(false)
-          return
-        }
-        const role = await res.json();
-
-        setMessage("Datos correctos");
-        setIsAuthenticated(true);
-        setRole(role);
-        navigate("/home");
-      } catch (error) {
-        setMessage("Nombre de usuario o contraseña incorrectos");
-      }
-    }
-    setLoading(false)
-  };
-
-  const handleLogin = (e) => {
+  const handleLogin = async (e) => {
     setLoading(true)
     e.preventDefault();
 
@@ -53,8 +20,16 @@ const Login = () => {
       setMessage("Por favor, ingrese todos los campos.");
       return;
     }
-    validacion();
+    const result = await login(username, password);
+    if (result.success) {
+      setMessage("Datos correctos");
+      navigate("/home");
+    } else {
+      setMessage(result.message);
+    }
+    setLoading(false)
   };
+  
   const handleRegisterClick = () => {
     navigate("/register"); // Redirigir a la página de registro de clientes
   };

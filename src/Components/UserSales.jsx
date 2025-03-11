@@ -3,25 +3,25 @@ import { useAuth } from './AuthContext';
 
 const UserSales = () => {
     const { id } = useAuth();
-    const [sales, setSales] = useState([]);
     const [items, setItems] = useState([]);
+    const [message, setMessage] = useState([]);
 
     useEffect(() => {
         const fetchSales = async () => {
               try {
                 const res = await fetch(process.env.REACT_APP_API_URL + `/sales/${id}`, { credentials: "include" })
-                if (!res.ok) return console.log("error al obtener las ventas")
+                if (!res.ok) return setMessage("error al obtener las ventas")
                 const data = await res.json(); 
                 if(data.length > 0){
                   for (const sale of data) {
                     const res = await fetch(`${process.env.REACT_APP_API_URL}/rows/${sale.id}`, { credentials: "include" })
-                    if (!res.ok) return console.log("error al obtener items");
+                    if (!res.ok) return
                     const data = await res.json(); 
                     setItems([...items, data]);
                    }
                 }
               } catch (error) {
-                console.log(error);
+                setMessage("error al obtener las ventas");
               }
             };
         
@@ -44,7 +44,7 @@ const UserSales = () => {
         <div className="container mt-5" >
       <h2 className="text-center mb-4" style={{ marginTop: "7%" }}>🛒 Tus Compras</h2>
       {items.length === 0 ? (
-        <div className="alert alert-warning text-center">No hay compras disponibles</div>
+        <div className="alert alert-warning text-center"> {message? message: "No hay compras disponibles"} </div>
       ) : (
         <div className="row justify-content-center">
           {items.map((item) => (

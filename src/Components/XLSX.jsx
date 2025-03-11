@@ -5,9 +5,9 @@ import { getLocalStorage, setLocalStorage } from "../utils/localStorage";
 
 export default function XLSXReader() {
   const [data, setData] = useState([]);
-  const [proveedores,setProveedores] = useState([]);
-  const [categorias,setCategorias] = useState([]);
-  const [selectedProv,setSelectedProv] = useState(null);
+  const [suppliers,setSuppliers] = useState([]);
+  const [categories,setCategories] = useState([]);
+  const [selectedSupp,setSelectedSupp] = useState(null);
   const [message, setMessage] = useState(null);
   const navigate = useNavigate()
 
@@ -23,12 +23,11 @@ useEffect(() => {
         setState(data);
         setLocalStorage(data, localStorageKey);
       } catch (error) {
-        console.log(error);
         if(local) setState(local.datos);     
       }
     };
-    fetchData("/suppliers", "suppliers", setProveedores);
-    fetchData("/category", "category", setCategorias);
+    fetchData("/suppliers", "suppliers", setSuppliers);
+    fetchData("/category", "category", setCategories);
   }, []);
 
 
@@ -45,7 +44,6 @@ useEffect(() => {
       const sheet = workbook.Sheets[sheetName];
       const parsedData = XLSX.utils.sheet_to_json(sheet);
       setData(parsedData);
-      console.log(parsedData)
     };
   };
 
@@ -66,7 +64,7 @@ useEffect(() => {
           description:d.Descripcion,
           price:d.Precio,
           stock:d.Stock,
-          idProv:Number(selectedProv),
+          idProv:Number(selectedSupp),
           idCat:Number(d.idCat)
         }
       })
@@ -87,7 +85,6 @@ useEffect(() => {
         navigate("/productos")
       },3000)
     } catch (error) {
-      console.log("error al ingresar los productos", error)
       setMessage("error al ingresar los productos")
 
     }
@@ -112,11 +109,11 @@ useEffect(() => {
             name="idProv"
             id="idProv"
             className="form-select mt-2"
-            onChange={(e) => setSelectedProv(e.target.value)}
+            onChange={(e) => setSelectedSupp(e.target.value)}
             required
           >
             <option value="">Proveedores</option>
-            {proveedores.map((prov) => (
+            {suppliers.map((prov) => (
               <option key={prov.id} value={prov.id}>
                 {prov.name}
               </option>
@@ -164,7 +161,7 @@ useEffect(() => {
                         required
                       >
                         <option value="">Categoria</option>
-                        {categorias.map((cat) => (
+                        {categories.map((cat) => (
                           <option key={cat.id} value={cat.id}>
                             {cat.description}
                           </option>

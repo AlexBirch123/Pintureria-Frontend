@@ -1,8 +1,8 @@
 import { useState } from "react";
 import Modal from "react-modal";
 
-const BuscadorProd = ({ setSaleProds ,productos, }) => {
-  const [filteredProductos, setFilteredProductos] = useState([]);
+const BuscadorProd = ({ setSaleProds ,products }) => {
+  const [filteredProducts, setFilteredProductos] = useState([]);
   const [isOpen, setIsOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
 
@@ -11,7 +11,7 @@ const BuscadorProd = ({ setSaleProds ,productos, }) => {
 
   const handleSearch = (e) => {
     setFilteredProductos(
-      productos.filter((product) =>
+      products.filter((product) =>
         product.description.toLowerCase().includes(searchTerm.toLowerCase())
       )
     );
@@ -53,7 +53,7 @@ const BuscadorProd = ({ setSaleProds ,productos, }) => {
       <button
         onClick={() => {
           setIsOpen(true);
-          setFilteredProductos(productos);
+          setFilteredProductos(products);
         }}
         className="btn btn-primary"
       >
@@ -63,14 +63,13 @@ const BuscadorProd = ({ setSaleProds ,productos, }) => {
         <h2>Seleccionar Productos</h2>
         <input
           type="text"
-          placeholder="Buscar productos..."
+          placeholder="Buscar products..."
           value={searchTerm}
           onChange={(e) => {
             setSearchTerm(e.target.value);
           }}
           onKeyDown={(e) => {
             if (e.key === "Enter") {
-              console.log(searchTerm);
               handleSearch(e);
             }
           }}
@@ -86,7 +85,7 @@ const BuscadorProd = ({ setSaleProds ,productos, }) => {
               </tr>
             </thead>
             <tbody>
-        {filteredProductos.map((product) => (
+        {filteredProducts.map((product) => (
               <tr key={product.id}>
                 <td>
                   <input
@@ -110,7 +109,7 @@ const BuscadorProd = ({ setSaleProds ,productos, }) => {
             setIsOpen(false);
             handleAddProduct();
             setSelectedProducts([]);
-            setFilteredProductos(productos);
+            setFilteredProductos(products);
             setSearchTerm("");
           }}
         >

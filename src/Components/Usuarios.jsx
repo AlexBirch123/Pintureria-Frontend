@@ -1,23 +1,25 @@
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { useAuth } from "./AuthContext";
 
 const Usuarios = () => {
-  const [usuarios, setUsuarios] = useState([]);
-  const [filteredUsuarios, setFilteredUsuarios] = useState([]);
+  const [users, setUsers] = useState([]);
+  const [filteredUsers, setFilteredUsuarios] = useState([]);
   const [formVisible, setFormVisible] = useState(false);
   const [editingField, setEditingField] = useState({ id: null, field: null });
   const [message, setMessage] = useState(null);
   const [prevValue, setPrevValue] = useState(null);
   const [search, setSearch] = useState(null);
   const [sortedOrder, setSortedOrder] = useState(null);
-  const passRef = useRef(null);
-  const roleRef = useRef(null);
-  const userNameRef = useRef(null);
-  const emailRef = useRef(null);
+  const [formData, setFormData] = useState({
+      userName: "",
+      pswHash: "",
+      email: "",
+      role: "",
+    });
   const {id} = useAuth()
 
-  // Obtener usuarios al cargar el componente
+  // Obtener users al cargar el componente
   useEffect(() => {
     const fetchUsers = async () => {
       try {
@@ -26,7 +28,7 @@ const Usuarios = () => {
           .then((data) => {
             if (!data) return
             const list = data.filter((u) => u.id !== id) //saca de la lista al usuario admin que esta en uso
-            setUsuarios(list);
+            setUsers(list);
             setFilteredUsuarios(list);
           });
       } catch (error) {
@@ -39,8 +41,8 @@ const Usuarios = () => {
   }, [id]);
 
   const searchUser = (userName, email) => {
-    const existingMail = usuarios.find((s) => s.userName === userName);
-    const existingName = usuarios.find((s) => s.email === email);
+    const existingMail = users.find((s) => s.userName === userName);
+    const existingName = users.find((s) => s.email === email);
     if(existingMail) return existingMail
     if(existingName) return existingName
     return false
@@ -49,10 +51,7 @@ const Usuarios = () => {
   // Crear usuario
   const createUser = async (event) => {
     event.preventDefault();
-    const userName = userNameRef.current?.value;
-    const pswHash = passRef.current?.value;
-    const email = emailRef.current?.value;
-    const role = roleRef.current?.value;
+    const {userName, pswHash,email,role} = formData
     if (userName && pswHash && email && role) {
       const existingUser = searchUser(userName, email);
       if (!existingUser) {
@@ -74,8 +73,8 @@ const Usuarios = () => {
           });
           if (res.ok) {
             const completeUsers = await res.json();
-            setUsuarios([...usuarios, completeUsers]); // Actualiza la lista de usuarios con el nuevo
-            setFilteredUsuarios([...usuarios, completeUsers]);
+            setUsers([...users, completeUsers]); // Actualiza la lista de users con el nuevo
+            setFilteredUsuarios([...users, completeUsers]);
             resetForm();
             setMessage("Sucursal creada correctamente");
             setTimeout(() => setMessage(null), 3000);
@@ -98,10 +97,16 @@ const Usuarios = () => {
 
   // Limpiar formulario
   const resetForm = () => {
-    if (userNameRef.current) userNameRef.current.value = "";
-    if (passRef.current) passRef.current.value = "";
-    if (emailRef.current)emailRef.current.value = "";
-    if (roleRef.current) roleRef.current.value = "";
+    setFormData({
+      userName: "",
+      pswHash: "",
+      email: "",
+      role: "",
+    })
+  };
+
+  const handleInputChange = (e) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
   // Función para eliminar sucursal
@@ -115,10 +120,10 @@ const Usuarios = () => {
           credentials: "include",
           method: "DELETE",
         });
-        const updatedSucursales = usuarios.filter(
+        const updatedSucursales = users.filter(
           (usuario) => usuario.id !== id
         );
-        setUsuarios(updatedSucursales);
+        setUsers(updatedSucursales);
         setFilteredUsuarios(updatedSucursales);
       } catch (error) {
         setMessage("Error al eliminar el usuario");
@@ -132,8 +137,8 @@ const Usuarios = () => {
   };
 
   const handleFieldChange = (id, field, value) => {
-    const newUsuarios = usuarios.map((usuario) => usuario.id === id ? { ...usuario, [field]: value } : usuario)
-    setUsuarios(newUsuarios);
+    const newUsuarios = users.map((usuario) => usuario.id === id ? { ...usuario, [field]: value } : usuario)
+    setUsers(newUsuarios);
     setFilteredUsuarios(newUsuarios);
   };
 
@@ -191,7 +196,7 @@ const Usuarios = () => {
   const handleSearch = (e) => {
     e.preventDefault();
     setFilteredUsuarios(
-      usuarios.filter(
+      users.filter(
         (c) =>
           c.userName.toLowerCase().includes(search.toLowerCase().trim()) ||
           c.email.toLowerCase().includes(search.toLowerCase().trim()) 
@@ -201,14 +206,14 @@ const Usuarios = () => {
 
   const sortList = (field) => {
       if(sortedOrder){
-        const sorted = [...filteredUsuarios].sort((a, b) => {
+        const sorted = [...filteredUsers].sort((a, b) => {
             if (a[field] < b[field]) return -1;
             if (a[field] > b[field]) return 1;
             return 0;
           });
           setFilteredUsuarios(sorted);
       }else{
-        const sorted = [...filteredUsuarios].sort((a, b) => {
+        const sorted = [...filteredUsers].sort((a, b) => {
           if (a[field] > b[field]) return -1;
           if (a[field] < b[field]) return 1;
           return 0;
@@ -233,7 +238,6 @@ const Usuarios = () => {
           }}
           onKeyDown={(e) => {
             if (e.key === "Enter") {
-              console.log(search);
               handleSearch(e);
             }
           }}
@@ -262,7 +266,8 @@ const Usuarios = () => {
             </label>
             <input
               type="text"
-              ref={userNameRef}
+              value={formData.userName} 
+              onChange={handleInputChange}
               name="userName"
               className="form-control"
               required
@@ -274,7 +279,8 @@ const Usuarios = () => {
             </label>
             <input
               type="password"
-              ref={passRef}
+              value={formData.pswHash} 
+              onChange={handleInputChange}
               name="password"
               className="form-control"
               required
@@ -286,7 +292,8 @@ const Usuarios = () => {
             </label>
             <input
               type="email"
-              ref={emailRef}
+              value={formData.email} 
+              onChange={handleInputChange}
               name="email"
               className="form-control"
               required
@@ -298,7 +305,8 @@ const Usuarios = () => {
             </label>
             <select
               id="role"
-              ref={roleRef}
+              value={formData.role} 
+              onChange={handleInputChange}
               name="role"
               className="form-control"
               required
@@ -342,8 +350,8 @@ const Usuarios = () => {
             </tr>
           </thead>
           <tbody>
-            {filteredUsuarios.length > 0 ? (
-              filteredUsuarios.map((usuario) => (
+            {filteredUsers.length > 0 ? (
+              filteredUsers.map((usuario) => (
                 <tr key={usuario.id}>
                   <td>{usuario.id}</td>
                   <td>{input(usuario, "userName", usuario.userName)}</td>
@@ -374,7 +382,7 @@ const Usuarios = () => {
               ))
             ) : (
               <tr>
-                <td colSpan={5}>No hay usuarios registrados</td>
+                <td colSpan={5}>No hay users registrados</td>
               </tr>
             )}
           </tbody>

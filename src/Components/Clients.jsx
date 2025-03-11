@@ -1,9 +1,9 @@
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { setLocalStorage, getLocalStorage } from "../utils/localStorage";
 
 const Clientes = () => {
-  const [clientes, setClientes] = useState([]);
+  const [clients, setClients] = useState([]);
   const [filteredClients, setFilteredClients] = useState([]);
   const [formVisible, setFormVisible] = useState(false);
   const [message, setMessage] = useState(null);
@@ -11,10 +11,8 @@ const Clientes = () => {
   const [prevValue, setPrevValue] = useState(null);
   const [search, setSearch] = useState("");
   const [sortedOrder, setSortedOrder] = useState(false);
-  const nombreRef = useRef(null);
-  const direccionRef = useRef(null);
-  const telefonoRef = useRef(null);
-  const dniRef = useRef(null);
+  const [formData, setFormData] = useState({ name: "", address: "", phone: "", dni: "" });
+
 
   useEffect(() => {
 
@@ -24,32 +22,32 @@ const Clientes = () => {
       await fetch(process.env.REACT_APP_API_URL + "/clients",{credentials: "include"})
         .then((res) => res.json())
         .then((data) => {
-          if (!data) return setClientes(local.datos);;
-          setClientes(data);
+          if (!data) return setClients(local.datos);;
+          setClients(data);
           setFilteredClients(data);
           setLocalStorage(data, "clients");
         });
     } catch (error) {
-      console.log(error);
-      setClientes(local.datos);
+      setClients(local.datos);
     }
   };
 
     fetchClients();
   }, []);
 
+  const handleChange = (e) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+
   const searchClient = (dni) => {
-    const client = clientes.find((c) => c.dni === dni);
+    const client = clients.find((c) => c.dni === dni);
     return client;
   };
 
   // Crear cliente
   const createClient = async (event) => {
     event.preventDefault();
-    const name = nombreRef.current?.value;
-    const address = direccionRef.current?.value;
-    const phone = Number(telefonoRef.current?.value);
-    const dni = Number(dniRef.current?.value);
+    const { name, address, phone, dni } = formData;
     if (name && dni) {
       const existingClient = searchClient(dni); //verifica que el DNI no exista
       if (!existingClient) {
@@ -71,8 +69,8 @@ const Clientes = () => {
           });
           if (res.ok) {
             const completeClient = await res.json();
-            const newClients = [...clientes, completeClient];
-            setClientes(newClients);
+            const newClients = [...clients, completeClient];
+            setClients(newClients);
             setFilteredClients(newClients);
             setLocalStorage(newClients, "clients");
             resetForm();
@@ -80,7 +78,7 @@ const Clientes = () => {
             setTimeout(() => setMessage(null), 3000);
           }
         } catch (error) {
-          console.log(error);
+          setMessage("error al crear el cliente")
         }
       } else setMessage("DNI ya registrado");
     }
@@ -95,10 +93,7 @@ const Clientes = () => {
 
   // Limpiar formulario
   const resetForm = () => {
-    if (nombreRef.current) nombreRef.current.value = "";
-    if (direccionRef.current) direccionRef.current.value = "";
-    if (telefonoRef.current) telefonoRef.current.value = "";
-    if (dniRef.current) dniRef.current.value = "";
+    setFormData({ name: "", address: "", phone: "", dni: "" })
   };
 
   // Función para eliminar cliente
@@ -112,14 +107,15 @@ const Clientes = () => {
           method: "DELETE",
           credentials: "include",
         });
-        const updatedClients = clientes.filter((client) => client.id !== id);
-        setClientes(updatedClients);
+        const updatedClients = clients.filter((client) => client.id !== id);
+        setClients(updatedClients);
         setFilteredClients(updatedClients); 
         setLocalStorage(updatedClients, "clients");
       } catch (error) {
         setMessage("Error al eliminar cliente");
       }
     }
+    setTimeout(() =>  setMessage(null),3000)
   };
 
   const handleDoubleClick = (id, field,value) => {
@@ -128,11 +124,11 @@ const Clientes = () => {
   };
 
   const handleFieldChange = (id, field, value) => {
-    const newList = clientes.map((cli) =>
+    const newList = clients.map((cli) =>
       cli.id === id ? { ...cli, [field]: value } : cli
     );
     setFilteredClients(newList);
-    setClientes(newList);
+    setClients(newList);
   };
 
   const handleBlur = async (id, field, value) => {
@@ -154,12 +150,13 @@ const Clientes = () => {
         },
         body: JSON.stringify(data),
       });
-      setLocalStorage(clientes, "clients");
+      setLocalStorage(clients, "clients");
       setEditingField({ id: null, field: null });
     } catch (error) {
-      console.log(error);
+      setMessage("error al editar el cliente")
     }
     searchClient(value);
+    setTimeout(() =>  setMessage(null),3000)
   };
 
   const input = (arr, field, value) => {
@@ -190,7 +187,7 @@ const Clientes = () => {
   const handleSearch = (e) => {
     e.preventDefault();
     setFilteredClients(
-      clientes.filter(
+      clients.filter(
         (c) =>
           c.name.toLowerCase().includes(search.toLowerCase().trim()) ||
           c.dni.toString().includes(search.trim()) ||
@@ -233,7 +230,6 @@ const Clientes = () => {
           }}
           onKeyDown={(e) => {
             if (e.key === "Enter") {
-              console.log(search);
               handleSearch(e);
             }
           }}
@@ -263,7 +259,8 @@ const Clientes = () => {
               </label>
               <input
                 type="text"
-                ref={nombreRef}
+                value={formData.name}
+                onChange={handleChange}
                 name="Nombre"
                 className="form-control"
                 required={true}
@@ -274,8 +271,9 @@ const Clientes = () => {
                 DNI:
               </label>
               <input
+                onChange={handleChange}
                 type="text"
-                ref={dniRef}
+                value={formData.dni}
                 name="dni"
                 className="form-control"
                 required={true}
@@ -286,8 +284,9 @@ const Clientes = () => {
                 Dirección:
               </label>
               <input
+                onChange={handleChange}
                 type="text"
-                ref={direccionRef}
+                value={formData.address}
                 name="Direccion"
                 className="form-control"
               />
@@ -297,8 +296,9 @@ const Clientes = () => {
                 Teléfono:
               </label>
               <input
+                onChange={handleChange}
                 type="text"
-                ref={telefonoRef}
+                value={formData.phone}
                 name="Telefono"
                 className="form-control"
               />
@@ -376,7 +376,7 @@ const Clientes = () => {
             ) : (
               <tr>
                 <td colSpan={6} className="text-center">
-                  No hay clientes registrados
+                  No hay clients registrados
                 </td>
               </tr>
             )}

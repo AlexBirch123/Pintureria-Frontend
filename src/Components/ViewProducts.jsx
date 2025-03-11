@@ -11,10 +11,10 @@ const ViewProducts = () => {
   const description = queryParams.get('description');
   const [filteredProds,setFilteredProds]= useState([])
   const [cat, setCat] = useState(category);
-  const [productos, setProductos] = useState([]);
+  const [products, setProducts] = useState([]);
   const [max, setMax] = useState(0);
   const [min, setMin] = useState(0);
-  const [categorias, setcategorias] = useState([]);
+  const [categories, setCategories] = useState([]);
 
   useEffect(() => {
     const fetchData = async (url, localStorageKey, setState) => {
@@ -28,37 +28,35 @@ const ViewProducts = () => {
             setState(data);
             setLocalStorage(data, localStorageKey);
           } catch (error) {
-            console.log(error);
             setState(local.datos);
           }
         };
 
-    fetchData("/products", "products", setProductos);
-    fetchData("/category", "category", setcategorias);
+    fetchData("/products", "products", setProducts);
+    fetchData("/category", "category", setCategories);
   }, []);
 
   useEffect(() => {
     handleFilteredProds();
-  }, [cat, productos, description]);
+  }, [cat, products, description]);
 
   const handleFilteredProds = () => {
-    console.log(productos)
-    if(!productos) return setFilteredProds([])
+    if(!products) return setFilteredProds([])
       else{
     if (cat) {
-      const prods = productos.filter((p) => p.idCat === Number(cat));
+      const prods = products.filter((p) => p.idCat === Number(cat));
       setFilteredProds(prods);
       setMaxMin(prods);
       return
     }
     if (description) {
-      const prods = productos.filter((p) => p.description.toLowerCase().includes(description.toLowerCase()));
+      const prods = products.filter((p) => p.description.toLowerCase().includes(description.toLowerCase()));
       setFilteredProds(prods);
       setMaxMin(prods);
       return
     }
-    setFilteredProds(productos);
-    setMaxMin(productos);
+    setFilteredProds(products);
+    setMaxMin(products);
       }
   };
 
@@ -74,7 +72,7 @@ const ViewProducts = () => {
 
   // const searchCat = () => {
   //   if (!cat) return false;
-  //   const categoria = categorias.find((p) => p.id === cat);
+  //   const categoria = categories.find((p) => p.id === cat);
   //   return categoria.description;
   // };
 
@@ -110,7 +108,7 @@ const ViewProducts = () => {
                 <label className="form-label">Categoría:</label>
                 <select className="form-select" onChange={(e) => setCat(e.target.value)} value={cat || ""}>
                   <option value="">Todas</option>
-                  {categorias.map((c) => (
+                  {categories.map((c) => (
                     <option key={c.id} value={c.id}>{c.description}</option>
                   ))}
                 </select>
@@ -127,7 +125,7 @@ const ViewProducts = () => {
                   onChange={(e) => {
                     const maxPrice = e.target.value;
                     setFilteredProds(
-                      productos.filter(
+                      products.filter(
                         (p) => p.price <= maxPrice && (!cat || p.idCat === Number(cat))
                       )
                     );
@@ -141,8 +139,8 @@ const ViewProducts = () => {
         <main className={showFilters ? "col-md-9" : "col-md-12"}>
           <div className="card p-3 shadow-sm h-100">
             <h2 className="text-center">Productos</h2>
-            {cat && <p className="text-muted">Mostrando productos para la categoría: {cat}</p>}
-            {description && <p className="text-muted">Mostrando productos para su búsqueda: {description}</p>}
+            {cat && <p className="text-muted">Mostrando products para la categoría: {cat}</p>}
+            {description && <p className="text-muted">Mostrando products para su búsqueda: {description}</p>}
             <div className="row g-3 mt-3">
               {filteredProds.length > 0 ? (
                 filteredProds.map((p) => (
@@ -151,7 +149,7 @@ const ViewProducts = () => {
                   </div>
                 ))
               ) : (
-                <p className="text-center text-danger">No hay productos disponibles.</p>
+                <p className="text-center text-danger">No hay products disponibles.</p>
               )}
             </div>
           </div>

@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
 import {getLocalStorage, setLocalStorage} from "../utils/localStorage"
 import { useNavigate } from "react-router";
@@ -8,21 +8,23 @@ import { CreatCategory } from "./CreatCategory";
 const Productos = () => {
   const [formVisible, setFormVisible] = useState(false);
   const [filteredProductos, setFilteredProductos] = useState([]);
-  const [productos, setProductos] = useState([]);
-  const [proveedores, setProveedores] = useState([]);
-  const [categorias, setcategorias] = useState([]);
+  const [products, setProducts] = useState([]);
+  const [suppliers, serSuppliers] = useState([]);
+  const [categories, setcategories] = useState([]);
   const [editingField, setEditingField] = useState({ id: null, field: null });
   const [message, setMessage] = useState(null);
   const [search, setSearch] = useState("");
   const [typeMessage, setTypeMessage] = useState(true);
   const [sortedOrder, setSortedOrder] = useState("");
-  const descripcionRef = useRef(null);
-  const titleRef = useRef(null);
-  const idProvRef = useRef(null);
-  const idCatRef = useRef(null);
-  const stockRef = useRef(null);
-  const precioRef = useRef(null);
-  const skuRef = useRef(null);
+  const [formData, setFormData] = useState({
+      title: "",
+      description: "",
+      sku: "",
+      price: "",
+      stock: "",
+      idProv: "",
+      idCat: "",
+    });
 
   const navigate = useNavigate();
 
@@ -36,18 +38,17 @@ const Productos = () => {
           setState(data);
           setLocalStorage(data, localStorageKey);
           } catch (error) {
-          console.log(error);
           setState(local.datos);
           }
         };
-    fetchData("/products", "products", setProductos);
-    fetchData("/category", "category", setcategorias);
-    fetchData("/suppliers", "suppliers", setProveedores); 
+    fetchData("/products", "products", setProducts);
+    fetchData("/category", "category", setcategories);
+    fetchData("/suppliers", "suppliers", serSuppliers); 
   }, []);
 
   useEffect(()=>{
-    if(productos) setFilteredProductos(productos)
-  },[productos])
+    if(products) setFilteredProductos(products)
+  },[products])
 
   const toggleFormVisibility = () => {
     setFormVisible(!formVisible);
@@ -55,32 +56,33 @@ const Productos = () => {
   };
 
   const resetForm = () => {
-    if (descripcionRef.current) descripcionRef.current.value = "";
-    if (stockRef.current) stockRef.current.value = "";
-    if (precioRef.current) precioRef.current.value = "";
-    if (idProvRef.current) idProvRef.current.value = "";
-    if (titleRef.current) titleRef.current.value = "";
-    if (skuRef.current)skuRef.current.value = "";
-  };
+    setFormData({
+      title: "",
+      description: "",
+      sku: "",
+      price: "",
+      stock: "",
+      idProv: "",
+      idCat: "",
+    })}
+
+    const handleInputChange = (e) => {
+      const { name, value } = e.target;
+      setFormData({ ...formData, [name]: value });
+    };
 
   const createProducto = async (event) => {
     event.preventDefault();
-    const description = descripcionRef.current?.value;
-    const price = Number(precioRef.current?.value);
-    const stock = Number(stockRef.current?.value);
-    const idProv = Number(idProvRef.current?.value);
-    const idCat = Number(idCatRef.current?.value);
-    const title = titleRef.current?.value
-    const sku = skuRef.current?.value
+    const { title, description, sku, price, stock, idProv, idCat } = formData;
     if (title && price && idProv && idCat && stock) {
       const newProd = {
-        sku:sku,
-        title: title,
-        description: description,
-        price: price,
-        stock: stock,
-        idProv: idProv,
-        idCat: idCat,
+        sku,
+        title,
+        description,
+        price: Number(price),
+        stock: Number(stock),
+        idProv: Number(idProv),
+        idCat: Number(idCat),
       };
       try {
         const res = await fetch(process.env.REACT_APP_API_URL + "/products", {
@@ -93,13 +95,12 @@ const Productos = () => {
         });
         if (res.ok) {
           const completeProd = await res.json();
-          setFilteredProductos([...productos, completeProd]);
+          setFilteredProductos([...products, completeProd]);
           setMessage("Productos creado con exito")
           setTypeMessage(true)
           resetForm();
         }
       } catch (error) {
-        console.log(error);
         setMessage("Error al crear producto")
         setTypeMessage(false)
       }
@@ -120,7 +121,7 @@ const Productos = () => {
         credentials: "include",
         method: "DELETE",
       });
-      const updatedProd = productos.filter((p) => p.id !== id);
+      const updatedProd = products.filter((p) => p.id !== id);
       setFilteredProductos(updatedProd);
       setLocalStorage(updatedProd);
     }
@@ -131,7 +132,7 @@ const Productos = () => {
     };
   
     const handleFieldChange = (id, field, value) => {
-      const newList = productos.map((prod) =>
+      const newList = products.map((prod) =>
         prod.id === id ? { ...prod, [field]: value } : prod
       )
       setFilteredProductos(newList);
@@ -148,7 +149,7 @@ const Productos = () => {
           },
           body: JSON.stringify(data),
         });
-        setLocalStorage(productos, "products");
+        setLocalStorage(products, "products");
         setEditingField({ id: null, field: null });
       } catch (error) {
         setMessage("Error en la solicitud");
@@ -181,7 +182,7 @@ const Productos = () => {
   };
   const handleSearch = (e) => {
     e.preventDefault();
-    if(search.trim() === "")return setFilteredProductos(productos);
+    if(search.trim() === "")return setFilteredProductos(products);
     setFilteredProductos(
       filteredProductos.filter((c) =>
         c.title.toLowerCase().includes(search.toLowerCase().trim()) ||
@@ -228,7 +229,6 @@ const Productos = () => {
             }}
             onKeyDown={(e) => {
               if (e.key === "Enter") {
-                console.log(search);
                 handleSearch(e);
               }
             }}
@@ -238,16 +238,16 @@ const Productos = () => {
             hidden={formVisible}
             onChange={(e) => {
               if (e.target.value === "") {
-                setFilteredProductos(productos);
+                setFilteredProductos(products);
               } else {
-                const filtered = productos.filter(
+                const filtered = products.filter(
                   (p) => p.idProv === Number(e.target.value)
                 );
                 setFilteredProductos(filtered);
               }
             }}>
             <option value="" hidden={formVisible}>Proveedores</option>
-            {proveedores.map((prov) => (
+            {suppliers.map((prov) => (
               <option key={prov.id} value={prov.id}>
                 {prov.name}
             </option>
@@ -258,16 +258,16 @@ const Productos = () => {
             hidden={formVisible}
             onChange={(e) => {
               if (e.target.value === "") {
-                setFilteredProductos(productos);
+                setFilteredProductos(products);
               } else {
-                const filtered = productos.filter(
+                const filtered = products.filter(
                   (p) => p.idCat === Number(e.target.value)
                 );
                 setFilteredProductos(filtered);
               }
             }}>
             <option value="">Categorias</option>
-            {categorias.map((cat) => (
+            {categories.map((cat) => (
               <option key={cat.id} value={cat.id}>
                 {cat.description}
               </option>
@@ -300,7 +300,7 @@ const Productos = () => {
           >
             Vista de tienda
           </button>
-          <CreatCategory categorias={categorias} setcategorias={setcategorias}></CreatCategory>
+          <CreatCategory categories={categories} setcategories={setcategories}></CreatCategory>
         </div>
       </div>
       <div>
@@ -318,7 +318,8 @@ const Productos = () => {
                   type="text"
                   className="form-control"
                   required
-                  ref={titleRef}
+                  value={formData.title}
+                  onChange={handleInputChange}
                 />
               </div>
               <div className="col-md-6">
@@ -326,7 +327,8 @@ const Productos = () => {
                 <input
                   type="text"
                   className="form-control"
-                  ref={descripcionRef}
+                  value={formData.description}
+                  onChange={handleInputChange}
                 />
               </div>
               <div className="col-md-6">
@@ -335,7 +337,8 @@ const Productos = () => {
                   placeholder="Codigo interno"
                   type="text"
                   className="form-control"
-                  ref={skuRef}
+                  value={formData.sku}
+                  onChange={handleInputChange}
                 />
               </div>
               <div className="col-md-6">
@@ -344,18 +347,21 @@ const Productos = () => {
                   type="number"
                   className="form-control"
                   required
-                  ref={precioRef}
+                  value={formData.price}
+                  onChange={handleInputChange}
                 />
               </div>
               <div className="col-md-6">
                 <label className="form-label">Stock:</label>
-                <input type="number" className="form-control" ref={stockRef} required />
+                <input type="number" className="form-control" value={formData.stock}
+                  onChange={handleInputChange} required />
               </div>
               <div className="col-md-6">
                 <label className="form-label">Proveedor:</label>
-                <select className="form-select" required ref={idProvRef}>
+                <select className="form-select" required value={formData.idProv}
+                  onChange={handleInputChange}>
                   <option value="">Elegir proveedor</option>
-                  {proveedores.map((prov) => (
+                  {suppliers.map((prov) => (
                     <option key={prov.id} value={prov.id}>
                       {prov.name}
                     </option>
@@ -364,9 +370,10 @@ const Productos = () => {
               </div>
               <div className="col-md-6">
                 <label className="form-label">Categoría:</label>
-                <select className="form-select" required ref={idCatRef}>
+                <select className="form-select" required value={formData.idCat}
+                  onChange={handleInputChange}>
                   <option value="">Elegir categoría</option>
-                  {categorias.map((cat) => (
+                  {categories.map((cat) => (
                     <option key={cat.id} value={cat.id}>
                       {cat.description}
                     </option>
@@ -411,7 +418,7 @@ const Productos = () => {
                 <tr key={producto.id}>
                   <td>{producto.id}</td>
                   <td>{producto.sku}</td>
-                  <ImgProducto key={producto.id} producto={producto} setProductos={setProductos} productos={productos} />             
+                  <ImgProducto key={producto.id} producto={producto} setProducts={setProducts} products={products} />             
                   <td className="text-truncate">{input(producto, "title", producto.title)}</td>
                   <td>{input(producto, "price", producto.price)}</td>
                   <td>{input(producto, "stock", producto.stock)}</td>
@@ -424,7 +431,7 @@ const Productos = () => {
                       handleBlur(producto.id, "idProv", e.target.value)} }
                     >
                     <option value="">Elegir proveedor</option>
-                    {proveedores.map((p) => (
+                    {suppliers.map((p) => (
                      <option key={p.id} value={p.id}>
                       {p.name}
                     </option>
@@ -440,7 +447,7 @@ const Productos = () => {
                       handleBlur(producto.id, "idCat", e.target.value)} }
                     >
                     <option value="">Elegir categoría</option>
-                    {categorias.map((cat) => (
+                    {categories.map((cat) => (
                      <option key={cat.id} value={cat.id}>
                       {cat.description}
                     </option>
@@ -461,7 +468,7 @@ const Productos = () => {
             ) : (
               <tr>
                 <td colSpan={9} className="text-center text-muted">
-                  No hay productos registrados
+                  No hay products registrados
                 </td>
               </tr>
             )}
