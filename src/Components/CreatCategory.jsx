@@ -22,7 +22,7 @@ export const CreatCategory = ({ categorias, setcategorias }) => {
         setImage(url);
         setDesc(selectedCategory.description);
         setSelectedCat(selectedCategory);
-        console.log("paso")
+
       }
     };
     if (selectedIdCat) {
@@ -89,7 +89,6 @@ export const CreatCategory = ({ categorias, setcategorias }) => {
         setTimeout(() => setMessage(null), 3000);
       }
     } catch (error) {
-      console.log(error);
       setMessage("error al crear la categoria");
       setTimeout(() => setMessage(null), 3000);
     }
@@ -146,7 +145,6 @@ export const CreatCategory = ({ categorias, setcategorias }) => {
         setTimeout(() => setMessage(null), 3000);
       }
     } catch (error) {
-      console.log(error);
       setLoading(false)
       setMessage("error al crear la categoria");
       setTimeout(() => setMessage(null), 3000);

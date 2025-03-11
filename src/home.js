@@ -18,7 +18,6 @@ function Home() {
   useEffect(() => {
     const fetchCat = async () => {
       const local = getLocalStorage("category");
-      try {
         await fetch(process.env.REACT_APP_API_URL + "/category", { credentials: "include" })
         .then((res) => res.json())
         .then((data) => {
@@ -28,9 +27,6 @@ function Home() {
           setCategorias(data);
           setLocalStorage(data, "category");
         });
-      } catch (error) {
-        console.log(error);
-      }
     };
     fetchCat();
   }, []);

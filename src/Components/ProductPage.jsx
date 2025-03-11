@@ -25,7 +25,7 @@ const ProductPage = ({ setCartChange, cartChange }) => {
         const data = await res.json();
         setState(data);
       } catch (error) {
-        console.log(error);
+        console.log("error en la peticion");
       }
     };
     if(idProd){
