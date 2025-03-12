@@ -253,7 +253,7 @@ const Usuarios = () => {
       </div>
       {message && <div className="alert alert-success">{message}</div>}
         
-      {/* Formulario visible para crear o editar sucursal */}
+      {/* Formulario visible para crear */}
       {formVisible && (
         <form
           id="userForm"
@@ -281,7 +281,7 @@ const Usuarios = () => {
               type="password"
               value={formData.pswHash} 
               onChange={handleInputChange}
-              name="password"
+              name="pswHash"
               className="form-control"
               required
             />

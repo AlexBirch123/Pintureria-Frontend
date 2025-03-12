@@ -244,7 +244,7 @@ const Clientes = () => {
         </button>
       </div>
       {message && <div className="alert alert-success">{message}</div>}
-      {/* Formulario visible para crear o editar cliente */}
+      {/* Formulario visible para crear cliente */}
       {formVisible && (
         <div className="card shadow p-4 mb-4">
           <h4 className="mb-3">Nuevo Cliente</h4>
@@ -261,7 +261,7 @@ const Clientes = () => {
                 type="text"
                 value={formData.name}
                 onChange={handleChange}
-                name="Nombre"
+                name="name"
                 className="form-control"
                 required={true}
               />
@@ -272,7 +272,7 @@ const Clientes = () => {
               </label>
               <input
                 onChange={handleChange}
-                type="text"
+                type="number"
                 value={formData.dni}
                 name="dni"
                 className="form-control"
@@ -287,7 +287,7 @@ const Clientes = () => {
                 onChange={handleChange}
                 type="text"
                 value={formData.address}
-                name="Direccion"
+                name="address"
                 className="form-control"
               />
             </div>
@@ -297,9 +297,9 @@ const Clientes = () => {
               </label>
               <input
                 onChange={handleChange}
-                type="text"
+                type="number"
                 value={formData.phone}
-                name="Telefono"
+                name="phone"
                 className="form-control"
               />
             </div>

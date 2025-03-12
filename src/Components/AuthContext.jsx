@@ -38,7 +38,7 @@ export const AuthProvider = ({ children }) => {
     checkAuth();
   });
 
-  const login = async (username, password) => {
+  const login = async (userName, pswHash) => {
     try {
       const res = await fetch(process.env.REACT_APP_API_URL + "/login", {
         method: "POST",
@@ -46,7 +46,7 @@ export const AuthProvider = ({ children }) => {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ username, password }),
+        body: JSON.stringify({ userName, pswHash }),
       });
 
       if (res.ok) {

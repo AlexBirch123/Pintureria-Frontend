@@ -244,19 +244,30 @@ const Sucursales = () => {
         </button>
       </div>
 
-      {/* Formulario visible para crear o editar sucursal */}
+      {/* Formulario visible para crear */}
       {formVisible && (
         <div className="card p-4 shadow-sm mb-4">
         <form onSubmit={createSucursal}>
           <div className="mb-3">
             <label className="form-label">Dirección</label>
-            <input type="text" value={formData.address}
-                onChange={handleChange} className="form-control" required />
+            <input 
+            type="text" 
+            name="address" 
+            value={formData.address}
+            onChange={handleChange} 
+            className="form-control" 
+            required />
           </div>
           <div className="mb-3">
             <label className="form-label">Teléfono</label>
-            <input type="text" value={formData.phone}
-                onChange={handleChange} className="form-control" required />
+            <input 
+            type="text"
+            name="phone" 
+            value={formData.phone}
+            onChange={handleChange} 
+            className="form-control" 
+            required 
+            />
           </div>
           <button type="submit" className="btn btn-success w-100">Guardar</button>
         </form>

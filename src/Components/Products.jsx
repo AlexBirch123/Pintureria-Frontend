@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
 import {getLocalStorage, setLocalStorage} from "../utils/localStorage"
 import { useNavigate } from "react-router";
-import { ImgProducto } from "./ImgProducto";
+import { ImgProducto } from "./ImgProduct";
 import { CreatCategory } from "./CreatCategory";
 
 const Productos = () => {

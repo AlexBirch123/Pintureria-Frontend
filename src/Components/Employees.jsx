@@ -248,19 +248,19 @@ const Empleados = () => {
         <form onSubmit={createEmp}>
           <div className="mb-3">
             <label className="form-label">Nombre:</label>
-            <input type="text" value={formData.name} onChange={handleChange} className="form-control" required />
+            <input type="text" name="name" value={formData.name} onChange={handleChange} className="form-control" required />
           </div>
           <div className="mb-3">
             <label className="form-label">DNI:</label>
-            <input type="text" value={formData.dni} onChange={handleChange} className="form-control" required />
+            <input type="number" name="dni" value={formData.dni} onChange={handleChange} className="form-control" required />
           </div>
           <div className="mb-3">
             <label className="form-label">Sueldo:</label>
-            <input type="number" value={formData.salary} onChange={handleChange} className="form-control" required />
+            <input type="number" name="salary" value={formData.salary} onChange={handleChange} className="form-control" required />
           </div>
           <div className="mb-3">
             <label className="form-label">Teléfono:</label>
-            <input type="text" value={formData.phone} onChange={handleChange} className="form-control" />
+            <input type="text" name="phone" value={formData.phone} onChange={handleChange} className="form-control" />
           </div>
           <button type="submit" className="btn btn-success w-100">Guardar</button>
         </form>

@@ -236,7 +236,7 @@ const Proveedores = () => {
            exit={{ y: -50, opacity: 0 }}
            className="fixed top-0 left-1/2 -translate-x-1/2 mt-4 px-6 py-2 bg-green-500 text-white rounded-lg shadow-lg z-50"
          >
-           Producto creado exitosamente 🎉
+           Proveedor creado exitosamente 🎉
          </motion.div>
         )} 
       {/* Formulario visible para crear o editar proveedor */}
@@ -248,7 +248,7 @@ const Proveedores = () => {
         </div>
         <div className="mb-3">
           <label className="form-label">CUIT/CUIL:</label>
-          <input type="text" value={formData.cuit} onChange={(e) => setFormData({ ...formData, cuit: e.target.value })} className="form-control" required />
+          <input type="number" value={formData.cuit} onChange={(e) => setFormData({ ...formData, cuit: e.target.value })} className="form-control" required />
         </div>
         <div className="mb-3">
           <label className="form-label">Dirección:</label>
@@ -256,7 +256,7 @@ const Proveedores = () => {
         </div>
         <div className="mb-3">
           <label className="form-label">Teléfono:</label>
-          <input type="text" value={formData.phone} onChange={(e) => setFormData({ ...formData, phone: e.target.value })} className="form-control" />
+          <input type="number" value={formData.phone} onChange={(e) => setFormData({ ...formData, phone: e.target.value })} className="form-control" />
         </div>
         <button type="submit" className="btn btn-success">Guardar</button>
       </form>

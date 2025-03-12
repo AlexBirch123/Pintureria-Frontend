@@ -126,7 +126,13 @@ const CrearVentas = () => {
         <div className="row" style={{ marginTop: "1%" }}>
           <div className="col-md-4">
             <label className="form-label">Cliente</label>
-            <select value={formData.idClient} onChange={handleInputChange} className="form-select" required>
+            <select 
+            value={formData.idClient} 
+            name="idClient" 
+            onChange={handleInputChange} 
+            className="form-select" 
+            required
+            >
               <option value="">Seleccione un client</option>
               {clients.map((client) => (
                 <option key={client.id} value={client.id}>{client.name}</option>
@@ -135,7 +141,13 @@ const CrearVentas = () => {
           </div>
           <div className="col-md-4">
             <label className="form-label">Empleado</label>
-            <select value={formData.idEmp} onChange={handleInputChange} className="form-select" required>
+            <select 
+            value={formData.idEmp} 
+            name="idEmp" 
+            onChange={handleInputChange} 
+            className="form-select" 
+            required
+            >
               <option value="">Seleccione un employee</option>
               {employees.map((employee) => (
                 <option key={employee.id} value={employee.id}>{employee.name}</option>
@@ -144,7 +156,13 @@ const CrearVentas = () => {
           </div>
           <div className="col-md-4">
             <label className="form-label">Sucursal</label>
-            <select value={formData.idBranch} onChange={handleInputChange} className="form-select" required>
+            <select 
+            value={formData.idBranch} 
+            name="idBranch" 
+            onChange={handleInputChange} 
+            className="form-select" 
+            required
+            >
               <option value="">Seleccione una branch</option>
               {branches.map((branch) => (
                 <option key={branch.id} value={branch.id}>{branch.address}</option>
