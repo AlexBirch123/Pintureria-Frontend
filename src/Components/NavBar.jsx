@@ -44,11 +44,12 @@ const NavBar = ({ cartChange }) => {
   }, []);
 
   const handleSession = async () => {
+    console.log(isAuthenticated)
     if (!isAuthenticated) {
       navigate("/login");
       return;
     }
-    const res = await logout
+    const res = await logout()
     if(res.success){
       setLocalStorage([],"cart")
       navigate("/home")

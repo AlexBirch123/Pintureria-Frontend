@@ -72,7 +72,7 @@ export const AuthProvider = ({ children }) => {
         credentials: "include",
       });
       
-      if(!res.ok) return{ success: false, message: "Credenciales incorrectas" };
+      if(!res.ok) return{ success: false };
       setIsAuthenticated(false);
       setRole(null);
       setId(null);
