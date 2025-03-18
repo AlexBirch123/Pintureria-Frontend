@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from "react";
 import Modal from "react-modal";
 import { Loading } from "./Loading";
 
-export const CreatCategory = ({ categorias, setcategorias }) => {
+export const CreatCategory = ({ categories, setcategories }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [change, setChange] = useState(true);
   const [message, setMessage] = useState(null);
@@ -16,7 +16,7 @@ export const CreatCategory = ({ categorias, setcategorias }) => {
 
   useEffect(() => {
     const handleSelect = () => {
-      const selectedCategory = categorias.find(cat => cat.id === Number(selectedIdCat));
+      const selectedCategory = categories.find(cat => cat.id === Number(selectedIdCat));
       if (selectedCategory) {
         const url = selectedCategory.imgUrl ? process.env.REACT_APP_API_URL + "/uploads/" + selectedCategory.imgUrl : null;
         setImage(url);
@@ -43,7 +43,7 @@ export const CreatCategory = ({ categorias, setcategorias }) => {
 
     //Busca si la categoria ya existe
     const description = catRef.current.value;
-    const existingCat = categorias.find((cat) => cat.description === description);
+    const existingCat = categories.find((cat) => cat.description === description);
     if (existingCat) {
       catRef.current.value = "";
       setMessage("La categoria ya existe");
@@ -78,7 +78,7 @@ export const CreatCategory = ({ categorias, setcategorias }) => {
       });
       if (res.ok) {
         const data = await res.json();
-        setcategorias([...categorias, data]);
+        setcategories([...categories, data]);
         setMessage("Categoria creada con exito");
         setTimeout(() => {
           setMessage(null);
@@ -99,7 +99,7 @@ export const CreatCategory = ({ categorias, setcategorias }) => {
     if(!(image !== selectedCat.imgUrl || desc !== selectedCat.description)) return
 
     //Busca si la categoria ya existe
-    const existingCat = categorias.find((cat) => cat.description === desc);
+    const existingCat = categories.find((cat) => cat.description === desc);
     if (existingCat && existingCat.id !== selectedCat.id) {
       setDesc(null);
       setMessage("La categoria ya existe");
@@ -132,7 +132,7 @@ export const CreatCategory = ({ categorias, setcategorias }) => {
       });
       if (res.ok) {
         const data = await res.json();
-        setcategorias([...categorias, data]);
+        setcategories([...categories, data]);
         setLoading(false)
         setMessage("Categoria actualizada con exito");
         setTimeout(() => {
@@ -248,11 +248,11 @@ export const CreatCategory = ({ categorias, setcategorias }) => {
                 id="cat"
                 onChange={(e) => {
                   setSelectedIdCat(e.target.value)
-                  // setSelectedCat(categorias.find((cat) => cat.id === selectedIdCat));
+                  // setSelectedCat(categories.find((cat) => cat.id === selectedIdCat));
                 }}
               >
                 <option value="">Categorias</option>
-                {categorias.map((cat) => 
+                {categories.map((cat) => 
                    <option key={cat.id} value={cat.id}> {cat.description} </option>
                 )}
               </select>

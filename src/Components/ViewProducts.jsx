@@ -37,8 +37,9 @@ const ViewProducts = () => {
   }, []);
 
   useEffect(() => {
+    setCat(category)
     handleFilteredProds();
-  }, [cat, products, description]);
+  }, [category, products, description]);
 
   const handleFilteredProds = () => {
     if(!products) return setFilteredProds([])
