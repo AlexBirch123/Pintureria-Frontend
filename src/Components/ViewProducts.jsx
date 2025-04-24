@@ -11,7 +11,6 @@ const ViewProducts = () => {
   const title = queryParams.get('title');
   const [filteredProds,setFilteredProds]= useState([])
   const [cat, setCat] = useState(category);
-  const [products, setProducts] = useState([]);
   const [max, setMax] = useState(0);
   const [min, setMin] = useState(0);
   const [categories, setCategories] = useState([]);
@@ -35,7 +34,7 @@ const ViewProducts = () => {
 
   useEffect(() => {
     handleFilteredProds();
-  }, [cat,category, products, title]);
+  }, [cat,category, title]);
   
 
   const fetchData = async (url, localStorageKey, setState) => {
@@ -119,6 +118,7 @@ const ViewProducts = () => {
                   step={0.1}
                   onChange={(e) => {
                     const maxPrice = e.target.value;
+                    const products = getLocalStorage("products").datos;
                     setFilteredProds(
                       products.filter(
                         (p) => p.price <= maxPrice && (!cat || p.idCat === Number(cat))
@@ -134,8 +134,8 @@ const ViewProducts = () => {
         <main className={showFilters ? "col-md-9" : "col-md-12"}>
           <div className="card p-3 shadow-sm h-100">
             <h2 className="text-center">Productos</h2>
-            {cat && <p className="text-muted">Mostrando products para la categoría: {cat}</p>}
-            {title && <p className="text-muted">Mostrando products para su búsqueda: {title}</p>}
+            {cat && <p className="text-muted">Mostrando productos para la categoría: {cat}</p>}
+            {title && <p className="text-muted">Mostrando productos para su búsqueda: {title}</p>}
             <div className="row g-3 mt-3">
               {filteredProds.length > 0 ? (
                 filteredProds.map((p) => (
@@ -144,7 +144,7 @@ const ViewProducts = () => {
                   </div>
                 ))
               ) : (
-                <p className="text-center text-danger">No hay products disponibles.</p>
+                <p className="text-center text-danger">No hay productos disponibles.</p>
               )}
             </div>
           </div>
