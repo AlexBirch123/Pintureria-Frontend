@@ -60,7 +60,7 @@ const NavBar = ({ cartChange }) => {
   const handleSearch = (e) => {
     e.preventDefault();
     if (search.trim() !== "") {
-      navigate(`/products?description=${search}`);
+      navigate(`/products?title=${search}`);
     }
   };
 
